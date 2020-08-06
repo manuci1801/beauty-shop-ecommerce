@@ -1,6 +1,6 @@
 const User = require('../models/User')
 
-const getUsers = async (req, res) => {
+const getAll = async (req, res) => {
   try {
     let { $limit, $skip, $sort } = req.query
 
@@ -13,5 +13,5 @@ const getUsers = async (req, res) => {
 }
 
 module.exports = {
-  getUsers
+  getAll
 }
