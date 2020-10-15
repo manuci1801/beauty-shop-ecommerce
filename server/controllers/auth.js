@@ -1,4 +1,4 @@
-const bcryptjs = require('bcryptjs')
+const argon2 = require('argon2')
 const jwt = require('jsonwebtoken')
 
 const { authValidation } = require('../validation')
@@ -11,23 +11,29 @@ const register = async (req, res) => {
     if (!isValid)
       res.status(400).json({ errors: errors })
     else {
-      const { name, email, password, password2 } = req.body
+      const { name, email, password, bird, gender, address  } = req.body
       const userByEmail = await User.findOne({ email })
 
       if (!userByEmail) {
-        const salt = await bcryptjs.genSalt(10)
-        const hashPassword = await bcryptjs.hash(password, salt)
+        const hashPassword = await argon2.hash(password)
 
         const newUser = new User({
           name,
           email,
-          password: hashPassword
+          password: hashPassword,
+          bird: new Date(bird),
+          gender,
+          address,
         })
         await newUser.save()
 
-        res.json({ success: true })
+        res.json({ newUser })
       } else {
-        res.status(400).json({ errors: ['Email is exists'] })
+        res.status(400).json({ 
+          errors: [
+            {field: "email",message: "user already exists"}
+          ]
+      })
       }
     }
   } catch (err) {
@@ -46,21 +52,34 @@ const login = async (req, res) => {
       const userByEmail = await User.findOne({ email })
 
       if (userByEmail) {
-        const matchPassword = await bcryptjs.compare(password, userByEmail.password)
+        const matchPassword = await argon2.verify(userByEmail.password, password)
         if (matchPassword) {
+          const { _id, name, email, bird, gender, address, role} = userByEmail
           const payload = {
-            id: userByEmail._id,
-            email: userByEmail.email,
-            role: userByEmail.role
+            id: _id,
+            name,
+            email: email,
+            bird,
+            gender,
+            address,
+            role
           }
-          const token = await jwt.sign(payload, process.env.SECRET_OR_KEY, { expiresIn: '6h' })
+          const token = await jwt.sign(payload, process.env.SECRET_OR_KEY, { expiresIn: '24h' })
 
-          res.json({ success: true, token: `Bearer ${token}` })
+          res.json({ token: `Bearer ${token}` })
         } else {
-          res.status(400).json({ errors: ['Password incorrect'] })
+          res.status(400).json({ 
+            errors: [
+              {field: "password",message: 'password incorrect'}
+            ] 
+        })
         }
       } else {
-        res.status(400).json({ errors: ['Email is not exists'] })
+        res.status(400).json({ 
+          errors: [
+            {field: "email",message: "email is not exists"}
+          ] 
+      })
       }
     }
   } catch (err) {

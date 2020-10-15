@@ -2,10 +2,10 @@ const router = require('express').Router()
 const passport = require('passport')
 
 const { userController } = require('../controllers')
-const { isAdmin } = require('../middlewares')
+const { isAdmin } = require('../middleware')
 
 router
   .route('/')
-  .get(passport.authenticate('jwt', { session: false }), isAdmin, userController.getAll)
+  .get(passport.authenticate('jwt', { session: false }), isAdmin, userController.getMany)
 
 module.exports = router
