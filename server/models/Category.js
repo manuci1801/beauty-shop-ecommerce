@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const brandSchema = mongoose.Schema({
+const categorySchema = mongoose.Schema({
   name: String,
   description: {
     type: String,
-    required: false,
+    default: "",
   },
   createdAt: {
     type: Date,
@@ -16,4 +16,4 @@ const brandSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("brands", brandSchema);
+module.exports = mongoose.model("categories", categorySchema);

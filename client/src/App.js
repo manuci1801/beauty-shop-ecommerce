@@ -1,51 +1,69 @@
-import React from 'react'
-import { Layout, Menu } from 'antd';
-import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
-
-import './App.css'
-
-const { Header, Content, Footer, Sider } = Layout;
+import React from "react";
+import { Provider } from "react-redux";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
+import Footer from "./layouts/Footer";
+import Header from "./layouts/Header";
+import Admin from "./pages/Admin";
+import Contact from "./pages/Contact";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import New from "./pages/New";
+import NewProducts from "./pages/NewProducts";
+import News from "./pages/News";
+import OldProducts from "./pages/OldProducts";
+import ProductDetail from "./pages/ProductDetail";
+import ProductsBySlug from "./pages/ProductsBySlug";
+import Register from "./pages/Register";
+import store from "./redux/store";
 
 function App() {
   return (
-    <Layout>
-      <Sider
-        breakpoint="lg"
-        collapsedWidth="0"
-        onBreakpoint={broken => {
-          console.log(broken);
-        }}
-        onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
-        }}
-      >
-        <div className="logo" />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']}>
-          <Menu.Item key="1" icon={<UserOutlined />}>
-            nav 1
-        </Menu.Item>
-          <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-            nav 2
-        </Menu.Item>
-          <Menu.Item key="3" icon={<UploadOutlined />}>
-            nav 3
-        </Menu.Item>
-          <Menu.Item key="4" icon={<UserOutlined />}>
-            nav 4
-        </Menu.Item>
-        </Menu>
-      </Sider>
-      <Layout>
-        <Header className="site-layout-sub-header-background" style={{ padding: 0 }} />
-        <Content style={{ margin: '24px 16px 0' }}>
-          <div className="site-layout-background" style={{ padding: 24, minHeight: '80vh' }}>
-            content
-        </div>
-        </Content>
-        <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
-      </Layout>
-    </Layout>
-  )
+    <Provider store={store}>
+      <Router>
+        <Header />
+        <ToastContainer />
+        <Switch>
+          <Route path="/" exact>
+            <Home />
+          </Route>
+          <Route path="/login" exact>
+            <Login />
+          </Route>
+          <Route path="/register" exact>
+            <Register />
+          </Route>
+          <Route path="/new-products" exact>
+            <NewProducts />
+          </Route>
+          <Route path="/old-products" exact>
+            <OldProducts />
+          </Route>
+          <Route path="/contact" exact>
+            <Contact />
+          </Route>
+          <Route path="/brands/:slug" exact>
+            <ProductsBySlug />
+          </Route>
+          <Route path="/products/:id" exact>
+            <ProductDetail />
+          </Route>
+          <Route path="/news" exact>
+            <News />
+          </Route>
+          <Route path="/news/:id" exact>
+            <New />
+          </Route>
+          <Route path="/admin" exact>
+            <Admin />
+          </Route>
+        </Switch>
+        <Footer />
+      </Router>
+    </Provider>
+  );
 }
 
-export default App
+export default App;

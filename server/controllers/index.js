@@ -1,11 +1,8 @@
-const authController = require('./auth')
-const userController = require('./users')
-const brandController = require('./brands')
-const productController = require('./products')
-
 module.exports = {
-  authController,
-  userController,
-  brandController,
-  productController
-}
+  authController: require("./auth"),
+  userController: require("./users"),
+  brandController: require("./brands"),
+  categoryController: require("./categories"),
+  subcategoryController: require("./subcategories"),
+  productController: require("./products"),
+};

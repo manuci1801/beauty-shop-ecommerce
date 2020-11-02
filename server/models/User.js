@@ -1,45 +1,44 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   password: {
     type: String,
-    required: true,
+    required: () => {
+      return this.provider === "local" ? true : false;
+    },
   },
-  bird: {
-    type: Date,
-    default: Date.now
-  },
-  gender: {
+  avatar: {
     type: String,
-    enum: ['male', 'female'],
-    default: 'male'
+    default: "",
   },
-  address: {
+  provider: {
     type: String,
+    enum: ["google", "facebook", "local"],
+    default: "local",
   },
   role: {
     type: String,
-    enum: ['admin', 'user'],
-    default: 'user'
+    enum: ["ROLE_ADMIN", "ROLE_USER"],
+    default: "ROLE_USER",
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   updatedAt: {
     type: Date,
-    default: Date.now
-  }
-})
+    default: Date.now,
+  },
+});
 
-module.exports = mongoose.model('users', userSchema)
+module.exports = mongoose.model("users", userSchema);
