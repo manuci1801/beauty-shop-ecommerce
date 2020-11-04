@@ -3,23 +3,11 @@ const Product = require("../models/Product");
 // get all products
 const getMany = async (req, res) => {
   const { limit, offset } = req.query;
-  // let conditions = {};
-
-  // if(typeof isOld !== 'undefined') {
-  //   // get all old products
-  //   if(isOld == 'true') {
-  //     conditions = {...{isOld: true}}
-
-  //   //get all new products
-  //   } else if(isOld == 'false'){
-  //     conditions = {...{isOld: false}}
-  //   }
-  // }
-  // console.log(conditions)
 
   const products = await Product.find()
-    .limit(limit ? parseInt(limit) : 0)
-    .skip(offset ? parseInt(offset) : 0);
+    .populate("brandId", "name")
+    .populate("categoryId", "name")
+    .populate("subcategoryId", "name");
 
   res.json(products);
 };
@@ -31,7 +19,14 @@ const addOne = async (req, res) => {
       errors: [{ field: "image", message: "image field is required" }],
     });
   }
-  const { name, description, categoryId, isOld } = req.body;
+  const {
+    name,
+    description,
+    categoryId,
+    subcategoryId,
+    brandId,
+    price,
+  } = req.body;
 
   if (!name) {
     return res.status(400).json({
@@ -61,7 +56,9 @@ const addOne = async (req, res) => {
     description,
     images,
     categoryId,
-    isOld: isOld ? isOld : false,
+    subcategoryId,
+    brandId,
+    price,
   });
 
   await newProduct.save();

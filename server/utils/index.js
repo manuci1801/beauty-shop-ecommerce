@@ -1,5 +1,7 @@
-const processFile = require('./processFile')
+const processFile = require("./processFile");
+const isEmpty = require("./isEmpty");
 
 module.exports = {
-  processFile
-}
+  processFile,
+  isEmpty,
+};

@@ -1,6 +1,6 @@
 const validator = require("validator");
 
-const isEmpty = require("../utils/isEmpty");
+const { isEmpty } = require("../utils");
 
 const register = (data) => {
   let errors = [];

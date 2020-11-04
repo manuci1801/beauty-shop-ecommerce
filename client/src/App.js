@@ -11,9 +11,8 @@ import Contact from "./pages/Contact";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import New from "./pages/New";
-import NewProducts from "./pages/NewProducts";
-import News from "./pages/News";
-import OldProducts from "./pages/OldProducts";
+import Products from "./pages/Products";
+import Blog from "./pages/Blog";
 import ProductDetail from "./pages/ProductDetail";
 import ProductsBySlug from "./pages/ProductsBySlug";
 import Register from "./pages/Register";
@@ -35,11 +34,8 @@ function App() {
           <Route path="/register" exact>
             <Register />
           </Route>
-          <Route path="/new-products" exact>
-            <NewProducts />
-          </Route>
-          <Route path="/old-products" exact>
-            <OldProducts />
+          <Route path="/products" exact>
+            <Products />
           </Route>
           <Route path="/contact" exact>
             <Contact />
@@ -50,12 +46,12 @@ function App() {
           <Route path="/products/:id" exact>
             <ProductDetail />
           </Route>
-          <Route path="/news" exact>
-            <News />
+          <Route path="/blog" exact>
+            <Blog />
           </Route>
-          <Route path="/news/:id" exact>
+          {/* <Route path="/news/:id" exact>
             <New />
-          </Route>
+          </Route> */}
           <Route path="/admin" exact>
             <Admin />
           </Route>

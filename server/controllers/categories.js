@@ -4,10 +4,18 @@ const Category = require("../models/Category");
 const getMany = async (req, res) => {
   const { limit, offset } = req.query;
 
-  const categories = await Category.find()
-    .limit(limit ? parseInt(limit) : 0)
-    .skip(offset ? parseInt(offset) : 0);
-
+  const categories = await Category.aggregate([
+    {
+      $lookup: {
+        from: "subcategories",
+        localField: "_id",
+        foreignField: "categoryId",
+        as: "subcategories",
+      },
+    },
+  ]);
+  // .limit(limit ? parseInt(limit) : 0)
+  // .skip(offset ? parseInt(offset) : 0);
   res.json(categories);
 };
 

@@ -14,11 +14,16 @@ const getMany = async (req, res) => {
 
 // add a new subcategory
 const addOne = async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, categoryId } = req.body;
 
   if (!name) {
     return res.status(400).json({
       errors: [{ field: "name", message: "name field is required" }],
+    });
+  }
+  if (!categoryId) {
+    return res.status(400).json({
+      errors: [{ field: "category", message: "category field is required" }],
     });
   }
   if (!description) {
@@ -31,6 +36,7 @@ const addOne = async (req, res) => {
 
   const newSubcategory = new Subcategory({
     name,
+    categoryId,
     description,
   });
 

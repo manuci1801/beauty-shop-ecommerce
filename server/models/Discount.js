@@ -1,25 +1,14 @@
 const mongoose = require("mongoose");
 
-const promotionCodeSchema = mongoose.Schema({
-  code: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: false,
-  },
-  startAt: {
-    type: Date,
-    required: true,
-  },
-  endAt: {
-    type: Date,
-    required: false,
-  },
-  discount: {
+const discountSchema = mongoose.Schema({
+  discountRate: {
     type: Number,
-    required: true,
+    min: 0,
+    max: 100,
+  },
+  discountPrice: {
+    type: Number,
+    // required: true,
   },
   applyFor: {
     type: String,
@@ -41,9 +30,13 @@ const promotionCodeSchema = mongoose.Schema({
     type: "brands",
     required: () => this.applyFor === "brand",
   },
-  usableCount: {
-    type: Number,
-    default: -1,
+  startAt: {
+    type: Date,
+    default: "",
+  },
+  endAt: {
+    type: Date,
+    default: "",
   },
   createdAt: {
     type: Date,
@@ -55,4 +48,4 @@ const promotionCodeSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("promotion_codes", promotionCodeSchema);
+module.exports = mongoose.model("discounts", discountSchema);

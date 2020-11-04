@@ -9,10 +9,10 @@ const getMany = async (req, res) => {
 
 // add a new brand
 const addOne = async (req, res) => {
-  console.log(req.body);
-  console.log("1");
   if (!req.file) {
-    console.log("no file");
+    return res.status(400).json({
+      errors: [{ field: "image", message: "image field is required" }],
+    });
   }
   const { name, description } = req.body;
 
@@ -24,7 +24,8 @@ const addOne = async (req, res) => {
 
   const newBrand = new Brand({
     name,
-    description: description ? description : null,
+    description: description,
+    image: req.file.filename,
   });
 
   await newBrand.save();

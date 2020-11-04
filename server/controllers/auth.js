@@ -50,11 +50,12 @@ const login = async (req, res) => {
           password
         );
         if (matchPassword) {
-          const { _id, name, email, bird, gender, address, role } = userByEmail;
+          const { _id, name, role } = userByEmail;
           const payload = {
             id: _id,
             name,
-            email: email,
+            email,
+            role,
           };
           const token = await jwt.sign(payload, process.env.SECRET_OR_KEY, {
             expiresIn: "24h",

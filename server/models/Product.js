@@ -1,38 +1,45 @@
 const mongoose = require("mongoose");
 
 const productSchema = mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "categories",
   },
-  subCategoryId: {
+  subcategoryId: {
     type: mongoose.Schema.Types.ObjectId,
-    type: "subcategories",
+    ref: "subcategories",
   },
   brandId: {
     type: mongoose.Schema.Types.ObjectId,
-    type: "brands",
+    ref: "brands",
     required: true,
   },
-  using: {
-    type: String,
-    default: "",
-  },
-  ingredient: {
-    type: String,
-    default: "",
-  },
-  description: {
-    type: String,
-    default: "",
+  price: {
+    type: Number,
+    required: true,
   },
   sizes: {
     type: Array,
-    required: true,
+    default: [],
   },
   images: {
     type: Array,
+    required: true,
+  },
+  // using: {
+  //   type: String,
+  //   default: "",
+  // },
+  // ingredient: {
+  //   type: String,
+  //   default: "",
+  // },
+  description: {
+    type: String,
     required: true,
   },
   createdAt: {

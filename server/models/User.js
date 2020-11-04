@@ -21,6 +21,14 @@ const userSchema = mongoose.Schema({
     type: String,
     default: "",
   },
+  address: {
+    type: String,
+    default: "",
+  },
+  phone: {
+    type: String,
+    default: "",
+  },
   provider: {
     type: String,
     enum: ["google", "facebook", "local"],
