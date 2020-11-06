@@ -6,16 +6,16 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import Footer from "./layouts/Footer";
 import Header from "./layouts/Header";
+import About from "./pages/About";
 import Admin from "./pages/Admin";
+import Blog from "./pages/Blog";
+import Cart from "./pages/Cart";
 import Contact from "./pages/Contact";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import New from "./pages/New";
-import Products from "./pages/Products";
-import Blog from "./pages/Blog";
+import Payment from "./pages/Payment";
 import ProductDetail from "./pages/ProductDetail";
-import ProductsBySlug from "./pages/ProductsBySlug";
-import Register from "./pages/Register";
+import Products from "./pages/Products";
+import Profile from "./pages/Profile";
 import store from "./redux/store";
 
 function App() {
@@ -28,30 +28,31 @@ function App() {
           <Route path="/" exact>
             <Home />
           </Route>
-          <Route path="/login" exact>
-            <Login />
-          </Route>
-          <Route path="/register" exact>
-            <Register />
-          </Route>
           <Route path="/products" exact>
             <Products />
-          </Route>
-          <Route path="/contact" exact>
-            <Contact />
-          </Route>
-          <Route path="/brands/:slug" exact>
-            <ProductsBySlug />
           </Route>
           <Route path="/products/:id" exact>
             <ProductDetail />
           </Route>
+          <Route path="/contact" exact>
+            <Contact />
+          </Route>
           <Route path="/blog" exact>
             <Blog />
           </Route>
-          {/* <Route path="/news/:id" exact>
-            <New />
-          </Route> */}
+          <Route path="/about" exact>
+            <About />
+          </Route>
+          <Route path="/profile" exact>
+            <Profile />
+          </Route>
+          <Route path="/cart" exact>
+            <Cart />
+          </Route>
+          <Route path="/payment" exact>
+            <Payment />
+          </Route>
+
           <Route path="/admin" exact>
             <Admin />
           </Route>

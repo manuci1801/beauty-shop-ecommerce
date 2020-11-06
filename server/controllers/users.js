@@ -38,7 +38,16 @@ const addOne = async (req, res) => {
   }
 };
 
+const deleteOne = async (req, res) => {
+  const { id } = req.params;
+
+  await User.findByIdAndDelete(id);
+
+  res.json({ success: true });
+};
+
 module.exports = {
   getMany,
   addOne,
+  deleteOne,
 };

@@ -22,22 +22,14 @@ const productSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  sizes: {
-    type: Array,
-    default: [],
-  },
   images: {
     type: Array,
     required: true,
   },
-  // using: {
-  //   type: String,
-  //   default: "",
-  // },
-  // ingredient: {
-  //   type: String,
-  //   default: "",
-  // },
+  amount: {
+    type: Number,
+    required: true,
+  },
   description: {
     type: String,
     required: true,

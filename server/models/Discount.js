@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const discountSchema = mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  },
   discountRate: {
     type: Number,
     min: 0,
@@ -12,22 +16,22 @@ const discountSchema = mongoose.Schema({
   },
   applyFor: {
     type: String,
-    enum: ["*", "category", "subcategory", "brand"],
-    required: true,
+    enum: ["all", "category", "subcategory", "brand"],
+    default: "all",
   },
-  categoryId: {
+  category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "categories",
     required: () => this.applyFor === "category",
   },
-  subcategoryId: {
+  subcategory: {
     type: mongoose.Schema.Types.ObjectId,
-    type: "subcategories",
+    ref: "subcategories",
     required: () => this.applyFor === "subcategory",
   },
-  brandId: {
+  brand: {
     type: mongoose.Schema.Types.ObjectId,
-    type: "brands",
+    ref: "brands",
     required: () => this.applyFor === "brand",
   },
   startAt: {

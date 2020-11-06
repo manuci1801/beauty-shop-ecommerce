@@ -5,7 +5,7 @@ const { isEmpty } = require("../utils");
 const register = (data) => {
   let errors = [];
 
-  const { name, email, password, password2 } = data;
+  const { name, email, password } = data;
 
   if (!name) {
     errors.push({ field: "name", message: "name field is required" });
@@ -37,14 +37,6 @@ const register = (data) => {
         message:
           "password must be minimum six characters, at least one letter, one number and one special character",
       });
-    else {
-      if (password !== password2) {
-        errors.push({
-          field: "password2",
-          message: "password confirm does not match",
-        });
-      }
-    }
   }
 
   return {

@@ -1,8 +1,23 @@
+const authController = require("./auth");
+const userController = require("./users");
+const brandController = require("./brands");
+const categoryController = require("./categories");
+const subcategoryController = require("./subcategories");
+const productController = require("./products");
+const contactController = require("./contacts");
+const profileController = require("./profiles");
+const orderController = require("./orders");
+const discountController = require("./discounts");
+
 module.exports = {
-  authController: require("./auth"),
-  userController: require("./users"),
-  brandController: require("./brands"),
-  categoryController: require("./categories"),
-  subcategoryController: require("./subcategories"),
-  productController: require("./products"),
+  authController,
+  userController,
+  brandController,
+  categoryController,
+  subcategoryController,
+  productController,
+  contactController,
+  profileController,
+  orderController,
+  discountController,
 };

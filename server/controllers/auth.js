@@ -1,5 +1,8 @@
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
+const { v4 } = require("uuid");
+
+const { sendMail } = require("../services/nodemailer");
 
 const { authValidation } = require("../validation");
 
@@ -8,19 +11,32 @@ const User = require("../models/User");
 const register = async (req, res) => {
   try {
     const { isValid, errors } = authValidation.register(req.body);
-    if (!isValid) res.status(400).json({ errors: errors });
-    else {
-      const { name, email, password } = req.body;
+    if (!isValid) {
+      return res.status(400).json({ errors: errors });
+    } else {
+      const { name, email, password, phone } = req.body;
       const userByEmail = await User.findOne({ email });
 
       if (!userByEmail) {
         const hashPassword = await argon2.hash(password);
 
+        const verifyToken = v4();
+
         const newUser = new User({
           name,
           email,
           password: hashPassword,
+          phone,
+          verifyToken,
         });
+
+        // send mail verify
+        await sendMail(
+          email,
+          "verify account",
+          `<a href="http://${process.env.CLIENT_URI}/verify/${verifyToken}"> Click to verify account</a>`
+        );
+
         await newUser.save();
 
         res.json({ newUser });
@@ -31,6 +47,23 @@ const register = async (req, res) => {
       }
     }
   } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+const verifyUser = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOneAndUpdate(
+      { verifyToken: token },
+      { isVerify: true, verifyToken: "" },
+      { new: true }
+    );
+
+    res.json({ success: true });
+  } catch (err) {
     res.status(500).json(err);
   }
 };
@@ -38,13 +71,20 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { isValid, errors } = authValidation.login(req.body);
-    if (!isValid) res.status(400).json({ errors: errors });
-    else {
+    if (!isValid) {
+      return res.status(400).json({ errors: errors });
+    } else {
       const { email, password } = req.body;
 
       const userByEmail = await User.findOne({ email });
 
       if (userByEmail) {
+        if (!userByEmail.isVerify) {
+          return res.status(400).json({
+            errors: [{ field: "verify", message: "not verify" }],
+          });
+        }
+
         const matchPassword = await argon2.verify(
           userByEmail.password,
           password
@@ -63,12 +103,12 @@ const login = async (req, res) => {
 
           res.json({ token: `Bearer ${token}` });
         } else {
-          res.status(400).json({
+          return res.status(400).json({
             errors: [{ field: "password", message: "password incorrect" }],
           });
         }
       } else {
-        res.status(400).json({
+        return res.status(400).json({
           errors: [{ field: "email", message: "email is not exists" }],
         });
       }
@@ -78,7 +118,105 @@ const login = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const resetPasswordToken = v4();
+
+    const user = await User.findOneAndUpdate(
+      { email },
+      { resetPasswordToken },
+      { new: true }
+    );
+
+    if (user)
+      // send mail change password
+      await sendMail(
+        email,
+        "change password account",
+        `<a href="http://${process.env.CLIENT_URI}/change-password/${resetPasswordToken}">change password</a>`
+      );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    await User.findOneAndUpdate(
+      { resetPasswordToken: token },
+      {
+        password: await argon2.hash(password),
+        resetPasswordToken: "",
+      },
+      { new: true }
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
+const googleLogin = async (req, res) => {
+  try {
+    const { email, name } = req.body;
+    console.log(req.body);
+    const userByEmail = await User.findOne({ email, provider: "google" });
+    if (!userByEmail) {
+      console.log("1");
+      let newUser = new User({
+        email,
+        name,
+        provider: "google",
+        isVerify: true,
+      });
+      const { _id, role } = newUser;
+      const payload = {
+        id: _id,
+        name,
+        email,
+        role,
+      };
+
+      const token = await jwt.sign(payload, process.env.SECRET_OR_KEY, {
+        expiresIn: "24h",
+      });
+
+      await newUser.save();
+
+      return res.json({ token: `Bearer ${token}` });
+    }
+
+    const { _id, role } = userByEmail;
+    const payload = {
+      id: _id,
+      name,
+      email,
+      role,
+    };
+    const token = await jwt.sign(payload, process.env.SECRET_OR_KEY, {
+      expiresIn: "24h",
+    });
+
+    res.json({ token: `Bearer ${token}` });
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
 module.exports = {
   login,
   register,
+  verifyUser,
+  forgotPassword,
+  changePassword,
+  googleLogin,
 };

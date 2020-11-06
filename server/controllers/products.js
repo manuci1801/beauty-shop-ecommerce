@@ -5,9 +5,9 @@ const getMany = async (req, res) => {
   const { limit, offset } = req.query;
 
   const products = await Product.find()
-    .populate("brandId", "name")
-    .populate("categoryId", "name")
-    .populate("subcategoryId", "name");
+    .populate("brandId", ["_id", "name"])
+    .populate("categoryId", ["_id", "name"])
+    .populate("subcategoryId", ["_id", "name"]);
 
   res.json(products);
 };
@@ -26,6 +26,7 @@ const addOne = async (req, res) => {
     subcategoryId,
     brandId,
     price,
+    amount,
   } = req.body;
 
   if (!name) {
@@ -59,6 +60,7 @@ const addOne = async (req, res) => {
     subcategoryId,
     brandId,
     price,
+    amount,
   });
 
   await newProduct.save();

@@ -21,13 +21,12 @@ const userSchema = mongoose.Schema({
     type: String,
     default: "",
   },
-  address: {
-    type: String,
-    default: "",
-  },
   phone: {
     type: String,
     default: "",
+  },
+  gender: {
+    type: String,
   },
   provider: {
     type: String,
@@ -38,6 +37,18 @@ const userSchema = mongoose.Schema({
     type: String,
     enum: ["ROLE_ADMIN", "ROLE_USER"],
     default: "ROLE_USER",
+  },
+  isVerify: {
+    type: Boolean,
+    default: false,
+  },
+  verifyToken: {
+    type: String,
+    unique: true,
+  },
+  resetPasswordToken: {
+    type: String,
+    unique: true,
   },
   createdAt: {
     type: Date,
