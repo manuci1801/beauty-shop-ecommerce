@@ -4,27 +4,34 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.2.1",
+    "@ckeditor/ckeditor5-build-classic": "^23.1.0",
+    "@ckeditor/ckeditor5-react": "^3.0.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "antd": "^4.4.3",
     "axios": "^0.20.0",
+    "file-saver": "^2.0.2",
+    "html-react-parser": "^0.14.1",
     "jwt-decode": "^3.0.0",
     "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-google-login": "^5.1.22",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-star-ratings": "^2.3.0",
     "react-toastify": "^6.0.9",
     "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "xlsx": "^0.16.8"
   },
   "scripts": {
-    "dev": "npm run build:css && react-scripts start",
+    "dev": "react-scripts start",
     "start": "react-scripts start",
-    "build": "npm run build:css && react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:css": "postcss src/styles/tailwind.css -o src/styles/index.css "
@@ -49,5 +56,5 @@
     "postcss-cli": "^8.1.0",
     "tailwindcss": "^1.9.2"
   },
-  "proxy": "http://localhost:5000"
+  "proxy": "http://127.0.0.1:5000"
 }

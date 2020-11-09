@@ -17,7 +17,11 @@ const addressSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  isDefault: {
+  isPaymentDefault: {
+    type: Boolean,
+    default: false,
+  },
+  isShipDefault: {
     type: Boolean,
     default: false,
   },

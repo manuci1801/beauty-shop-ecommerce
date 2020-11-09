@@ -16,6 +16,7 @@ import Payment from "./pages/Payment";
 import ProductDetail from "./pages/ProductDetail";
 import Products from "./pages/Products";
 import Profile from "./pages/Profile";
+import VerifyUser from "./pages/VerifyUser";
 import store from "./redux/store";
 
 function App() {
@@ -51,6 +52,9 @@ function App() {
           </Route>
           <Route path="/payment" exact>
             <Payment />
+          </Route>
+          <Route path="/verify/:token" exact>
+            <VerifyUser />
           </Route>
 
           <Route path="/admin" exact>

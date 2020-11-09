@@ -42,7 +42,7 @@ const register = async (req, res) => {
         res.json({ newUser });
       } else {
         res.status(400).json({
-          errors: [{ field: "email", message: "user already exists" }],
+          errors: [{ field: "email", message: "Tài khoản đã tồn tại" }],
         });
       }
     }
@@ -61,7 +61,7 @@ const verifyUser = async (req, res) => {
       { isVerify: true, verifyToken: "" },
       { new: true }
     );
-
+    if (!user) return res.status(400).json({ success: false });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json(err);
@@ -81,7 +81,12 @@ const login = async (req, res) => {
       if (userByEmail) {
         if (!userByEmail.isVerify) {
           return res.status(400).json({
-            errors: [{ field: "verify", message: "not verify" }],
+            errors: [
+              {
+                field: "verify",
+                message: "Tài khoản chưa được xác thực, hãy kiểm tra email",
+              },
+            ],
           });
         }
 
@@ -90,11 +95,14 @@ const login = async (req, res) => {
           password
         );
         if (matchPassword) {
-          const { _id, name, role } = userByEmail;
+          const { _id, name, role, phone, birthday, gender } = userByEmail;
           const payload = {
             id: _id,
             name,
             email,
+            phone,
+            birthday,
+            gender,
             role,
           };
           const token = await jwt.sign(payload, process.env.SECRET_OR_KEY, {
@@ -104,16 +112,19 @@ const login = async (req, res) => {
           res.json({ token: `Bearer ${token}` });
         } else {
           return res.status(400).json({
-            errors: [{ field: "password", message: "password incorrect" }],
+            errors: [
+              { field: "password", message: "Mật khẩu không chính xác" },
+            ],
           });
         }
       } else {
         return res.status(400).json({
-          errors: [{ field: "email", message: "email is not exists" }],
+          errors: [{ field: "email", message: "Tài khoản không tồn tại" }],
         });
       }
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };
@@ -178,11 +189,14 @@ const googleLogin = async (req, res) => {
         provider: "google",
         isVerify: true,
       });
-      const { _id, role } = newUser;
+      const { _id, role, phone, birthday, gender } = newUser;
       const payload = {
         id: _id,
         name,
         email,
+        phone,
+        birthday,
+        gender,
         role,
       };
 
@@ -195,11 +209,14 @@ const googleLogin = async (req, res) => {
       return res.json({ token: `Bearer ${token}` });
     }
 
-    const { _id, role } = userByEmail;
+    const { _id, role, phone, birthday, gender } = userByEmail;
     const payload = {
       id: _id,
       name,
       email,
+      phone,
+      birthday,
+      gender,
       role,
     };
     const token = await jwt.sign(payload, process.env.SECRET_OR_KEY, {

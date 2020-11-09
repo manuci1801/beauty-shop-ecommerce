@@ -5,9 +5,9 @@ const { isAuth, isAdmin } = require("../middleware");
 
 router
   .route("/")
-  // .get(discountController.getMany)
+  .get(discountController.getAll)
   .post(isAuth, isAdmin, discountController.addOne);
 
-// router.route("/:id").delete(isAuth, isAdmin, discountController.deleteOne);
+router.route("/:id").delete(isAuth, isAdmin, discountController.deleteOne);
 
 module.exports = router;

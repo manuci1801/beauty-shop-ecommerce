@@ -5,9 +5,10 @@ const Subcategory = require("../models/Subcategory");
 const getMany = async (req, res) => {
   const { limit, offset } = req.query;
 
-  const subcategories = await Subcategory.find()
-    .limit(limit ? parseInt(limit) : 0)
-    .skip(offset ? parseInt(offset) : 0);
+  const subcategories = await Subcategory.find().populate("categoryId", [
+    "_id",
+    "name",
+  ]);
 
   res.json(subcategories);
 };
@@ -53,8 +54,30 @@ const deleteOne = async (req, res) => {
   res.json({ success: true });
 };
 
+const updateOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { name, description, categoryId } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (description) updateData.description = description;
+    if (categoryId) updateData.categoryId = categoryId;
+
+    let category = await Category.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    res.json(category);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
 module.exports = {
   getMany,
   addOne,
   deleteOne,
+  updateOne,
 };

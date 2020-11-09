@@ -15,6 +15,14 @@ router
     brandController.addOne
   );
 
-router.route("/:id").delete(isAuth, isAdmin, brandController.deleteOne);
+router
+  .route("/:id")
+  .put(
+    isAuth,
+    isAdmin,
+    processFile.uploadFile("image", false),
+    brandController.updateOne
+  )
+  .delete(isAuth, isAdmin, brandController.deleteOne);
 
 module.exports = router;

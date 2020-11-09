@@ -1,15 +1,53 @@
 const Product = require("../models/Product");
+const Discount = require("../models/Discount");
+
+function getDiscountPrice(products, discounts) {
+  let _products = [];
+  return new Promise((resolve, reject) => {
+    try {
+      for (let i = 0; i < products.length; i++) {
+        let _isDiscount = discounts.find((e) =>
+          `${e.brand}` === `${products[i].brandId._id}` ||
+          `${e.category}` === `${products[i].categoryId._id}` ||
+          `${e.subcategory}` === products[i].subcategoryId
+            ? `${products[i].subcategoryId._id}`
+            : "" || e.applyFor === "all"
+        );
+        if (typeof _isDiscount !== "undefined") {
+          let priceDiscount = _isDiscount.discountPrice
+            ? products[i].price - _isDiscount.discountPrice < 0
+              ? 0
+              : products[i].price - _isDiscount.discountPrice
+            : products[i].price -
+              Math.floor((products[i].price * _isDiscount.discountRate) / 100);
+
+          _products.push({ ...products[i], priceDiscount });
+        } else _products.push(products[i]);
+      }
+      // console.log(_products);
+      resolve(_products);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
 
 // get all products
 const getMany = async (req, res) => {
-  const { limit, offset } = req.query;
+  try {
+    const discounts = await Discount.find().lean();
+    const products = await Product.find()
+      .populate("brandId", ["_id", "name"])
+      .populate("categoryId", ["_id", "name"])
+      .populate("subcategoryId", ["_id", "name"])
+      .lean();
 
-  const products = await Product.find()
-    .populate("brandId", ["_id", "name"])
-    .populate("categoryId", ["_id", "name"])
-    .populate("subcategoryId", ["_id", "name"]);
+    const _products = await getDiscountPrice(products, discounts);
 
-  res.json(products);
+    res.json(_products);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 // add a new product
@@ -64,7 +102,14 @@ const addOne = async (req, res) => {
   });
 
   await newProduct.save();
-  res.json(newProduct);
+
+  const _product = await Product.findById(newProduct._id)
+    .populate("brandId", ["_id", "name"])
+    .populate("categoryId", ["_id", "name"])
+    .populate("subcategoryId", ["_id", "name"]);
+
+  console.log(_product);
+  res.json(_product);
 };
 
 // delete a product by id

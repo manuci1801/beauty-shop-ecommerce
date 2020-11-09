@@ -41,8 +41,28 @@ const deleteOne = async (req, res) => {
   res.json({ success: true });
 };
 
+const updateOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const file = req.file;
+    const { name, description } = req.body;
+
+    const updateData = {};
+    if (file) updateData.image = file.filename;
+    if (name) updateData.name = name;
+    if (description) updateData.description = description;
+
+    const brand = await Brand.findByIdAndUpdate(id, updateData, { new: true });
+    res.json(brand);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
 module.exports = {
   getMany,
   addOne,
   deleteOne,
+  updateOne,
 };

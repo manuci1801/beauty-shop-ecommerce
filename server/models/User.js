@@ -25,8 +25,14 @@ const userSchema = mongoose.Schema({
     type: String,
     default: "",
   },
+  birthday: {
+    type: String,
+    default: "",
+  },
   gender: {
     type: String,
+    enum: ["male", "female"],
+    default: "male",
   },
   provider: {
     type: String,
@@ -44,11 +50,9 @@ const userSchema = mongoose.Schema({
   },
   verifyToken: {
     type: String,
-    unique: true,
   },
   resetPasswordToken: {
     type: String,
-    unique: true,
   },
   createdAt: {
     type: Date,

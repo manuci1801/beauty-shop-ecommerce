@@ -8,6 +8,9 @@ router
   .get(categoryController.getMany)
   .post(isAuth, isAdmin, categoryController.addOne);
 
-router.route("/:id").delete(isAuth, isAdmin, categoryController.deleteOne);
+router
+  .route("/:id")
+  .put(isAuth, isAdmin, categoryController.updateOne)
+  .delete(isAuth, isAdmin, categoryController.deleteOne);
 
 module.exports = router;
