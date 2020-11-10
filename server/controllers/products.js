@@ -121,8 +121,51 @@ const deleteOne = async (req, res) => {
   res.json({ success: true });
 };
 
+const updateOne = async (req, res) => {
+  const { id } = req.params;
+
+  const {
+    name,
+    description,
+    categoryId,
+    subcategoryId,
+    brandId,
+    price,
+    amount,
+  } = req.body;
+
+  let images = [];
+  if (req.files.length > 0)
+    req.files.forEach((file) => {
+      images = [...images, file.filename];
+    });
+
+  let updateData = {};
+
+  if (name) updateData = { ...updateData, name };
+  if (categoryId) updateData = { ...updateData, categoryId };
+  if (subcategoryId) updateData = { ...updateData, subcategoryId };
+  if (brandId) updateData = { ...updateData, brandId };
+  if (price) updateData = { ...updateData, price };
+  if (amount) updateData = { ...updateData, amount };
+  if (description) updateData = { ...updateData, description };
+  if (images.length > 0) updateData = { ...updateData, images };
+
+  const product = await Product.findByIdAndUpdate(id, updateData, {
+    new: true,
+  });
+
+  const _product = await Product.findById(id)
+    .populate("brandId", ["_id", "name"])
+    .populate("categoryId", ["_id", "name"])
+    .populate("subcategoryId", ["_id", "name"]);
+
+  res.json(_product);
+};
+
 module.exports = {
   getMany,
   addOne,
   deleteOne,
+  updateOne,
 };

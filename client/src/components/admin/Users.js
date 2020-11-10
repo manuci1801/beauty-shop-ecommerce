@@ -157,9 +157,9 @@ function Users({ users, addUser, deleteUser }) {
       width: 200,
       render: (text, record) => (
         <>
-          <Button onClick={() => showDataUpdate(record)} type="primary">
+          {/* <Button onClick={() => showDataUpdate(record)} type="primary">
             Sửa
-          </Button>
+          </Button> */}
           <Button
             type="primary"
             danger

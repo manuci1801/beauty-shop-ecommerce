@@ -75,7 +75,12 @@ export default function (state = initialState, action) {
 
     case UPDATE_PRODUCT:
       let i = _.findIndex(state.products, { _id: action.payload._id });
-      if (i > -1) state.products[i] = action.payload;
+      if (i > -1)
+        state.products = [
+          ...state.products.slice(0, i),
+          action.payload,
+          ...state.products.slice(i + 1, state.products.length),
+        ];
       else state.products.unshift(action.payload);
       return {
         ...state,

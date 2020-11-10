@@ -46,10 +46,10 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
       return toastNotify("warn", "Số lượng không được để trống");
     }
     if (!images) {
-      return alert("images field is required");
+      return toastNotify("warn", "Hình ảnh không được để trống");
     }
     if (!description) {
-      return alert("description field is required");
+      return toastNotify("warn", "Mô tả không được để trống");
     }
 
     let formData = new FormData();
@@ -80,20 +80,31 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
 
   const handleUpdate = () => {
     if (!name) {
-      return alert("Name field is required");
+      return toastNotify("warn", "Tên không được để trống");
     }
     if (!brandId) {
-      return alert("brand field is required");
+      return toastNotify("warn", "Thương hiệu không được để trống");
     }
-    if (!origin) {
-      return alert("origin field is required");
+    if (!categoryId) {
+      return toastNotify("warn", "Danh mục không được để trống");
+    }
+    if (!price) {
+      return toastNotify("warn", "Giá không được để trống");
+    }
+    if (!amount) {
+      return toastNotify("warn", "Giá không được để trống");
     }
     if (!description) {
-      return alert("description field is required");
+      return toastNotify("warn", "Mô tả không được để trống");
     }
+
     let formData = new FormData();
     formData.append("name", name);
     formData.append("brandId", brandId);
+    formData.append("categoryId", categoryId);
+    if (subcategoryId) formData.append("subcategoryId", subcategoryId);
+    formData.append("price", price);
+    formData.append("amount", amount);
     formData.append("description", description);
 
     if (images && images.length > 0)
@@ -117,6 +128,10 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
   const showDataUpdate = (product) => {
     setName(product.name);
     setBrandId(product.brandId._id);
+    setCategoryId(product.categoryId._id);
+    setSubcategoryId(product.subcategoryId._id);
+    setPrice(product.price);
+    setAmount(product.amount);
     setImages(null);
     setDescription(product.description);
     setIsVisible(true);
@@ -129,9 +144,15 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     setBrandId("");
     setImages(null);
     setDescription("");
+    setCategoryId("");
+    setSubcategoryId("");
+    setPrice("");
+    setAmount("");
     setIsUpdate(false);
     fileRef.current.value = null;
   };
+
+  console.log(products);
 
   const columns = [
     {
@@ -175,7 +196,10 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
       title: "Hình ảnh",
       dataIndex: "images",
       key: "images",
-      render: (text) => text.map((e) => <img src={`/images/${e}`} alt="img" />),
+      render: (text) =>
+        text.map((e, index) => (
+          <img key={index} src={`/images/${e}`} alt="img" />
+        )),
     },
     {
       title: "Hành động",
