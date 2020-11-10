@@ -9,11 +9,12 @@ const getMany = async (req, res) => {
 
 // add a new brand
 const addOne = async (req, res) => {
-  const { name, email, content } = req.body;
+  const { name, email, phone, content } = req.body;
 
   const newContact = new Contact({
     name,
     email,
+    phone,
     content,
   });
 

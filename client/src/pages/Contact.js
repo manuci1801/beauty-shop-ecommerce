@@ -7,16 +7,18 @@ import toastNotify from "../utils/toastNotify";
 function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [content, setContent] = useState("");
 
   const sendNewContact = (e) => {
     e.preventDefault();
     axios
-      .post("/api/contacts", { name, email, content })
+      .post("/api/contacts", { name, email, phone, content })
       .then((res) => {
         toastNotify("success", "Bạn đã gửi thành công!");
         setName("");
         setEmail("");
+        setPhone("");
         setContent("");
       })
       .catch((err) => {});
@@ -112,6 +114,19 @@ function Contact() {
                   size={30}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="comment-form-email col-md-12">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="text"
+                  placeholder="Điện thoại *"
+                  size={30}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </div>
             </div>

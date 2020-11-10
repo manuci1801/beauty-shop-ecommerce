@@ -13,6 +13,14 @@ function Contacts({ contacts, deleteContact }) {
 
   const columns = [
     {
+      title: "STT",
+      width: 60,
+      dataIndex: "stt",
+      key: "stt",
+      fixed: "left",
+      render: (_, __, index) => index + 1,
+    },
+    {
       title: "Họ tên",
       dataIndex: "name",
       key: "name",
@@ -21,6 +29,11 @@ function Contacts({ contacts, deleteContact }) {
       title: "Email",
       dataIndex: "email",
       key: "email",
+    },
+    {
+      title: "Điện thoại",
+      dataIndex: "phone",
+      key: "phone",
     },
     { title: "Nội dung", dataIndex: "content", key: "content" },
     {

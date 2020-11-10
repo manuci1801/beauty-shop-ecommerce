@@ -113,6 +113,14 @@ function Brands({ brands, dispatch }) {
 
   const columns = [
     {
+      title: "STT",
+      width: 60,
+      dataIndex: "stt",
+      key: "stt",
+      fixed: "left",
+      render: (_, __, index) => index + 1,
+    },
+    {
       title: "Tên thương hiệu",
       width: 150,
       dataIndex: "name",

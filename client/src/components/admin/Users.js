@@ -136,6 +136,14 @@ function Users({ users, addUser, deleteUser }) {
 
   const columns = [
     {
+      title: "STT",
+      width: 60,
+      dataIndex: "stt",
+      key: "stt",
+      fixed: "left",
+      render: (_, __, index) => index + 1,
+    },
+    {
       title: "Email",
       width: 150,
       dataIndex: "email",

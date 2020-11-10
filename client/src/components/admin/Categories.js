@@ -159,6 +159,14 @@ function Categories({ categories, subcategories, dispatch }) {
 
   const categoryColumns = [
     {
+      title: "STT",
+      width: 60,
+      dataIndex: "stt",
+      key: "stt",
+      fixed: "left",
+      render: (_, __, index) => index + 1,
+    },
+    {
       title: "Tên danh mục",
       width: 200,
       dataIndex: "name",

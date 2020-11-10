@@ -22,6 +22,14 @@ function Orders({ orders }) {
 
   const columns = [
     {
+      title: "STT",
+      width: 60,
+      dataIndex: "stt",
+      key: "stt",
+      fixed: "left",
+      render: (_, __, index) => index + 1,
+    },
+    {
       title: "Người dùng",
       dataIndex: "user",
       key: "user",

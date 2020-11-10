@@ -101,7 +101,12 @@ export default function (state = initialState, action) {
 
     case UPDATE_BRAND:
       let _i = _.findIndex(state.brands, { _id: action.payload._id });
-      if (_i > -1) state.brands[_i] = action.payload;
+      if (_i > -1)
+        state.brands = [
+          ...state.brands.slice(0, _i),
+          action.payload,
+          ...state.brands.slice(_i + 1, state.brands.length),
+        ];
       else state.brands.unshift(action.payload);
       return {
         ...state,
@@ -126,7 +131,12 @@ export default function (state = initialState, action) {
       let categoryIndex = _.findIndex(state.categories, {
         _id: action.payload._id,
       });
-      if (categoryIndex > -1) state.categories[categoryIndex] = action.payload;
+      if (categoryIndex > -1)
+        state.categories = [
+          ...state.categories.slice(0, categoryIndex),
+          action.payload,
+          ...state.categories.slice(categoryIndex + 1, state.categories.length),
+        ];
       else state.categories.unshift(action.payload);
       return {
         ...state,
@@ -152,7 +162,14 @@ export default function (state = initialState, action) {
         _id: action.payload._id,
       });
       if (subcategoryIndex > -1)
-        state.subcategories[subcategoryIndex] = action.payload;
+        state.subcategories = [
+          ...state.subcategories.slice(0, subcategoryIndex),
+          action.payload,
+          ...state.subcategories.slice(
+            subcategoryIndex + 1,
+            state.subcategories.length
+          ),
+        ];
       else state.subcategories.unshift(action.payload);
       return {
         ...state,
