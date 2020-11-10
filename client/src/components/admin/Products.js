@@ -129,7 +129,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     setName(product.name);
     setBrandId(product.brandId._id);
     setCategoryId(product.categoryId._id);
-    setSubcategoryId(product.subcategoryId._id);
+    if (product.subcategoryId) setSubcategoryId(product.subcategoryId._id);
     setPrice(product.price);
     setAmount(product.amount);
     setImages(null);
