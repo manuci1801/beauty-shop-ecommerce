@@ -257,7 +257,12 @@ function Profile() {
                 </li>
                 <li className={currentTab === "history" ? "active" : ""}>
                   <a href="#" onClick={() => setCurrentTab("history")}>
-                    Lịch sử giao dịch
+                    Đơn mua
+                  </a>
+                </li>
+                <li className={currentTab === "history" ? "active" : ""}>
+                  <a href="#" onClick={() => setCurrentTab("history")}>
+                    MIN Xu
                   </a>
                 </li>
               </ul>

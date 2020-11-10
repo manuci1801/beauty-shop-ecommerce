@@ -6,12 +6,15 @@ function getDiscountPrice(products, discounts) {
   return new Promise((resolve, reject) => {
     try {
       for (let i = 0; i < products.length; i++) {
-        let _isDiscount = discounts.find((e) =>
-          `${e.brand}` === `${products[i].brandId._id}` ||
-          `${e.category}` === `${products[i].categoryId._id}` ||
-          `${e.subcategory}` === products[i].subcategoryId
-            ? `${products[i].subcategoryId._id}`
-            : "" || e.applyFor === "all"
+        let _isDiscount = discounts.find(
+          (e) =>
+            `${e.brand}` === `${products[i].brandId._id}` ||
+            `${e.category}` === `${products[i].categoryId._id}` ||
+            // (`${e.subcategory}` === typeof products[i].subcategoryId) !==
+            //   "undefined"
+            //   ? `${products[i].subcategoryId._id}`
+            //   : "" ||
+            e.applyFor === "all"
         );
         if (typeof _isDiscount !== "undefined") {
           let priceDiscount = _isDiscount.discountPrice
