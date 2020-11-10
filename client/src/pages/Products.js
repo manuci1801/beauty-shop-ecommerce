@@ -357,8 +357,18 @@ function Products() {
                         <div className="col-item chair arm-chair col-xs-6 col-lg-4">
                           <div className="item-container">
                             <div className="name">
-                              <h3>{product.name}</h3>
-                              <p>by {product.brandId.name}</p>
+                              <div
+                                className="max-1-line"
+                                style={{
+                                  fontWeight: 600,
+                                  fontSize: "16px",
+                                }}
+                              >
+                                {product.name}
+                              </div>
+                              <div className="max-1-line">
+                                by {product.brandId.name}
+                              </div>
                             </div>
                             <div>
                               <div className="photo">

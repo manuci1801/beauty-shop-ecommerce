@@ -754,7 +754,8 @@ i.fa-search-plus {
   background-color: #fff;
 }
 .name {
-  padding-top: 20px;
+  padding: 8px;
+  text-align: center;
 }
 .price {
   padding: 15px;
@@ -3958,4 +3959,13 @@ button.save-change:hover {
 /* admin */
 .admin-tab {
   padding: 12px 16px;
+}
+
+/* max 1 line */
+.max-1-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* number of lines to show */
+  -webkit-box-orient: vertical;
 }

@@ -10,10 +10,10 @@ function getDiscountPrice(products, discounts) {
           (e) =>
             `${e.brand}` === `${products[i].brandId._id}` ||
             `${e.category}` === `${products[i].categoryId._id}` ||
-            // (`${e.subcategory}` === typeof products[i].subcategoryId) !==
-            //   "undefined"
-            //   ? `${products[i].subcategoryId._id}`
-            //   : "" ||
+            `${e.subcategory}` ===
+              (Boolean(products[i].subcategoryId)
+                ? `${products[i].subcategoryId._id}`
+                : "") ||
             e.applyFor === "all"
         );
         if (typeof _isDiscount !== "undefined") {
@@ -27,7 +27,6 @@ function getDiscountPrice(products, discounts) {
           _products.push({ ...products[i], priceDiscount });
         } else _products.push(products[i]);
       }
-      // console.log(_products);
       resolve(_products);
     } catch (err) {
       reject(err);
@@ -43,6 +42,7 @@ const getMany = async (req, res) => {
       .populate("brandId", ["_id", "name"])
       .populate("categoryId", ["_id", "name"])
       .populate("subcategoryId", ["_id", "name"])
+      .sort({ createdAt: -1 })
       .lean();
 
     const _products = await getDiscountPrice(products, discounts);
