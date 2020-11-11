@@ -1,49 +1,39 @@
 const mongoose = require("mongoose");
 
 const promotionCodeSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   code: {
     type: String,
     required: true,
+    unique: true,
+  },
+  discountRate: {
+    type: Number,
+    min: 0,
+    max: 100,
+  },
+  discountPrice: {
+    type: Number,
   },
   description: {
     type: String,
     required: false,
   },
-  startAt: {
-    type: Date,
-    required: true,
-  },
-  endAt: {
-    type: Date,
-    required: false,
-  },
-  discount: {
-    type: Number,
-    required: true,
-  },
-  applyFor: {
-    type: String,
-    enum: ["*", "category", "subcategory", "brand"],
-    required: true,
-  },
-  categoryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "categories",
-    required: () => this.applyFor === "category",
-  },
-  subcategoryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    type: "subcategories",
-    required: () => this.applyFor === "subcategory",
-  },
-  brandId: {
-    type: mongoose.Schema.Types.ObjectId,
-    type: "brands",
-    required: () => this.applyFor === "brand",
-  },
+  // startAt: {
+  //   type: Date,
+  //   required: true,
+  // },
+  // endAt: {
+  //   type: Date,
+  //   required: false,
+  // },
   usableCount: {
     type: Number,
-    default: -1,
+    default: 0,
+    required: true,
   },
   createdAt: {
     type: Date,

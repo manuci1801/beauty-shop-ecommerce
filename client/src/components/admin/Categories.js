@@ -27,6 +27,8 @@ function Categories({ categories, subcategories, dispatch }) {
   const [categoryId, setCategoryId] = useState("");
   const [categoryIdSelected, setCategoryIdSelected] = useState("");
 
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 6 });
+
   function callback(key) {
     setCurrentTab(key);
   }
@@ -164,7 +166,8 @@ function Categories({ categories, subcategories, dispatch }) {
       dataIndex: "stt",
       key: "stt",
       fixed: "left",
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) =>
+        index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
     {
       title: "Tên danh mục",
@@ -202,6 +205,15 @@ function Categories({ categories, subcategories, dispatch }) {
   ];
 
   const subcategoryColumns = [
+    {
+      title: "STT",
+      width: 60,
+      dataIndex: "stt",
+      key: "stt",
+      fixed: "left",
+      render: (_, __, index) =>
+        index + 1 + (pagination.current - 1) * pagination.pageSize,
+    },
     {
       title: "Tên danh mục",
       width: 200,
@@ -393,6 +405,11 @@ function Categories({ categories, subcategories, dispatch }) {
           <Table
             columns={categoryColumns}
             dataSource={categories}
+            rowKey={(record) => record._id}
+            pagination={pagination}
+            onChange={(_pagination, filters, sorter) =>
+              setPagination(_pagination)
+            }
             scroll={{ x: "100%" }}
           />
         </TabPane>
@@ -424,6 +441,11 @@ function Categories({ categories, subcategories, dispatch }) {
           <Table
             columns={subcategoryColumns}
             dataSource={subcategories}
+            rowKey={(record) => record._id}
+            pagination={pagination}
+            onChange={(_pagination, filters, sorter) =>
+              setPagination(_pagination)
+            }
             scroll={{ x: "100%" }}
           />
         </TabPane>

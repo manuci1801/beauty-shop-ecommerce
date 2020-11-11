@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -20,6 +20,8 @@ import VerifyUser from "./pages/VerifyUser";
 import store from "./redux/store";
 
 function App() {
+  const [coupon, setCoupon] = useState({});
+
   return (
     <Provider store={store}>
       <Router>
@@ -48,10 +50,10 @@ function App() {
             <Profile />
           </Route>
           <Route path="/cart" exact>
-            <Cart />
+            <Cart coupon={coupon} setCoupon={setCoupon} />
           </Route>
           <Route path="/payment" exact>
-            <Payment />
+            <Payment coupon={coupon} />
           </Route>
           <Route path="/verify/:token" exact>
             <VerifyUser />

@@ -64,13 +64,15 @@ function Products() {
               (categoryFilter
                 ? product.categoryId._id == categoryFilter
                 : subcategoryFilter
-                ? product.subcategoryId._id == subcategoryFilter
+                ? product.subcategoryId
+                  ? product.subcategoryId._id == subcategoryFilter
+                  : false
                 : true)
             );
           })
           .sort((a, b) => {
             if (sortFilter === "new") {
-              return -1;
+              return 1;
             } else if (sortFilter === "low") {
               return a.price - b.price;
             } else if (sortFilter === "hight") {
@@ -447,10 +449,13 @@ function Products() {
                 </div>
                 <nav>
                   <div className="pagination">
-                    <a className="prev page-no" href="#">
-                      <i className="fa fa-long-arrow-left" />
-                    </a>
+                    {currentProducts && currentProducts.length > 0 && (
+                      <a className="prev page-no" href="#">
+                        <i className="fa fa-long-arrow-left" />
+                      </a>
+                    )}
                     {currentProducts &&
+                      currentProducts.length > 0 &&
                       Array(Math.floor(currentProducts.length / 6) + 1)
                         .fill(1)
                         .map((e, index) => (
@@ -464,9 +469,11 @@ function Products() {
                             {index + 1}
                           </a>
                         ))}
-                    <a className="next page-no" href="#">
-                      <i className="fa fa-long-arrow-right" />
-                    </a>
+                    {currentProducts && currentProducts.length > 0 && (
+                      <a className="next page-no" href="#">
+                        <i className="fa fa-long-arrow-right" />
+                      </a>
+                    )}
                   </div>
                 </nav>
               </div>

@@ -22,6 +22,8 @@ function Brands({ brands, dispatch }) {
   const [currentBrands, setCurrentBrands] = useState([]);
   const [searchInput, setSearchInput] = useState("");
 
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 4 });
+
   const fileRef = useRef();
 
   useEffect(() => {
@@ -118,7 +120,8 @@ function Brands({ brands, dispatch }) {
       dataIndex: "stt",
       key: "stt",
       fixed: "left",
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) =>
+        index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
     {
       title: "Tên thương hiệu",
@@ -293,6 +296,9 @@ function Brands({ brands, dispatch }) {
         dataSource={currentBrands.filter((brand) =>
           new RegExp(searchInput, "gi").test(brand.name)
         )}
+        rowKey={(record) => record._id}
+        pagination={pagination}
+        onChange={(_pagination, filters, sorter) => setPagination(_pagination)}
         scroll={{ x: "100%" }}
       />
     </>

@@ -35,6 +35,8 @@ function Users({ users, addUser, deleteUser }) {
   const [userId, setUserId] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
 
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+
   const handleAdd = () => {
     if (!name) {
       return alert("Name field is required");
@@ -141,7 +143,8 @@ function Users({ users, addUser, deleteUser }) {
       dataIndex: "stt",
       key: "stt",
       fixed: "left",
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) =>
+        index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
     {
       title: "Email",
@@ -362,7 +365,14 @@ function Users({ users, addUser, deleteUser }) {
           </div>
         </form>
       </Modal>
-      <Table columns={columns} dataSource={users} scroll={{ x: "100%" }} />
+      <Table
+        columns={columns}
+        dataSource={users}
+        rowKey={(record) => record._id}
+        pagination={pagination}
+        onChange={(_pagination, filters, sorter) => setPagination(_pagination)}
+        scroll={{ x: "100%" }}
+      />
     </>
   );
 }

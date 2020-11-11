@@ -14,6 +14,8 @@ const fileExtension = ".xlsx";
 function Orders({ orders }) {
   const [isVisible, setIsVisible] = useState(false);
 
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 6 });
+
   // const handleDelete = (id) => {
   //   axios.delete(`/api/contacts/${id}`).then((res) => {
   //     deleteContact(id);
@@ -27,7 +29,8 @@ function Orders({ orders }) {
       dataIndex: "stt",
       key: "stt",
       fixed: "left",
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) =>
+        index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
     {
       title: "Người dùng",
@@ -305,6 +308,7 @@ function Orders({ orders }) {
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="price"
                 type="number"
+                min="0"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
               />
@@ -322,6 +326,7 @@ function Orders({ orders }) {
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="price"
                 type="number"
+                min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -394,7 +399,14 @@ function Orders({ orders }) {
         </form>
       </Modal>
        */}
-      <Table columns={columns} dataSource={orders} scroll={{ x: "200%" }} />
+      <Table
+        columns={columns}
+        dataSource={orders}
+        rowKey={(record) => record._id}
+        pagination={pagination}
+        onChange={(_pagination, filters, sorter) => setPagination(_pagination)}
+        scroll={{ x: "200%" }}
+      />
     </>
   );
 }

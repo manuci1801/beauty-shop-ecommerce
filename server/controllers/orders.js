@@ -1,7 +1,15 @@
+const Coupon = require("../models/Coupon");
 const Order = require("../models/Order");
 
 const addOne = async (req, res) => {
   try {
+    const { coupon } = req.body;
+    if (!!coupon) {
+      await Coupon.findByIdAndUpdate(coupon._id, {
+        usableCount: coupon.usableCount - 1,
+      });
+    }
+
     const newOrder = new Order({ ...req.body, user: req.user.id });
 
     await newOrder.save();

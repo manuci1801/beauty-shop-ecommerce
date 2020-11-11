@@ -1,16 +1,16 @@
 import { DownloadOutlined } from "@ant-design/icons";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { Button, Input, Modal, Table } from "antd";
 import axios from "axios";
-import React, { useRef, useState } from "react";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import parseHTML from "html-react-parser";
-import toastNotify from "../../utils/toastNotify";
+import React, { useRef, useState } from "react";
 import {
   addProduct,
   deleteProduct,
   updateProduct,
 } from "../../redux/actions/products";
+import toastNotify from "../../utils/toastNotify";
 
 function Products({ products, brands, categories, subcategories, dispatch }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -26,6 +26,8 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
 
   const [isUpdate, setIsUpdate] = useState(false);
   const [productId, setProductId] = useState("");
+
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 4 });
 
   const fileRef = useRef();
 
@@ -161,7 +163,8 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
       dataIndex: "stt",
       key: "stt",
       fixed: "left",
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) =>
+        index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
     {
       title: "Tên sản phẩm",
@@ -393,8 +396,12 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="price"
                 type="number"
+                min="1"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => {
+                  if (!e.target.value.includes("-")) setPrice(e.target.value);
+                  else toastNotify("warn", "Bạn chỉ có thể nhập số dương");
+                }}
               />
             </div>
           </div>
@@ -410,8 +417,12 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="price"
                 type="number"
+                min="1"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  if (!e.target.value.includes("-")) setAmount(e.target.value);
+                  else toastNotify("warn", "Bạn chỉ có thể nhập số dương");
+                }}
               />
             </div>
           </div>
@@ -487,7 +498,14 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
         </form>
       </Modal>
 
-      <Table columns={columns} dataSource={products} scroll={{ x: "150%" }} />
+      <Table
+        columns={columns}
+        dataSource={products}
+        rowKey={(record) => record._id}
+        pagination={pagination}
+        onChange={(_pagination, filters, sorter) => setPagination(_pagination)}
+        scroll={{ x: "150%" }}
+      />
     </>
   );
 }

@@ -18,6 +18,7 @@ import Users from "../components/admin/Users";
 import { logout } from "../redux/actions/auth";
 import Orders from "../components/admin/Orders";
 import Discounts from "../components/admin/Discounts";
+import Coupons from "../components/admin/Coupons";
 
 function Admin() {
   const { SubMenu } = Menu;
@@ -135,6 +136,8 @@ function Admin() {
         categories={categories}
         subcategories={subcategories}
       />
+    ) : currentTab === "coupons" ? (
+      <Coupons />
     ) : null;
 
   return (
@@ -194,7 +197,7 @@ function Admin() {
               title="Quản lý khuyến mãi"
             >
               <Menu.Item key="discounts">Khuyến mãi</Menu.Item>
-              <Menu.Item key="coupon">Mã giảm giá</Menu.Item>
+              <Menu.Item key="coupons">Mã giảm giá</Menu.Item>
             </SubMenu>
             <div
               style={{

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 import formatPrice from "../utils/formatPrice";
 
 import { clearCart } from "../redux/actions/products";
 import toastNotify from "../utils/toastNotify";
 
-function Cart() {
+function Cart({ coupon, setCoupon }) {
   const dispatch = useDispatch();
 
   const [totalPrice, setTotalPrice] = useState(0);
+  const [couponString, setCouponString] = useState("");
 
   const [
     isAuthenticated,
@@ -43,6 +45,16 @@ function Cart() {
       setTotalPrice(total);
     }
   }, [cart, products]);
+
+  function checkValidCoupon() {
+    axios
+      .post("/api/coupons/check", { code: couponString })
+      .then((res) => {
+        setCoupon(res.data.coupon);
+        toastNotify("success", "Đã áp dụng mã giảm giá");
+      })
+      .catch((err) => toastNotify("warn", "Mã giảm giá không hợp lệ"));
+  }
 
   return (
     <>
@@ -180,10 +192,14 @@ function Cart() {
                   <h3>Mã giảm giá</h3>
                   <input
                     type="text"
-                    defaultValue
                     placeholder="Nhập mã giảm giá"
+                    value={couponString}
+                    onChange={(e) => setCouponString(e.target.value)}
                   />
-                  <button className="apply-coupon link-to">
+                  <button
+                    onClick={() => checkValidCoupon()}
+                    className="apply-coupon link-to"
+                  >
                     Áp dụng mã giảm giá
                   </button>
                 </div>
@@ -202,21 +218,54 @@ function Cart() {
                           Giảm giá
                           <span className="discount-rate" />
                         </th>
-                        <td>0</td>
+                        <td>
+                          {Object.keys(coupon).length > 0
+                            ? formatPrice(
+                                coupon.discountPrice
+                                  ? coupon.discountPrice
+                                  : Math.floor(
+                                      (coupon.discountRate * totalPrice) / 100
+                                    )
+                              )
+                            : 0}
+                        </td>
                       </tr>
                       <tr className="order-total">
                         <th>Tổng tiền</th>
                         <td className="amount">
-                          <strong>{formatPrice(totalPrice)}</strong>
+                          <strong>
+                            {Object.keys(coupon).length > 0
+                              ? formatPrice(
+                                  coupon.discountPrice
+                                    ? formatPrice(
+                                        totalPrice - coupon.discountPrice
+                                      )
+                                    : formatPrice(
+                                        totalPrice -
+                                          Math.floor(
+                                            (coupon.discountRate * totalPrice) /
+                                              100
+                                          )
+                                      )
+                                )
+                              : formatPrice(totalPrice)}
+                          </strong>
                         </td>
                       </tr>
                     </tbody>
                   </table>
-                  <div className="checkout-proceed">
+                  <Link
+                    to="/payment"
+                    style={{
+                      cursor:
+                        cart && cart.length == 0 ? "not-allowed" : "pointer",
+                    }}
+                    className="checkout-proceed"
+                  >
                     <div
                       style={{
-                        margin: "50px auto",
-                        padding: "10px 20px",
+                        margin: "10px 0 0",
+                        padding: "10px",
                         textAlign: "center",
                         textTransform: "uppercase",
                         fontWeight: 500,
@@ -227,28 +276,11 @@ function Cart() {
                         position: "relative",
                         cursor: "pointer",
                       }}
-                      onClick={() => {
-                        console.log(cart);
-                        if (typeof cart !== "undefined" && cart.length === 0) {
-                          return toastNotify(
-                            "warn",
-                            "Giỏ hàng của bạn đang trống"
-                          );
-                        }
-                        // if (!isAuthenticated) {
-                        //   return toastNotify(
-                        //     "warn",
-                        //     "Bạn cần đăng nhập để thanh toán"
-                        //   );
-                        // }
-
-                        window.location.href = "/payment";
-                      }}
                       className="link-to checkout-button"
                     >
                       Tiến hành đặt hàng <i className="fa fa-angle-right" />
                     </div>
-                  </div>
+                  </Link>
                 </div>
               </div>
             </div>

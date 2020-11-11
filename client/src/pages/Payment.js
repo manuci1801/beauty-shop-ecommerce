@@ -7,7 +7,7 @@ import formatPrice from "../utils/formatPrice";
 import { checkout } from "../redux/actions/products";
 import toastNotify from "../utils/toastNotify";
 
-function Payment() {
+function Payment({ coupon }) {
   const dispatch = useDispatch();
 
   const [totalPrice, setTotalPrice] = useState(0);
@@ -81,7 +81,15 @@ function Payment() {
       .post("/api/orders/checkout-no-auth", {
         ...orderData,
         products: [...cart],
-        total: totalPrice,
+
+        total:
+          Object.keys(coupon).length > 0
+            ? coupon.discountPrice
+              ? totalPrice - coupon.discountPrice
+              : totalPrice -
+                Math.floor((coupon.discountRate * totalPrice) / 100)
+            : totalPrice,
+        coupon: Object.keys(coupon).length > 0 ? "coupon" : "123",
       })
       .then((res) => {
         console.log(res);
@@ -275,10 +283,39 @@ function Payment() {
                   <th>Phí giao hàng</th>
                   <td>0</td>
                 </tr>
+                <tr className="deli-fee">
+                  Giảm giá
+                  <span className="discount-rate" />
+                  <td>
+                    {Object.keys(coupon).length > 0
+                      ? formatPrice(
+                          coupon.discountPrice
+                            ? coupon.discountPrice
+                            : Math.floor(
+                                (coupon.discountRate * totalPrice) / 100
+                              )
+                        )
+                      : 0}
+                  </td>
+                </tr>
                 <tr className="order-total">
                   <th>Tổng tiền</th>
                   <td className="amount">
-                    <strong>{formatPrice(totalPrice)}</strong>
+                    <strong>
+                      {" "}
+                      {Object.keys(coupon).length > 0
+                        ? formatPrice(
+                            coupon.discountPrice
+                              ? formatPrice(totalPrice - coupon.discountPrice)
+                              : formatPrice(
+                                  totalPrice -
+                                    Math.floor(
+                                      (coupon.discountRate * totalPrice) / 100
+                                    )
+                                )
+                          )
+                        : formatPrice(totalPrice)}
+                    </strong>
                   </td>
                 </tr>
               </tbody>
@@ -306,7 +343,16 @@ function Payment() {
                     checkout({
                       ...orderData,
                       products: [...cart],
-                      total: totalPrice,
+                      total:
+                        Object.keys(coupon).length > 0
+                          ? coupon.discountPrice
+                            ? totalPrice - coupon.discountPrice
+                            : totalPrice -
+                              Math.floor(
+                                (coupon.discountRate * totalPrice) / 100
+                              )
+                          : totalPrice,
+                      coupon: Object.keys(coupon).length > 0 ? coupon : "",
                     })
                   );
                 }

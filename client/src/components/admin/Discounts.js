@@ -19,6 +19,8 @@ function Discounts({ brands, categories, subcategories }) {
 
   const [isUpdate, setIsUpdate] = useState(false);
 
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+
   useEffect(() => {
     axios
       .get("/api/discounts")
@@ -89,7 +91,8 @@ function Discounts({ brands, categories, subcategories }) {
       dataIndex: "stt",
       key: "stt",
       fixed: "left",
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) =>
+        index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
     {
       title: "Áp dụng",
@@ -140,8 +143,8 @@ function Discounts({ brands, categories, subcategories }) {
           <div>-{formatPrice(record.discountPrice)}₫</div>
         ) : null,
     },
-    { title: "Bắt đầu", dataIndex: "startAt", key: "startAt" },
-    { title: "Bắt đầu", dataIndex: "endAt", key: "endAt" },
+    // { title: "Bắt đầu", dataIndex: "startAt", key: "startAt" },
+    // { title: "Bắt đầu", dataIndex: "endAt", key: "endAt" },
     {
       title: "Hành động",
       key: "actions",
@@ -184,7 +187,7 @@ function Discounts({ brands, categories, subcategories }) {
       </div>
       <Modal
         style={{ top: "20px" }}
-        // title={!isUpdate ? "Add a new product" : "Update product"}
+        title={!isUpdate ? "Thêm khuyến mãi" : "Cập nhật khuyến mãi"}
         visible={isVisible}
         footer={null}
         width="70%"
@@ -369,8 +372,13 @@ function Discounts({ brands, categories, subcategories }) {
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="price"
                 type="number"
+                min="1"
                 value={discount}
-                onChange={(e) => setDiscount(e.target.value)}
+                onChange={(e) => {
+                  if (!e.target.value.includes("-"))
+                    setDiscount(e.target.value);
+                  else toastNotify("warn", "Bạn chỉ có thể nhập số dương");
+                }}
               />
             </div>
           </div>
@@ -392,7 +400,14 @@ function Discounts({ brands, categories, subcategories }) {
         </form>
       </Modal>
 
-      <Table columns={columns} dataSource={discounts} scroll={{ x: "100%" }} />
+      <Table
+        columns={columns}
+        dataSource={discounts}
+        rowKey={(record) => record._id}
+        pagination={pagination}
+        onChange={(_pagination, filters, sorter) => setPagination(_pagination)}
+        scroll={{ x: "100%" }}
+      />
     </>
   );
 }
