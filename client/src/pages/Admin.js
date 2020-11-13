@@ -19,6 +19,7 @@ import { logout } from "../redux/actions/auth";
 import Orders from "../components/admin/Orders";
 import Discounts from "../components/admin/Discounts";
 import Coupons from "../components/admin/Coupons";
+import Blogs from "../components/admin/Blogs";
 
 function Admin() {
   const { SubMenu } = Menu;
@@ -138,6 +139,8 @@ function Admin() {
       />
     ) : currentTab === "coupons" ? (
       <Coupons />
+    ) : currentTab === "blogs" ? (
+      <Blogs />
     ) : null;
 
   return (
@@ -198,6 +201,13 @@ function Admin() {
             >
               <Menu.Item key="discounts">Khuyến mãi</Menu.Item>
               <Menu.Item key="coupons">Mã giảm giá</Menu.Item>
+            </SubMenu>
+            <SubMenu
+              key="blogs-management"
+              icon={<SettingOutlined />}
+              title="Quản lý blog"
+            >
+              <Menu.Item key="blogs">Blog</Menu.Item>
             </SubMenu>
             <div
               style={{

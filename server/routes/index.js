@@ -9,6 +9,8 @@ const profileRoute = require("./profiles");
 const orderRoute = require("./orders");
 const discountRoute = require("./discounts");
 const couponRoute = require("./coupons");
+const blogRoute = require("./blogs");
+const commentRoute = require("./comments");
 
 module.exports = (app) => {
   app.use("/api/auth", authRoute);
@@ -22,6 +24,8 @@ module.exports = (app) => {
   app.use("/api/orders", orderRoute);
   app.use("/api/discounts", discountRoute);
   app.use("/api/coupons", couponRoute);
+  app.use("/api/blogs", blogRoute);
+  app.use("/api/comments", commentRoute);
 
   return app;
 };

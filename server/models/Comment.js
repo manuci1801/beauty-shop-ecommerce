@@ -1,36 +1,27 @@
 const mongoose = require("mongoose");
 
 const commentSchema = mongoose.Schema({
-  author: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
     required: true,
   },
-  title: {
-    type: String,
-    required: true,
-  },
-  cover: {
-    type: String,
-    required: true,
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "products",
   },
   content: {
     type: String,
     required: true,
   },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "blog_categories",
-    required: true,
+  isReply: {
+    type: Boolean,
+    default: false,
   },
-  tags: [
-    {
-      tag: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "blog_tags",
-      },
-    },
-  ],
+  commentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "comments",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -41,4 +32,4 @@ const commentSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("blogs", commentSchema);
+module.exports = mongoose.model("comments", commentSchema);

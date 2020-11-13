@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import axios from "axios";
 import "../App.css";
 import { addToCart } from "../redux/actions/products";
 import parseHTML from "html-react-parser";
@@ -9,17 +10,27 @@ import formatPrice from "../utils/formatPrice";
 
 function ProductDetail() {
   let { id } = useParams();
+
+  const [product, setProduct] = useState({});
   const [amount, setAmount] = useState(1);
 
   const dispatch = useDispatch();
 
-  const [products] = useSelector(({ products }) => [products.products]);
+  // const [products] = useSelector(({ products }) => [products.products]);
 
-  const product = products.find((p) => p._id == id);
+  // const product = products.find((p) => p._id == id);
+  useEffect(() => {
+    axios
+      .get(`/api/products/${id}`)
+      .then((res) => {
+        setProduct(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, [id]);
 
   return (
     <>
-      {!!product && (
+      {product && Object.keys(product).length > 0 && (
         <>
           <div className="container-fluid page-heading shop-heading">
             <div className="heading-content">
@@ -48,28 +59,30 @@ function ProductDetail() {
                 data-interval="false"
               >
                 <ol className="carousel-indicators">
-                  {product.images.map((image, index) => (
-                    <li
-                      data-target={product._id}
-                      data-slide-to={index}
-                      className={index === 0 ? "active" : ""}
-                    >
-                      <img
-                        src={`/images/${image}`}
-                        className="img-responsive"
-                      />
-                    </li>
-                  ))}
+                  {product.images &&
+                    product.images.map((image, index) => (
+                      <li
+                        data-target={product._id}
+                        data-slide-to={index}
+                        className={index === 0 ? "active" : ""}
+                      >
+                        <img
+                          src={`/images/${image}`}
+                          className="img-responsive"
+                        />
+                      </li>
+                    ))}
                 </ol>
                 <div className="carousel-inner" role="listbox">
-                  {product.images.map((image, index) => (
-                    <div
-                      className={index === 0 ? "item active" : "item"}
-                      style={{
-                        backgroundImage: `url(/images/${image})`,
-                      }}
-                    ></div>
-                  ))}
+                  {product.images &&
+                    product.images.map((image, index) => (
+                      <div
+                        className={index === 0 ? "item active" : "item"}
+                        style={{
+                          backgroundImage: `url(/images/${image})`,
+                        }}
+                      ></div>
+                    ))}
                 </div>
                 <a
                   className="left carousel-control"
@@ -216,46 +229,20 @@ function ProductDetail() {
                 <div id="tab-reviews" className="tab-pane fade">
                   <div className="comments-section">
                     <ul className="comments-list">
-                      <li className="comment">
-                        <div className="comment-wrap">
-                          <div className="comment-img">
-                            <img src="/img/feedback_2.jpg" />
-                          </div>
-                          <div className="comment-block">
-                            <div className="comment-header">
-                              <span className="comment-author">
-                                <a href="#">Lê Cát Trọng Lý</a>
-                              </span>
-                              <span>2 tuần trước </span>
-                              <span className="pull-right">
-                                <a className="comment-reply-link" href="#">
-                                  <i className="fa fa-reply" />
-                                  <span className="hidden-sm"> Trả lời</span>
-                                </a>
-                              </span>
-                            </div>
-                            <div className="comment-content">
-                              <p>
-                                Chiếc ghế quá hoàn hảo. Mới nhìn thôi cũng đã
-                                muốn ngả lưng lên luôn rồi. Mình vừa đặt hàng
-                                một chiếc màu da bò, shop kiểm tra lại và ship
-                                sớm cho mình nhé!
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <ul className="children">
+                      {product.comments &&
+                        product.comments.length > 0 &&
+                        product.comments.map((e) => (
                           <li className="comment">
                             <div className="comment-wrap">
                               <div className="comment-img">
-                                <img alt="" src="/img/feedback_1.jpg" />
+                                <img src="/img/feedback_2.jpg" />
                               </div>
                               <div className="comment-block">
                                 <div className="comment-header">
                                   <span className="comment-author">
-                                    <a href="#">Admin</a>
+                                    <a href="#">{e.user.name}</a>
                                   </span>
-                                  <span>2 tuần trước </span>
+                                  {/* <span>2 tuần trước </span>
                                   <span className="pull-right">
                                     <a className="comment-reply-link" href="#">
                                       <i className="fa fa-reply" />
@@ -264,21 +251,52 @@ function ProductDetail() {
                                         Trả lời
                                       </span>
                                     </a>
-                                  </span>
+                                  </span> */}
                                 </div>
                                 <div className="comment-content">
-                                  <p>
-                                    Chào chị ạ! Cảm ơn chị đã quan tâm và đặt
-                                    mua sản phầm này. MIN đã nhận được đơn đặt
-                                    hàng của chị, nhân viên đang tiến hành xuất
-                                    kho và sẽ giao cho chị trong ngày hôm nay ạ.
-                                  </p>
+                                  <p>{e.content}</p>
                                 </div>
                               </div>
                             </div>
+                            {/* <ul className="children">
+                              {e.replies &&
+                                e.replies.length > 0 &&
+                                e.replies.map((reply) => (
+                                  <li className="comment">
+                                    <div className="comment-wrap">
+                                      <div className="comment-img">
+                                        <img alt="" src="/img/feedback_1.jpg" />
+                                      </div>
+                                      <div className="comment-block">
+                                        <div className="comment-header">
+                                          <span className="comment-author">
+                                            <a href="#"></a>
+                                          </span>
+                                          <span>2 tuần trước </span>
+                                          <span className="pull-right">
+                                            <a
+                                              className="comment-reply-link"
+                                              href="#"
+                                            >
+                                              <i className="fa fa-reply" />
+                                              <span className="hidden-sm">
+                                                {" "}
+                                                Trả lời
+                                              </span>
+                                            </a>
+                                          </span>
+                                        </div>
+                                        <div className="comment-content">
+                                          <p>{reply.content}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </li>
+                                ))}
+                            </ul>
+                          */}
                           </li>
-                        </ul>
-                      </li>
+                        ))}
                     </ul>
                     <div className="respond-wrap">
                       <h3 className="comment-reply-title">Viết bình luận</h3>

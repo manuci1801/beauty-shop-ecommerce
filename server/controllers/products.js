@@ -1,5 +1,8 @@
+const mongoose = require("mongoose");
+
 const Product = require("../models/Product");
 const Discount = require("../models/Discount");
+const Comment = require("../models/Comment");
 
 function getDiscountPrice(products, discounts) {
   let _products = [];
@@ -166,9 +169,51 @@ const updateOne = async (req, res) => {
   res.json(_product);
 };
 
+const getById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const comments = await Comment.aggregate([
+      {
+        $match: {
+          productId: mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "commentId",
+          as: "replies",
+        },
+      },
+    ]);
+
+    const _comments = await Comment.populate(comments, [
+      { path: "user", select: "name" },
+      { path: "replies.user", select: "name" },
+    ]);
+
+    const product = await Product.findById(id)
+      .populate("brandId", ["_id", "name"])
+      .populate("categoryId", ["_id", "name"])
+      .populate("subcategoryId", ["_id", "name"])
+      .lean();
+
+    const _product = { ...product, comments: _comments };
+    // console.log(comments);
+    // console.log(_product);
+    res.json(_product);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
 module.exports = {
   getMany,
   addOne,
   deleteOne,
   updateOne,
+  getById,
 };

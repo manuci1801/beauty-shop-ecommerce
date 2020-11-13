@@ -17,7 +17,8 @@ router
 
 router
   .route("/:id")
-  .delete(productController.deleteOne)
+  .get(productController.getById)
+  .delete(isAuth, isAdmin, productController.deleteOne)
   .put(
     isAuth,
     isAdmin,

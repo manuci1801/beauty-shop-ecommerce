@@ -9,6 +9,8 @@ const profileController = require("./profiles");
 const orderController = require("./orders");
 const discountController = require("./discounts");
 const couponController = require("./coupons");
+const blogController = require("./blogs");
+const commentController = require("./comments");
 
 module.exports = {
   authController,
@@ -22,4 +24,6 @@ module.exports = {
   orderController,
   discountController,
   couponController,
+  blogController,
+  commentController,
 };

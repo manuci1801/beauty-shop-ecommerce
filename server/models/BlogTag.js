@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const contactSchema = mongoose.Schema({
+const blogCategorySchema = mongoose.Schema({
   tag: {
     type: String,
     required: true,
@@ -15,4 +15,4 @@ const contactSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("contacts", contactSchema);
+module.exports = mongoose.model("blog_tags", blogCategorySchema);
