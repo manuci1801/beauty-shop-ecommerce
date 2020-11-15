@@ -47,26 +47,26 @@ $(document).ready(function () {
     },
   });
 
-  $(".box").each(function () {
-    var countTo = Number($(this).find(".count").text());
-    $(this).mouseenter(function () {
-      $(this)
-        .find(".count")
-        .prop("counter", 0)
-        .animate(
-          {
-            counter: countTo,
-          },
-          {
-            duration: 800,
-            easing: "swing",
-            step: function (now) {
-              $(this).text(Math.ceil(now));
-            },
-          }
-        );
-    });
-  });
+  // $(".box").each(function () {
+  //   var countTo = Number($(this).find(".count").text());
+  //   $(this).mouseenter(function () {
+  //     $(this)
+  //       .find(".count")
+  //       .prop("counter", 0)
+  //       .animate(
+  //         {
+  //           counter: countTo,
+  //         },
+  //         {
+  //           duration: 800,
+  //           easing: "swing",
+  //           step: function (now) {
+  //             $(this).text(Math.ceil(now));
+  //           },
+  //         }
+  //       );
+  //   });
+  // });
 
   // Solution 1
   projectResponsive();

@@ -5,10 +5,9 @@ const Subcategory = require("../models/Subcategory");
 const getMany = async (req, res) => {
   const { limit, offset } = req.query;
 
-  const subcategories = await Subcategory.find().populate("categoryId", [
-    "_id",
-    "name",
-  ]);
+  const subcategories = await Subcategory.find()
+    .populate("categoryId", ["_id", "name"])
+    .sort({ createdAt: -1 });
 
   res.json(subcategories);
 };
@@ -42,7 +41,12 @@ const addOne = async (req, res) => {
   });
 
   await newSubcategory.save();
-  res.json(newSubcategory);
+
+  const _sub = await SubCategory.findById(
+    newSubcategory._id
+  ).populate("categoryId", ["name"]);
+
+  res.json(_sub);
 };
 
 // delete a category by id
@@ -65,12 +69,13 @@ const updateOne = async (req, res) => {
     if (description) updateData.description = description;
     if (categoryId) updateData.categoryId = categoryId;
 
-    let category = await Category.findByIdAndUpdate(id, updateData, {
+    let category = await SubCategory.findByIdAndUpdate(id, updateData, {
       new: true,
     });
 
     res.json(category);
   } catch (err) {
+    console.log(err);
     return res.status(500).json(err);
   }
 };

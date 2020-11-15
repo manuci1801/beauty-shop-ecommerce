@@ -23,14 +23,9 @@ const commentSchema = mongoose.Schema({
     ref: "blog_categories",
     required: true,
   },
-  tags: [
-    {
-      tag: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "blog_tags",
-      },
-    },
-  ],
+  tags: {
+    type: Array,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

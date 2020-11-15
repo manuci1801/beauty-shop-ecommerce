@@ -18,6 +18,10 @@ const productSchema = mongoose.Schema({
     ref: "brands",
     required: true,
   },
+  describeLink: {
+    type: String,
+    required: true,
+  },
   price: {
     type: Number,
     required: true,

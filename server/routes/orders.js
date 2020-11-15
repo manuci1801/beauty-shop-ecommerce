@@ -6,7 +6,7 @@ const { isAuth, isAdmin } = require("../middleware");
 router.route("/").get(isAuth, orderController.getAllOfUser);
 
 router.route("/checkout").post(isAuth, orderController.addOne);
-router.route("/checkout-no-auth").post(isAuth, orderController.addOneNoAuth);
+router.route("/checkout-no-auth").post(orderController.addOneNoAuth);
 
 router.route("/all").get(orderController.getAll);
 

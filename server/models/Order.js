@@ -43,6 +43,15 @@ const orderSchema = mongoose.Schema({
     enum: ["standard", "fast"],
     default: "standard",
   },
+  orderType: {
+    type: String,
+    enum: ["COD", "vnpay"],
+    default: "COD",
+  },
+  isPaid: {
+    type: Boolean,
+    default: false,
+  },
   status: {
     type: String,
     enum: ["pending", "packed", "delivered", "success", "cancel"],

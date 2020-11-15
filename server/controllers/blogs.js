@@ -57,6 +57,7 @@ const getAllTags = async (req, res) => {
 
     res.json(blogTags);
   } catch (err) {
+    console.log(err);
     return res.status(500).json(err);
   }
 };
@@ -69,19 +70,79 @@ const addBlog = async (req, res) => {
         errors: [{ field: "image", message: "image field is required" }],
       });
     }
+    console.log(req.body);
 
     const { title, content, category, tags } = req.body;
 
     const newBlog = new Blog({
+      author: req.user.id,
       title,
       cover: req.file.filename,
       content,
       category,
-      tags,
+      tags: JSON.parse(tags),
     });
 
-    console.log(newBlog);
     await newBlog.save();
+
+    const blog = await Blog.findById(newBlog._id)
+      .populate("author", ["name"])
+      .populate("category", ["name"]);
+
+    res.json(blog);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+// get all blogs
+const getAll = async (req, res) => {
+  try {
+    const blogs = await Blog.find()
+      .sort({ createdAt: -1 })
+      .populate("author", ["name"])
+      .populate("category", ["name"]);
+
+    res.json(blogs);
+    // await newBlog.save();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+// get a blog by id
+const getById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blog = await Blog.findById(id)
+      .populate("author", ["name"])
+      .populate("category", ["name"]);
+
+    res.json(blog);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+// delete a blog by id
+const deleteOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Blog.findByIdAndDelete(id);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+const uploadImgContent = async (req, res) => {
+  try {
+    console.log(req.files);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
@@ -94,4 +155,8 @@ module.exports = {
   addTag,
   getAllTags,
   addBlog,
+  getAll,
+  getById,
+  deleteOne,
+  uploadImgContent,
 };

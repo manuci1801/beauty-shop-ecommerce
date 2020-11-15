@@ -13,7 +13,7 @@ const getMany = async (req, res) => {
         as: "subcategories",
       },
     },
-  ]);
+  ]).sort({ createdAt: -1 });
   // .limit(limit ? parseInt(limit) : 0)
   // .skip(offset ? parseInt(offset) : 0);
   res.json(categories);

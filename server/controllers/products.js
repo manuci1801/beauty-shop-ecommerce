@@ -71,6 +71,7 @@ const addOne = async (req, res) => {
     brandId,
     price,
     amount,
+    describeLink,
   } = req.body;
 
   if (!name) {
@@ -90,6 +91,13 @@ const addOne = async (req, res) => {
       errors: [{ field: "categoryId", message: "category field is required" }],
     });
   }
+  if (!describeLink) {
+    return res.status(400).json({
+      errors: [
+        { field: "describeLink", message: "describe field is required" },
+      ],
+    });
+  }
 
   let images = [];
   req.files.forEach((file) => {
@@ -105,6 +113,7 @@ const addOne = async (req, res) => {
     brandId,
     price,
     amount,
+    describeLink,
   });
 
   await newProduct.save();
@@ -201,9 +210,20 @@ const getById = async (req, res) => {
       .lean();
 
     const _product = { ...product, comments: _comments };
+
+    const productsRelated = await Product.find({
+      categoryId: product.categoryId._id,
+      _id: {
+        $nin: [product._id],
+      },
+    })
+      .populate("brandId", ["_id", "name"])
+      .populate("categoryId", ["_id", "name"])
+      .populate("subcategoryId", ["_id", "name"])
+      .lean();
     // console.log(comments);
     // console.log(_product);
-    res.json(_product);
+    res.json({ product: _product, productsRelated });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
