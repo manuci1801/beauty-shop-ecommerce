@@ -11,6 +11,7 @@ const discountRoute = require("./discounts");
 const couponRoute = require("./coupons");
 const blogRoute = require("./blogs");
 const commentRoute = require("./comments");
+const vnpayRoute = require("./vnpay");
 
 module.exports = (app) => {
   app.use("/api/auth", authRoute);
@@ -26,6 +27,7 @@ module.exports = (app) => {
   app.use("/api/coupons", couponRoute);
   app.use("/api/blogs", blogRoute);
   app.use("/api/comments", commentRoute);
+  app.use("/api/vnpay", vnpayRoute);
 
   return app;
 };

@@ -45,7 +45,7 @@ const orderSchema = mongoose.Schema({
   },
   orderType: {
     type: String,
-    enum: ["COD", "vnpay"],
+    enum: ["COD", "VNPAY"],
     default: "COD",
   },
   isPaid: {

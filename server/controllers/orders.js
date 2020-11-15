@@ -34,7 +34,7 @@ const addOneNoAuth = async (req, res) => {
   try {
     const newOrder = new Order({ ...req.body });
 
-    // await newOrder.save();
+    await newOrder.save();
     console.log(newOrder);
     res.json({ success: true });
   } catch (err) {

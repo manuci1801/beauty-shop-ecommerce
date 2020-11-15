@@ -11,6 +11,7 @@ const discountController = require("./discounts");
 const couponController = require("./coupons");
 const blogController = require("./blogs");
 const commentController = require("./comments");
+const vnpayController = require("./vnpay");
 
 module.exports = {
   authController,
@@ -26,4 +27,5 @@ module.exports = {
   couponController,
   blogController,
   commentController,
+  vnpayController,
 };
