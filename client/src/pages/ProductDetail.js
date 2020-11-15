@@ -30,6 +30,8 @@ function ProductDetail() {
       .catch((err) => console.log(err));
   }, [id]);
 
+  function addComment() {}
+
   return (
     <>
       {product && Object.keys(product).length > 0 && (

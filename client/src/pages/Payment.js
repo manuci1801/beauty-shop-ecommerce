@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import formatPrice from "../utils/formatPrice";
 
@@ -73,7 +73,6 @@ function Payment({ coupon }) {
       .post("/api/orders/checkout-no-auth", {
         ...orderData,
         products: [...cart],
-
         total:
           Object.keys(coupon).length > 0
             ? coupon.discountPrice
@@ -81,7 +80,7 @@ function Payment({ coupon }) {
               : totalPrice -
                 Math.floor((coupon.discountRate * totalPrice) / 100)
             : totalPrice,
-        coupon: Object.keys(coupon).length > 0 ? "coupon" : "123",
+        coupon: Object.keys(coupon).length > 0 ? "coupon" : "",
       })
       .then((res) => {
         toastNotify("success", "Đặt hàng thành công");
@@ -207,12 +206,30 @@ function Payment({ coupon }) {
             <h3>Hình thức thanh toán</h3>
             <ul className="nav nav-tabs">
               <li className="active">
-                <a href="#payment-cod" data-toggle="tab">
+                <a
+                  href="#payment-cod"
+                  data-toggle="tab"
+                  onClick={() =>
+                    setOrderData({
+                      ...orderData,
+                      orderType: "COD",
+                    })
+                  }
+                >
                   TT khi nhận hàng
                 </a>
               </li>
               <li>
-                <a href="#payment-online" data-toggle="tab">
+                <a
+                  href="#payment-online"
+                  data-toggle="tab"
+                  onClick={() =>
+                    setOrderData({
+                      ...orderData,
+                      orderType: "VNPAY",
+                    })
+                  }
+                >
                   VNPAY
                 </a>
               </li>
@@ -338,16 +355,10 @@ function Payment({ coupon }) {
                 if (typeof orderData.shipType === "undefined")
                   return toastNotify("warn", "Hãy chọn hình thức vận chuyển");
 
-                if (!isAuthenticated) {
-                  return checkoutNoAuth();
-                }
-
-                if (window.confirm("Bạn chắc chắn muốn đặt hàng?")) {
-                  dispatch(
-                    checkout({
-                      ...orderData,
-                      products: [...cart],
-                      total:
+                if (orderData.orderType === "VNPAY") {
+                  axios
+                    .post("/api/vnpay/create-payment-url", {
+                      amount:
                         Object.keys(coupon).length > 0
                           ? coupon.discountPrice
                             ? totalPrice - coupon.discountPrice
@@ -356,9 +367,55 @@ function Payment({ coupon }) {
                                 (coupon.discountRate * totalPrice) / 100
                               )
                           : totalPrice,
-                      coupon: Object.keys(coupon).length > 0 ? coupon : "",
+                      bankCode: "NCB",
+                      orderDescription: "st",
+                      orderType: "210000",
+                      language: "vn",
                     })
-                  );
+                    .then(async (res) => {
+                      await localStorage.setItem(
+                        "cart_pending",
+                        JSON.stringify({
+                          ...orderData,
+                          products: [...cart],
+                          total:
+                            Object.keys(coupon).length > 0
+                              ? coupon.discountPrice
+                                ? totalPrice - coupon.discountPrice
+                                : totalPrice -
+                                  Math.floor(
+                                    (coupon.discountRate * totalPrice) / 100
+                                  )
+                              : totalPrice,
+                          coupon:
+                            Object.keys(coupon).length > 0 ? "coupon" : "",
+                        })
+                      );
+                      window.location.href = res.data.data;
+                    })
+                    .catch((err) => console.log(err));
+                } else {
+                  if (window.confirm("Bạn chắc chắn muốn đặt hàng?")) {
+                    if (!isAuthenticated) {
+                      return checkoutNoAuth();
+                    } else
+                      dispatch(
+                        checkout({
+                          ...orderData,
+                          products: [...cart],
+                          total:
+                            Object.keys(coupon).length > 0
+                              ? coupon.discountPrice
+                                ? totalPrice - coupon.discountPrice
+                                : totalPrice -
+                                  Math.floor(
+                                    (coupon.discountRate * totalPrice) / 100
+                                  )
+                              : totalPrice,
+                          coupon: Object.keys(coupon).length > 0 ? coupon : "",
+                        })
+                      );
+                  }
                 }
               }}
             >

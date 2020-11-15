@@ -11,6 +11,7 @@ import Admin from "./pages/Admin";
 import Blog from "./pages/Blog";
 import BlogDetail from "./pages/BlogDetail";
 import Cart from "./pages/Cart";
+import CheckPayment from "./pages/CheckPayment";
 import Contact from "./pages/Contact";
 import Home from "./pages/Home";
 import Payment from "./pages/Payment";
@@ -58,6 +59,9 @@ function App() {
           </Route>
           <Route path="/payment" exact>
             <Payment coupon={coupon} />
+          </Route>
+          <Route path="/payment/check" exact>
+            <CheckPayment />
           </Route>
           <Route path="/verify/:token" exact>
             <VerifyUser />

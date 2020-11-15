@@ -40,9 +40,9 @@ function Orders({ orders }) {
       fixed: "left",
       render: (text) => (
         <div style={{ fontWeight: 600 }}>
-          {text.name}
+          {text && text.name ? text.name : ""}
           <br />
-          {text.email}
+          {text && text.email}
         </div>
       ),
     },

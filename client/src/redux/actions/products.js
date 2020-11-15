@@ -214,7 +214,9 @@ export const checkout = (data) => (dispatch) => {
       dispatch({
         type: CLEAR_CART,
       });
-      window.location.href = "/cart";
+      setTimeout(() => {
+        window.location.href = "/cart";
+      }, 2000);
     })
     .catch((err) => console.log(err));
 };
