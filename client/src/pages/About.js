@@ -21,21 +21,34 @@ function About() {
           <div className="col-xs-12 col-sm-6 col-md-6 txt-col">
             <h2>Chúng tôi là ai?</h2>
             <p>
-              MIN được thành lập vào tháng 11/2016, với xuất phát điểm ban đầu
-              là những người bạn chia sẻ chung một tình yêu dành cho những món
-              đồ nội thất mộc mạc, đơn giản mà vẫn đầy cá tính.
+              MIN là kênh mua sắm mỹ phẩm, làm đẹp được các blogger lựa chọn để
+              giới thiệu sản phẩm họ yêu thích tới khách hàng, người hâm mộ.
             </p>
             <p>
-              Tên gọi MIN, được viết tắt từ Minimalist, có nghĩa là sự đơn giản,
-              giảm thiểu các chi tiết thừa, chỉ giữ lại những phần thật sự cần
-              thiết cho công năng và thẩm mỹ để mang lại nét tinh tế thanh lịch
-              cho không gian sống.
+              Đến với MIN khách hàng sẽ là những người đầu tiên có cơ hội được
+              trải nghiệm và sử dụng các sản phẩm làm đẹp theo một cách riêng và
+              tốt nhất với các thương hiệu mỹ phẩm quốc tế quen thuộc. Ngoài ra,
+              còn có các thương hiệu được biết đến bởi những người tiên phong
+              trong việc tìm kiếm sản phẩm chất lượng nhất.
             </p>
             <p>
-              Với đội ngũ thiết kế chuyên nghiệp và chia sẻ chung niềm đam mê
-              với phong cách thiết kế này, MIN mong muốn có thể chia sẻ, truyền
-              tải trọn vẹn một phong cách cũng là một triết lý sống độc đáo tới
-              từng sản phẩm, từng không gian của quý khách hàng.
+              Sản phẩm từ MIN đã được kiểm nghiệm chất lượng không chỉ bởi các
+              chuyên gia trong lĩnh vực làm đẹp mà còn được các blogger nổi
+              tiếng tuyển chọn kỹ lưỡng và sử dụng qua nhằm đem đến những sản
+              phẩm tốt nhất phù hợp cho từng loại da khác nhau theo nhiều cách.
+            </p>
+            <p>
+              MIN là cách bán các sản phẩm làm đẹp theo từng box (hộp). Các sản
+              phẩm ở trong box này thường là từ 3, 5 đến nhiều sản phẩm trở lên
+              và thường theo cả set không tách rời. Nhiều khách hàng thường hỏi
+              tại sao không bán riêng lẻ từng cái vì họ thích sử dụng cái này
+              hay cái kia. Thực ra, để tạo ra một box sản phẩm đến tay khách
+              hàng không hề dễ dàng như mọi người nghĩ. Vì các sản phẩm này
+              thường được kiểm nghiệm chất lượng trước bởi các chuyên gia,
+              blogger nổi tiếng trong lĩnh vực làm đẹp. Họ là những người đã sử
+              dụng qua sản phẩm, biết đánh giá sản phẩm theo từng loại da và có
+              thể kết hợp nhiều thương hiệu khác nhau nhằm đem một box hoàn hảo
+              với mức giá phù hợp.
             </p>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-6 img-col">
@@ -71,21 +84,20 @@ function About() {
           <div className="col-xs-12 col-sm-6 col-md-8 txt-col">
             <h2>Chúng tôi làm gì?</h2>
             <h3>
-              <i className="fa fa-long-arrow-right" /> Thiết kế và thi công nội
-              thất
+              <i className="fa fa-long-arrow-right" /> Mỹ phẩm và trang điểm
             </h3>
             <p>
-              MIN thực hiện các dự án thiết kế và thi công nội thất: nhà phố,
-              biệt thự, căn hộ chung cư, cửa hàng, showroom, nhà hàng, cafe,
-              bar, spa, khách sạn, resort...ở tất cả các tỉnh thành.
+              Box còn khác các sản phẩm bán riêng lẻ ở chỗ, bạn có cơ hội tìm
+              hiểu và sử dụng được nhiều thương hiệu khác nhau từ khắp nơi trên
+              thế giới. Việc kết hợp các sản phẩm cũng giảm đi giá thành đáng kể
+              so với việc mua riêng lẻ. Trong mỗi box, bạn còn được nhận thêm
+              các sản phẩm simple (hoàn toàn miễn phí) mới nhất để dùng thử.
             </p>
             <p>
-              Với mong muốn là bạn đồng hành thân thiết của khách hàng trong
-              việc tạo dựng những không gian khác biệt, MIN luôn tôn trọng cái
-              tôi và tiếng nói riêng của mỗi khách hàng và lấy đó làm cơ sở, kết
-              hợp cùng với những ý tưởng và kinh nghiệm của nhà thiết kế, chắc
-              chắn sẽ tạo ra một không gian sống và làm việc thẩm mỹ, cá tính và
-              tối ưu hoá công năng sử dụng cho khách hàng.
+              Tại MIN, bạn còn được tư vấn hoàn toàn miễn phí bởi các chuyên gia
+              trong lĩnh vực làm đẹp. Với giao diện dễ nhìn, bắt mắt cùng các
+              sản phẩm chất lượng. MIN là địa chỉ yêu thích, thường xuyên của
+              các chị em phụ nữ với mong muốn mình đẹp hơn lên mỗi ngày.
             </p>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-4 img-col">

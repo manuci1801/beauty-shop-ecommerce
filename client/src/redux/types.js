@@ -17,6 +17,7 @@ export const DELETE_NEW = "DELETE_NEW";
 export const UPDATE_NEW = "UPDATE_NEW";
 export const GET_CART = "GET_CART";
 export const ADD_CART = "ADD_CART";
+export const DELETE_FROM_CART = "DELETE_FROM_CART";
 export const CLEAR_CART = "CLEAR_CART";
 export const ADD_CATEGORY = "ADD_CATEGORY";
 export const DELETE_CATEGORY = "DELETE_CATEGORY";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import formatPrice from "../../utils/formatPrice";
 import { Button, Input, Table, Modal, Select } from "antd";
@@ -7,21 +7,25 @@ import toastNotify from "../../utils/toastNotify";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import parseHTML from "html-react-parser";
+// import * as ckfinder from "@ckeditor/ckeditor5-ckfinder/src/ckfinder";
 
 function Blogs() {
   const { Option } = Select;
 
   const [blogs, setBlogs] = useState([]);
+  const [blogCategories, setBlogCategories] = useState([]);
+  const [blogTags, setBlogTags] = useState([]);
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const [name, setName] = useState("");
-  const [discount, setDiscount] = useState("");
-  const [discountType, setDiscountType] = useState("price");
-  const [count, setCount] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("");
+  const [categoryIdSelected, setCategoryIdSelected] = useState("");
+  const [tagsSelected, setTagsSelected] = useState([]);
+  const [content, setContent] = useState("");
+  const [image, setImage] = useState(null);
   // const [startAt, setStartAt] = useState("");
   // const [endAt, setEndAt] = useState("");
+  const fileRef = useRef();
 
   const [isUpdate, setIsUpdate] = useState(false);
 
@@ -34,6 +38,18 @@ function Blogs() {
         setBlogs(res.data);
       })
       .catch((err) => console.log(err));
+    axios
+      .get("/api/blogs/categories")
+      .then((res) => {
+        setBlogCategories(res.data);
+      })
+      .catch((err) => console.log(err));
+    axios
+      .get("/api/blogs/tags")
+      .then((res) => {
+        setBlogTags(res.data);
+      })
+      .catch((err) => console.log(err));
   }, []);
 
   const handleDelete = (id) => {
@@ -43,32 +59,36 @@ function Blogs() {
   };
 
   function resetState() {
-    setDiscount("");
-    setDiscountType("price");
+    fileRef.current.value = null;
   }
 
   const handleAdd = () => {
-    if (!name)
-      return toastNotify("warn", "Tên mã giảm giá không được để trống");
-    else if (!discount)
-      return toastNotify(
-        "warn",
-        "Giá hay phần trăm giảm giá không được để trống"
-      );
-    else if (!count) return toastNotify("warn", "Số lượng không được để trống");
-    else if (!description)
-      return toastNotify("warn", "Mô tả không được để trống");
+    console.log(title);
+    console.log(categoryIdSelected);
+    console.log(tagsSelected);
+    if (!title) return toastNotify("warn", "Tiêu đề không được để trống");
+    else if (!categoryIdSelected)
+      return toastNotify("warn", "Danh mục không được để trống");
+    else if (!image) return toastNotify("warn", "Ảnh bìa không được để trống");
+    else if (!content)
+      return toastNotify("warn", "Nội dung không được để trống");
     else {
-      let data = { name, discount, usableCount: count, description };
-      if (discountType === "rate") data.discountRate = discount;
-      else if (discountType === "price") data.discountPrice = discount;
+      let formData = new FormData();
+
+      formData.append("title", title);
+      formData.append("category", categoryIdSelected);
+      formData.append("cover", image);
+      formData.append("content", content);
+
+      if (tagsSelected.length > 0)
+        formData.append("tags", JSON.stringify(tagsSelected));
 
       axios
-        .post("/api/blogs", data)
+        .post("/api/blogs", formData)
         .then((res) => {
           resetState();
           setIsVisible(false);
-          setBlogs([...blogs, res.data]);
+          setBlogs([res.data, ...blogs]);
         })
         .catch((err) => toastNotify("error", "Đã có lỗi xảy ra"));
     }
@@ -87,35 +107,39 @@ function Blogs() {
         index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
     {
-      title: "Tên mã giảm giá",
-      dataIndex: "name",
-      key: "name",
+      title: "Tiêu đề",
+      dataIndex: "title",
+      key: "title",
     },
     {
-      title: "Code",
-      dataIndex: "code",
-      key: "code",
+      title: "Tác giả",
+      dataIndex: "author",
+      key: "author",
+      render: (text) => text.name,
     },
     {
-      title: "Giá hay phần trăm giảm giá",
-      dataIndex: "discount",
-      key: "discount",
-      render: (_, record) =>
-        record.discountRate ? (
-          <div>-{record.discountRate}%</div>
-        ) : record.discountPrice ? (
-          <div>-{formatPrice(record.discountPrice)}₫</div>
-        ) : null,
+      title: "Danh mục",
+      dataIndex: "category",
+      key: "category",
+      render: (text) => text.name,
     },
     {
-      title: "Số lượng dùng được",
-      dataIndex: "usableCount",
-      key: "usableCount",
+      title: "Tags",
+      dataIndex: "tags",
+      key: "tags",
+      render: (text) => text.join(", "),
+    },
+
+    {
+      title: "Ảnh bìa",
+      dataIndex: "cover",
+      key: "cover",
+      render: (text) => <img src={`/images/${text}`} alt="image" />,
     },
     {
-      title: "Mô tả",
-      dataIndex: "description",
-      key: "description",
+      title: "Nội dung",
+      dataIndex: "content",
+      key: "content",
       render: (text) => parseHTML(text),
     },
     // { title: "Bắt đầu", dataIndex: "startAt", key: "startAt" },
@@ -184,8 +208,8 @@ function Blogs() {
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="price"
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
           </div>
@@ -199,17 +223,17 @@ function Blogs() {
               </label>
               <div class="relative">
                 <select
-                  class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                   id="grid-state"
-                  // onChange={(e) => setCategoryIdSelected(e.target.value)}
-                  // value={categoryIdSelected}
+                  onChange={(e) => setCategoryIdSelected(e.target.value)}
+                  value={categoryIdSelected}
                 >
                   <option value="">Chọn danh mục</option>
-                  {/* {categories && categories.length > 0
-                    ? categories.map((category) => (
+                  {blogCategories && blogCategories.length > 0
+                    ? blogCategories.map((category) => (
                         <option value={category._id}>{category.name}</option>
                       ))
-                    : null} */}
+                    : null}
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                   <svg
@@ -235,12 +259,17 @@ function Blogs() {
                 mode="multiple"
                 allowClear
                 style={{ width: "100%" }}
-                placeholder="Please select"
-                defaultValue={["a10", "c12"]}
-                // onChange={handleChange}
+                placeholder="Chọn tag cho blog"
+                onChange={(value) => setTagsSelected(value)}
+                value={tagsSelected}
               >
-                <Option>tag 1</Option>
-                <Option>tag 2</Option>
+                {blogTags &&
+                  blogTags.length > 0 &&
+                  blogTags.map((tag) => (
+                    <Option key={tag._id} value={tag.tag}>
+                      {tag.tag}
+                    </Option>
+                  ))}
               </Select>
             </div>
           </div>
@@ -248,20 +277,17 @@ function Blogs() {
             <div className="w-full px-3">
               <label
                 className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
-                htmlFor="price"
+                htmlFor="image"
               >
-                Số lượng
+                Ảnh bìa
               </label>
               <input
-                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                id="price"
-                type="number"
-                min="1"
-                value={count}
-                onChange={(e) => {
-                  if (!e.target.value.includes("-")) setCount(e.target.value);
-                  else toastNotify("warn", "Bạn chỉ có thể nhập số dương");
-                }}
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="image"
+                name="image"
+                type="file"
+                ref={fileRef}
+                onChange={(e) => setImage(e.target.files[0])}
               />
             </div>
           </div>
@@ -271,26 +297,21 @@ function Blogs() {
                 className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="price"
               >
-                Mô tả
+                Nội dung
               </label>
               <CKEditor
                 editor={ClassicEditor}
-                data={description}
-                onReady={(editor) => {
-                  // You can store the "editor" and use when it is needed.
-                  console.log("Editor is ready to use!", editor);
-                }}
+                data={content}
                 onChange={(event, editor) => {
                   const data = editor.getData();
-                  setDescription(data);
+                  setContent(data);
                   console.log({ event, editor, data });
                 }}
-                onBlur={(event, editor) => {
-                  console.log("Blur.", editor);
-                }}
-                onFocus={(event, editor) => {
-                  console.log("Focus.", editor);
-                }}
+                // config={{
+                //   ckfinder: {
+                //     upl: "/api/blogs/uploads",
+                //   },
+                // }}
               />
             </div>
           </div>
@@ -311,14 +332,13 @@ function Blogs() {
           </div>
         </form>
       </Modal>
-
       <Table
         columns={columns}
         dataSource={blogs}
         rowKey={(record) => record._id}
         pagination={pagination}
         onChange={(_pagination, filters, sorter) => setPagination(_pagination)}
-        scroll={{ x: "100%" }}
+        scroll={{ x: "125%" }}
       />
     </>
   );

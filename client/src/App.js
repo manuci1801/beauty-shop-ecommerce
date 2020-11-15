@@ -9,6 +9,7 @@ import Header from "./layouts/Header";
 import About from "./pages/About";
 import Admin from "./pages/Admin";
 import Blog from "./pages/Blog";
+import BlogDetail from "./pages/BlogDetail";
 import Cart from "./pages/Cart";
 import Contact from "./pages/Contact";
 import Home from "./pages/Home";
@@ -42,6 +43,9 @@ function App() {
           </Route>
           <Route path="/blog" exact>
             <Blog />
+          </Route>
+          <Route path="/blog/:id" exact>
+            <BlogDetail />
           </Route>
           <Route path="/about" exact>
             <About />

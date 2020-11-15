@@ -1,13 +1,37 @@
-import React, { useEffect } from "react";
+import axios from "axios";
+import parseHTML from "html-react-parser";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import "../App.css";
+import { addToCart } from "../redux/actions/products";
+import formatPrice from "../utils/formatPrice";
 
 function Home() {
-  // const [products, isLoading] = useSelector(({ products, errors }) => [
-  //   products.products,
-  //   errors.isLoading,
-  // ]);
+  const dispatch = useDispatch();
 
+  const [blogs, setBlogs] = useState([]);
+
+  const [
+    products,
+    categories,
+    brands,
+    isLoading,
+  ] = useSelector(({ products, errors }) => [
+    products.products,
+    products.categories,
+    products.brands,
+    errors.isLoading,
+  ]);
+
+  console.log(brands);
   useEffect(() => {
     document.title = "Trang chủ";
+
+    axios
+      .get("/api/blogs")
+      .then((res) => setBlogs(res.data))
+      .catch((err) => console.log(err));
   }, []);
 
   return (
@@ -20,12 +44,12 @@ function Home() {
                 <img className="img-responsive" src="img/chair.png" />
               </div>
               <div className="content back">
-                <div className="count">23</div>
+                {brands && <div className="count">{brands.length}</div>}
                 <h4>Thương hiệu</h4>
               </div>
             </div>
             <div className="box-title product">
-              <h4>Sản phẩm Nội thất</h4>
+              <h4>Sản phẩm</h4>
             </div>
           </div>
           <div className="box-col col-sm-4 pull-right hidden-xs">
@@ -34,18 +58,18 @@ function Home() {
                 <img className="img-responsive" src="img/hammer.png" />
               </div>
               <div className="content back">
-                <div className="count">96</div>
-                <h4>Dự án</h4>
+                {products && <div className="count">{products.length}</div>}
+                <h4>Sản phẩm</h4>
               </div>
             </div>
             <div className="box-title project">
-              <h4>Thiết kế &amp; Thi công</h4>
+              <h4>Thiết kế</h4>
             </div>
           </div>
           <div className="col-xs-12 col-sm-4">
             <div className="slogan">
-              <h1>min</h1>
-              <h3>Giản đơn &amp; Tinh tế</h3>
+              <h1>MIN</h1>
+              <h3>Hiệu quả &amp; An toàn</h3>
               <a id="to-about" href="#">
                 <img src="img/down.png" />
               </a>
@@ -55,34 +79,33 @@ function Home() {
       </div>
       <div className="container-fluid about" id="about-min">
         <div className="section-title">
-          <h2>Giới thiệu về Min</h2>
+          <h2>Giới thiệu về MIN</h2>
         </div>
         <i>
-          MIN, được viết tắt từ Minimalist, có nghĩa là sự đơn giản, giảm thiểu
-          các chi tiết thừa, chỉ giữ lại những phần thật sự cần thiết cho công
-          năng và thẩm mỹ để mang lại nét tinh tế thanh lịch cho không gian
-          thiết kế.
+          MIN là kênh mua sắm mỹ phẩm, làm đẹp được các blogger lựa chọn để giới
+          thiệu sản phẩm họ yêu thích tới khách hàng, người hâm mộ.
         </i>
         <br />
         <i>
-          MIN mang đến cho khách hàng những sản phẩm nội thất mộc mạc, đơn giản
-          mà vẫn có cá tính riêng, đồng thời thực hiện các dự án thiết kế và thi
-          công nội thất với mong muốn tạo dựng những không gian khác biệt, tinh
-          tế và sáng tạo.
+          Đến với MIN, khách hàng sẽ là những người đầu tiên có cơ hội được trải
+          nghiệm và sử dụng các sản phẩm làm đẹp theo một cách riêng và tốt nhất
+          với các thương hiệu mỹ phẩm quốc tế quen thuộc. Ngoài ra, còn có các
+          thương hiệu được biết đến bởi những người tiên phong trong việc tìm
+          kiếm sản phẩm chất lượng nhất.
         </i>
         <div className="link-container">
-          <a className="link-to" href="about.html">
+          <Link className="link-to" to="/about">
             Xem thêm <i className="fa fa-angle-right" />
-          </a>
+          </Link>
         </div>
       </div>
       {/* Sản phẩm mới */}
       <div className="container-fluid">
         <div className="section-title">
-          <h2>Sản phẩm mới</h2>
-          <p>Những sản phẩm mới nhất T4/2017</p>
+          {/* <h2>Sản phẩm mới</h2> */}
+          {/* <p>Những sản phẩm mới nhất T4/2017</p> */}
         </div>
-        <div className="row block-container">
+        {/* <div className="row block-container">
           <div className="block block1 col-xs-6 col-sm-6 col-md-3">
             <div className="banner-content">
               <h3>Bộ bàn ghế sân vườn BJ Pappilon</h3>
@@ -117,21 +140,22 @@ function Home() {
             <img src="img/banner_3.jpg" className="img-responsive" />
           </div>
         </div>
+       */}
       </div>
       {/* Sản phẩm nổi bật */}
       <div className="container-fluid featured">
         <div className="section-title">
-          <h2>Sản phẩm nổi bật</h2>
-          <p>Top những sản phẩm được đánh giá cao</p>
+          <h2>Sản phẩm gần đây</h2>
+          {/* <p>Top những sản phẩm được đánh giá cao</p> */}
         </div>
         <div className="row">
           <ul className="nav nav-tabs">
             <li className="active">
-              <a href="#chair" data-toggle="tab">
-                Ghế
+              <a href="#new-products" data-toggle="tab">
+                Mới nhất
               </a>
             </li>
-            <li>
+            {/* <li>
               <a href="#table" data-toggle="tab">
                 Bàn
               </a>
@@ -140,647 +164,96 @@ function Home() {
               <a href="#cabinet" data-toggle="tab">
                 Tủ &amp; Giá
               </a>
-            </li>
+            </li> */}
           </ul>
           <div className="tab-content">
-            <div className="tab-pane active fade in" id="chair">
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Eros Papasan</h3>
-                    <p>by Kartell</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="product1"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#product1"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#product1" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
+            <div className="tab-pane active fade in" id="new-products">
+              {products &&
+                products.length > 0 &&
+                products.slice(0, 4).map((e) => (
+                  <div className="col-item col-xs-6 col-md-3">
+                    <div className="item-container">
+                      <div>
                         <div
+                          className="max-1-line"
                           style={{
-                            backgroundImage: `url(img/danhmat.png)`,
+                            fontWeight: 600,
+                            fontSize: "16px",
+                            margin: "8px",
                           }}
-                          className="item active"
-                        ></div>
-                        <div
-                          style={{
-                            backgroundImage: `url(img/product_1b.jpg)`,
-                          }}
-                          className="item"
-                        ></div>
+                          className="max-1-line"
+                        >
+                          {e.name}
+                        </div>
+                        <p className="max-1-line">by {e.brandId.name}</p>
                       </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>4.800.000₫</strong>
-                  </div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Signature Chair</h3>
-                    <p>by Frits Henningsen</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="product2"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#product2"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#product2" data-slide-to={1} />
-                        <li data-target="#product2" data-slide-to={2} />
-                        <li data-target="#product2" data-slide-to={3} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/product_2a.jpg" />
+                      <div className="photo">
+                        <div
+                          id={e._id}
+                          className="carousel slide"
+                          data-ride="carousel"
+                          data-interval="false"
+                        >
+                          <ol className="carousel-indicators">
+                            <li
+                              data-target={`#${e._id}`}
+                              data-slide-to={0}
+                              className="active"
+                            />
+                            <li data-target={`#${e._id}`} data-slide-to={1} />
+                          </ol>
+                          <div className="carousel-inner" role="listbox">
+                            {e.images &&
+                              e.images.map((image, index) => (
+                                <div
+                                  style={{
+                                    backgroundImage: `url("/images/${image}")`,
+                                  }}
+                                  className={
+                                    index === 0 ? "item active" : "item"
+                                  }
+                                ></div>
+                              ))}
+                          </div>
                         </div>
-                        <div className="item">
-                          <img src="img/product_2b.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/product_2c.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/product_2d.jpg" />
+                        <div className="vertical-icon">
+                          <a href="#">
+                            <i className="fa fa-heart-o" />
+                          </a>
+                          <a
+                            href="#"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              dispatch(
+                                addToCart({
+                                  productId: e._id,
+                                  amount: 1,
+                                })
+                              );
+                            }}
+                          >
+                            <i className="fa fa-shopping-cart" />
+                          </a>
+                          <Link to={`/products/${e._id}`}>
+                            <i className="fa fa-search-plus" />
+                          </Link>
                         </div>
                       </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>4.400.000₫</strong>
-                  </div>
-                  <div className="tag tag-right sale" />
-                  <div className="tag-name-right">Sale!</div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Hansen Ro</h3>
-                    <p>by Fritz Hansen</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="product3"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#product3"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#product3" data-slide-to={1} />
-                        <li data-target="#product3" data-slide-to={2} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/product_4a.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/product_4b.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/product_4c.jpg" />
-                        </div>
+                      <div className="price">
+                        <strong>{formatPrice(e.price)}₫</strong>
                       </div>
                     </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
                   </div>
-                  <div className="price">
-                    <strong>6.600.000₫</strong>
-                  </div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Cuba Chair</h3>
-                    <p>by Morten Goettler</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="product4"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#product4"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#product4" data-slide-to={1} />
-                        <li data-target="#product4" data-slide-to={2} />
-                        <li data-target="#product4" data-slide-to={3} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div
-                          style={{
-                            backgroundImage: `url(img/product_6a.jpg)`,
-                          }}
-                          className="item active"
-                        ></div>
-                        <div
-                          style={{
-                            backgroundImage: `url(img/product_6b.jpg)`,
-                          }}
-                          className="item"
-                        ></div>
-                        <div
-                          style={{
-                            backgroundImage: `url(img/product_6c.jpg)`,
-                          }}
-                          className="item"
-                        ></div>
-                        <div
-                          style={{
-                            backgroundImage: `url(img/product_6d.jpg)`,
-                          }}
-                          className="item"
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>1.900.000₫</strong>
-                  </div>
-                  <div className="tag tag-left new" />
-                  <div className="tag-name-left">New!</div>
-                </div>
-              </div>
+                ))}
             </div>
-            <div className="tab-pane fade" id="table">
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Rio</h3>
-                    <p>by Charlotte Perriand</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="rio"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#rio"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#rio" data-slide-to={1} />
-                        <li data-target="#rio" data-slide-to={2} />
-                        <li data-target="#rio" data-slide-to={3} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/rio_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/rio_2.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/rio_3.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/rio_4.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>4.900.000₫</strong>
-                  </div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Rotor</h3>
-                    <p>by Piero Lissoni</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="rotor"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#rotor"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#rotor" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/rotor_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/rotor_2.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>5.600.000₫</strong>
-                  </div>
-                  <div className="tag tag-left new" />
-                  <div className="tag-name-left">New!</div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>La Rotonda</h3>
-                    <p>by Mario Bellini</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="rotonda"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#rotonda"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#rotonda" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/rotonda_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/rotonda_2.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>3.200.000₫</strong>
-                  </div>
-                  <div className="tag tag-right sale" />
-                  <div className="tag-name-right">Sale!</div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Ventaglio</h3>
-                    <p>by Charlotte Perriand</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="ventaglio"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#ventaglio"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#ventaglio" data-slide-to={1} />
-                        <li data-target="#ventaglio" data-slide-to={2} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/ventaglio_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/ventaglio_2.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/ventaglio_3.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>7.700.000₫</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="tab-pane fade" id="cabinet">
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Casiers Standard</h3>
-                    <p>by Le Corbusier</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="casiers"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#casiers"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#casiers" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/casiers_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/casiers_2.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>6.600.000₫</strong>
-                  </div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>LC16</h3>
-                    <p>by Le Corbusier</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="lc16"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#lc16"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#lc16" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/lc16_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/lc16_2.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>4.800.000₫</strong>
-                  </div>
-                  <div className="tag tag-left new" />
-                  <div className="tag-name-left">New!</div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Nuvola Rossa</h3>
-                    <p>by Vico Magistretti</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="rossa"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#rossa"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#rossa" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/rossa_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/rossa_2.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>3.900.000₫</strong>
-                  </div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Riflesso</h3>
-                    <p>by Charlotte Perriand</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="riflesso"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#riflesso"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#riflesso" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="img/riflesso_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="img/riflesso_2.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>4.400.000₫</strong>
-                  </div>
-                  <div className="tag tag-right sale" />
-                  <div className="tag-name-right">Sale!</div>
-                </div>
-              </div>
-            </div>
+            <div className="tab-pane fade" id="table"></div>
+            <div className="tab-pane fade" id="cabinet"></div>
           </div>
         </div>
         <div className="link-container">
-          <a className="link-to" href="shop.html">
+          <Link className="link-to" to="/products">
             Xem toàn bộ sản phẩm <i className="fa fa-angle-right" />
-          </a>
+          </Link>
         </div>
       </div>
       {/* Thương hiệu owl carousel */}
@@ -790,7 +263,7 @@ function Home() {
             <div className="brand-item">
               <img src="img/logo_1.png" className="img-responsive" />
             </div>
-            <div className="brand-item">
+            {/* <div className="brand-item">
               <img src="img/logo_2.png" className="img-responsive" />
             </div>
             <div className="brand-item">
@@ -798,7 +271,7 @@ function Home() {
             </div>
             <div className="brand-item">
               <img src="img/logo_4.png" className="img-responsive" />
-            </div>
+            </div> */}
             <div className="brand-item">
               <img src="img/logo_5.png" className="img-responsive" />
             </div>
@@ -827,7 +300,7 @@ function Home() {
         </div>
       </div>
       {/* Bộ sưu tập nổi bật */}
-      <div className="container collection">
+      {/* <div className="container collection">
         <div className="section-title">
           <h2>Bộ sưu tập mới</h2>
           <p>Ikea VIKTIGT Collection 2017</p>
@@ -903,9 +376,9 @@ function Home() {
             Xem trọn bộ sưu tập <i className="fa fa-angle-right" />
           </a>
         </div>
-      </div>
+      </div> */}
       {/* Nhận xét của khách hàng */}
-      <div className="container-fluid">
+      {/* <div className="container-fluid">
         <div className="row">
           <div
             id="feedback"
@@ -964,9 +437,9 @@ function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* Dự án gần đây */}
-      <div className="container-fluid new-project">
+      {/* <div className="container-fluid new-project">
         <div className="section-title">
           <h2>Thiết kế &amp; Thi công</h2>
           <p>Các dự án mới thực hiện</p>
@@ -1000,9 +473,9 @@ function Home() {
             Xem tất cả dự án <i className="fa fa-angle-right" />
           </a>
         </div>
-      </div>
+      </div> */}
       {/* Phong cách */}
-      <div className="section-title style">
+      {/* <div className="section-title style">
         <h2>Phong cách</h2>
         <p>Các phong cách thiết kế tại MIN</p>
       </div>
@@ -1055,7 +528,7 @@ function Home() {
             <div className="tab-pane fade" id="wabi"></div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* Blog */}
       <div className="container blog-section">
         <div className="section-title">
@@ -1063,51 +536,53 @@ function Home() {
           <p>Bài viết mới nhất</p>
         </div>
         <div className="row">
-          <div className="blog-container" id="blog1">
-            <div className="blog-thumbnail">
-              <a href="blog-detail.html">
-                <span className="cross" />
-              </a>
+          {blogs && blogs.length > 0 && (
+            <div className="blog-container" id="blog1">
+              <div
+                className="blog-thumbnail"
+                style={{
+                  backgroundImage: `url("/images/${blogs[0].cover}")`,
+                }}
+              >
+                <Link to={`/blog/${blogs[0]._id}`}>
+                  <span className="cross" />
+                </Link>
+              </div>
+              <div className="blog-content">
+                <h3 style={{ fontSize: "24px" }}>{blogs[0].title}</h3>
+                <p className="max-3-line">{parseHTML(blogs[0].content)}</p>
+                <Link className="link-to" to={`/blog/${blogs[0]._id}`}>
+                  Đọc thêm <i className="fa fa-angle-right" />
+                </Link>
+              </div>
             </div>
-            <div className="blog-content">
-              <h3>Nội thất cổ điển cho không gian nhỏ</h3>
-              <p>
-                Nói đến thiết kế cổ điển chúng ta thường hình dung ra những mẫu
-                thiết kế chắc chắn và bề thế. Tuy nhiên để phù hợp với xu hướng
-                hiện đại, các nhà thiết kế nội thất đã sáng tạo ra những mẫu
-                thiết kế vừa mang tính chất sang trọng của cổ điển, vừa nhỏ gọn
-                và tiết kiệm không gian.
-              </p>
-              <a className="link-to" href="blog-detail.html">
-                Đọc thêm <i className="fa fa-angle-right" />
-              </a>
+          )}
+          {blogs && blogs.length > 1 && (
+            <div className="blog-container" id="blog2">
+              <div
+                className="blog-thumbnail"
+                style={{
+                  backgroundImage: `url("/images/${blogs[1].cover}")`,
+                }}
+              >
+                <Link to={`/blog/${blogs[1]._id}`}>
+                  <span className="cross" />
+                </Link>
+              </div>
+              <div className="blog-content">
+                <h3 style={{ fontSize: "24px" }}>{blogs[1].title}</h3>
+                <p className="max-3-line">{parseHTML(blogs[1].content)}</p>
+                <Link className="link-to" to={`/blog/${blogs[1]._id}`}>
+                  Đọc thêm <i className="fa fa-angle-right" />
+                </Link>
+              </div>
             </div>
-          </div>
-          <div className="blog-container" id="blog2">
-            <div className="blog-thumbnail">
-              <a href="blog-detail.html">
-                <span className="cross" />
-              </a>
-            </div>
-            <div className="blog-content">
-              <h3>Nội thất đẹp cho căn hộ dưới 40m²</h3>
-              <p>
-                Dạng căn hộ dưới 40m² ngày càng phổ biến trên thế giới. Bất chấp
-                diện tích có hạn, chỉ cần sáng tạo và bài trí hợp lý, chúng vẫn
-                là những không gian sống đáng mơ ước. Cùng tham khảo 4 mẫu căn
-                hộ nhỏ xinh dưới đây và học tập cách bài trí thông minh của
-                những căn hộ này nhé.
-              </p>
-              <a className="link-to" href="blog-detail.html">
-                Đọc thêm <i className="fa fa-angle-right" />
-              </a>
-            </div>
-          </div>
+          )}
         </div>
         <div className="link-container">
-          <a className="link-to" href="blog.html">
+          <Link className="link-to" to="/blog">
             Xem tất cả bài viết <i className="fa fa-angle-right" />
-          </a>
+          </Link>
         </div>
       </div>
     </>

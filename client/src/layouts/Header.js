@@ -224,6 +224,9 @@ function Header({ props }) {
               className="search"
               data-toggle="slide-collapse"
               data-target="#search-form"
+              style={{
+                visibility: "hidden",
+              }}
             >
               <i className="fa fa-search" />
               <span className="hidden-xs"> Tìm kiếm</span>

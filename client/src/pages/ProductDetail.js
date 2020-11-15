@@ -12,6 +12,7 @@ function ProductDetail() {
   let { id } = useParams();
 
   const [product, setProduct] = useState({});
+  const [productsRelated, setProductsRelated] = useState([]);
   const [amount, setAmount] = useState(1);
 
   const dispatch = useDispatch();
@@ -23,7 +24,8 @@ function ProductDetail() {
     axios
       .get(`/api/products/${id}`)
       .then((res) => {
-        setProduct(res.data);
+        setProduct(res.data.product);
+        setProductsRelated(res.data.productsRelated);
       })
       .catch((err) => console.log(err));
   }, [id]);
@@ -66,10 +68,12 @@ function ProductDetail() {
                         data-slide-to={index}
                         className={index === 0 ? "active" : ""}
                       >
-                        <img
-                          src={`/images/${image}`}
-                          className="img-responsive"
-                        />
+                        <div
+                          className="bg-img-responsive"
+                          style={{
+                            backgroundImage: `url("/images/${image}")`,
+                          }}
+                        ></div>
                       </li>
                     ))}
                 </ol>
@@ -121,9 +125,9 @@ function ProductDetail() {
                   <ins>{formatPrice(product.price)}₫</ins>
                 )}
               </div>
-              <div className="description">
+              {/* <div className="description">
                 <p>{parseHTML(product.description)}</p>
-              </div>
+              </div> */}
               <p className="stock">
                 Tình trạng:{" "}
                 {product.amount > 0 ? (
@@ -212,19 +216,18 @@ function ProductDetail() {
               </ul>
               <div className="tab-content">
                 <div className="tab-pane fade active in" id="tab-description">
-                  <p>{parseHTML(product.description)}</p>
+                  {product.describeLink.split("watch?v=").length > 1 && (
+                    <iframe
+                      width="100%"
+                      height="400px"
+                      src={`https://www.youtube.com/embed/${
+                        product.describeLink.split("watch?v=")[1]
+                      }`}
+                    ></iframe>
+                  )}
                 </div>
                 <div className="tab-pane fade" id="tab-info">
-                  <p>
-                    <strong>Vật liệu khung</strong>: Gỗ sồi / Gỗ óc chó
-                  </p>
-                  <p>
-                    <strong>Kích thước</strong>: 102cm x 89cm x 67cm
-                  </p>
-                  <img
-                    src="/img/signature_dim.jpg"
-                    className="img-responsive"
-                  />
+                  <p>{parseHTML(product.description)}</p>
                 </div>
                 <div id="tab-reviews" className="tab-pane fade">
                   <div className="comments-section">
@@ -354,216 +357,81 @@ function ProductDetail() {
             </div>
           </div>
           <div className="container-fluid relate-products">
-            <div className="section-title">
-              <h2>Sản phẩm liên quan</h2>
+            {productsRelated && productsRelated.length > 0 && (
+              <div className="section-title">
+                <h2>Sản phẩm liên quan</h2>
+              </div>
+            )}
+            <div className="row">
+              {productsRelated &&
+                productsRelated.length > 0 &&
+                productsRelated.slice(0, 4).map((e) => (
+                  <div className="col-item col-xs-6 col-md-3">
+                    <div className="item-container">
+                      <div className="name">
+                        <h3>{e.name}</h3>
+                        <p>by {e.brandId.name}</p>
+                      </div>
+                      <div className="photo">
+                        <div
+                          id="casiers"
+                          className="carousel slide"
+                          data-ride="carousel"
+                          data-interval="false"
+                        >
+                          <ol className="carousel-indicators">
+                            <li
+                              data-target="#casiers"
+                              data-slide-to={0}
+                              className="active"
+                            />
+                            <li data-target="#casiers" data-slide-to={1} />
+                          </ol>
+                          <div className="carousel-inner" role="listbox">
+                            {e.images &&
+                              e.images.length > 0 &&
+                              e.images.map((img, index) => (
+                                <div
+                                  className={
+                                    index === 0 ? "item active" : "item"
+                                  }
+                                  style={{
+                                    backgroundImage: `url(/images/${img})`,
+                                  }}
+                                ></div>
+                              ))}
+                          </div>
+                        </div>
+                        <div className="vertical-icon">
+                          <a>
+                            <i className="fa fa-heart-o" />
+                          </a>
+                          <a
+                            href="#"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              dispatch(
+                                addToCart({
+                                  productId: product._id,
+                                  amount: 1,
+                                })
+                              );
+                            }}
+                          >
+                            <i className="fa fa-shopping-cart" />
+                          </a>
+                          <Link to={`/products/${e._id}`}>
+                            <i className="fa fa-search-plus" />
+                          </Link>
+                        </div>
+                      </div>
+                      <div className="price">
+                        <strong>{formatPrice(e.price)}₫</strong>
+                      </div>
+                    </div>
+                  </div>
+                ))}
             </div>
-            {/* <div className="row">
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Casiers Standard</h3>
-                    <p>by Le Corbusier</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="casiers"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#casiers"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#casiers" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="/img/casiers_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="/img/casiers_2.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>6.600.000₫</strong>
-                  </div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>La Rotonda</h3>
-                    <p>by Mario Bellini</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="rotonda"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#rotonda"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#rotonda" data-slide-to={1} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="/img/rotonda_1.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="/img/rotonda_2.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>3.200.000₫</strong>
-                  </div>
-                  <div className="tag tag-right sale" />
-                  <div className="tag-name-right">Sale!</div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Hansen Ro</h3>
-                    <p>by Fritz Hansen</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="product3"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#product3"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#product3" data-slide-to={1} />
-                        <li data-target="#product3" data-slide-to={2} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="/img/product_4a.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="/img/product_4b.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="/img/product_4c.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>6.600.000₫</strong>
-                  </div>
-                </div>
-              </div>
-              <div className="col-item col-xs-6 col-md-3">
-                <div className="item-container">
-                  <div className="name">
-                    <h3>Cuba Chair</h3>
-                    <p>by Morten Goettler</p>
-                  </div>
-                  <div className="photo">
-                    <div
-                      id="product4"
-                      className="carousel slide"
-                      data-ride="carousel"
-                      data-interval="false"
-                    >
-                      <ol className="carousel-indicators">
-                        <li
-                          data-target="#product4"
-                          data-slide-to={0}
-                          className="active"
-                        />
-                        <li data-target="#product4" data-slide-to={1} />
-                        <li data-target="#product4" data-slide-to={2} />
-                        <li data-target="#product4" data-slide-to={3} />
-                      </ol>
-                      <div className="carousel-inner" role="listbox">
-                        <div className="item active">
-                          <img src="/img/product_6a.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="/img/product_6b.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="/img/product_6c.jpg" />
-                        </div>
-                        <div className="item">
-                          <img src="/img/product_6d.jpg" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="vertical-icon">
-                      <a href="#">
-                        <i className="fa fa-heart-o" />
-                      </a>
-                      <a href="#">
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a href="shop-detail.html">
-                        <i className="fa fa-search-plus" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="price">
-                    <strong>1.900.000₫</strong>
-                  </div>
-                  <div className="tag tag-left new" />
-                  <div className="tag-name-left">New!</div>
-                </div>
-              </div>
-            </div>
-           */}
           </div>
           <a href="#">
             <i className="fa fa-angle-up back-top" />

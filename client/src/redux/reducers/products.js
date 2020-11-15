@@ -24,6 +24,7 @@ import {
   DELETE_SUBCATEGORY,
   ADD_SUBCATEGORY,
   UPDATE_SUBCATEGORY,
+  DELETE_FROM_CART,
 } from "../types";
 
 const initialState = {
@@ -235,6 +236,17 @@ export default function (state = initialState, action) {
       return {
         ...state,
         cart: newCart,
+      };
+
+    case DELETE_FROM_CART:
+      let cartCur = JSON.parse(localStorage.getItem("cart"));
+      let _cart = cartCur.filter((e) => e.productId != action.payload);
+
+      localStorage.setItem("cart", JSON.stringify(_cart));
+
+      return {
+        ...state,
+        cart: _cart,
       };
 
     case CLEAR_CART:

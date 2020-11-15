@@ -95,6 +95,7 @@ function Categories({ categories, subcategories, dispatch }) {
       axios
         .put(`/api/categories/${categoryId}`, { name, description })
         .then((res) => {
+          toastNotify("success", "Cập nhật thành công");
           setIsVisible(false);
           dispatch(updateCategory(res.data));
           resetState();
@@ -115,6 +116,7 @@ function Categories({ categories, subcategories, dispatch }) {
           categoryId: categoryIdSelected,
         })
         .then((res) => {
+          toastNotify("success", "Cập nhật thành công");
           setIsVisible(false);
           dispatch(updateSubcategory(res.data));
           resetState();
@@ -134,10 +136,12 @@ function Categories({ categories, subcategories, dispatch }) {
     if (currentTab == "categories") {
       axios.delete(`/api/categories/${id}`).then((res) => {
         dispatch(deleteCategory(id));
+        toastNotify("success", "Xóa thành công");
       });
     } else {
       axios.delete(`/api/subcategories/${id}`).then((res) => {
         dispatch(deleteSubcategory(id));
+        toastNotify("success", "Xóa thành công");
       });
     }
   };
@@ -156,6 +160,8 @@ function Categories({ categories, subcategories, dispatch }) {
   const resetState = () => {
     setName("");
     setDescription("");
+    setCategoryIdSelected("");
+    setCategoryId("");
     setIsUpdate(false);
   };
 

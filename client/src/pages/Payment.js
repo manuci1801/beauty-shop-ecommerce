@@ -6,6 +6,7 @@ import formatPrice from "../utils/formatPrice";
 
 import { checkout } from "../redux/actions/products";
 import toastNotify from "../utils/toastNotify";
+import { CLEAR_CART } from "../redux/types";
 
 function Payment({ coupon }) {
   const dispatch = useDispatch();
@@ -34,15 +35,6 @@ function Payment({ coupon }) {
         if (_shipAddressDefault) {
           setShipAddressDefault(_shipAddressDefault);
         }
-
-        //  const _paymentAddressDefault = res.data.find((e) => !!e.isPaymentDefault);
-        //  if (_paymentAddressDefault)
-        //   setOrderData({
-        //     ...orderData,
-        //     paymen: _shipAddressDefault,
-        //     phone: _shipAddressDefault.phone,
-        //     address: _shipAddressDefault.address,
-        //   });
       })
       .catch((err) => {
         console.log(err);
@@ -54,8 +46,8 @@ function Payment({ coupon }) {
   }
 
   useEffect(() => {
-    getAddressDefault();
-  }, []);
+    if (isAuthenticated) getAddressDefault();
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (
@@ -92,7 +84,11 @@ function Payment({ coupon }) {
         coupon: Object.keys(coupon).length > 0 ? "coupon" : "123",
       })
       .then((res) => {
-        console.log(res);
+        toastNotify("success", "Đặt hàng thành công");
+        dispatch({
+          type: CLEAR_CART,
+        });
+        window.location.href = "/cart";
       });
   }
 
@@ -103,55 +99,61 @@ function Payment({ coupon }) {
           <div className="payment-tabs">
             <h3>Địa chỉ giao hàng</h3>
             <form>
-              <div className="checkbox">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={isDefaultAddress}
-                    onChange={() => {
-                      if (typeof shipAddressDefault === "undefined") {
-                        return toastNotify(
-                          "warn",
-                          "Bạn chưa có địa chỉ giao hàng mặc định"
-                        );
-                      }
-                      setIsDefaultAddress(!isDefaultAddress);
-                      setOrderData({
-                        ...orderData,
-                        name: shipAddressDefault.name,
-                        phone: shipAddressDefault.phone,
-                        address: shipAddressDefault.address,
-                      });
-                    }}
-                  />{" "}
-                  Sử dụng địa chỉ mặc định
-                </label>
-              </div>
+              {isAuthenticated && (
+                <div className="checkbox">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={isDefaultAddress}
+                      onChange={() => {
+                        if (typeof shipAddressDefault === "undefined") {
+                          return toastNotify(
+                            "warn",
+                            "Bạn chưa có địa chỉ giao hàng mặc định"
+                          );
+                        }
+                        setIsDefaultAddress(!isDefaultAddress);
+                        setOrderData({
+                          ...orderData,
+                          name: shipAddressDefault.name,
+                          phone: shipAddressDefault.phone,
+                          address: shipAddressDefault.address,
+                        });
+                      }}
+                    />{" "}
+                    Sử dụng địa chỉ mặc định
+                  </label>
+                </div>
+              )}
               <input
                 type="text"
                 className="form-control"
                 id="name"
-                value={isDefaultAddress ? shipAddressDefault.name : ""}
                 onChange={(e) =>
                   setOrderData({
                     ...orderData,
                     name: e.target.value,
                   })
                 }
+                value={orderData.name}
                 placeholder="Họ tên"
               />
               <input
-                type="text"
+                type="number"
+                min="1"
                 className="form-control"
                 id="phone"
                 placeholder="Số điện thoại"
-                value={isDefaultAddress ? shipAddressDefault.phone : ""}
-                onChange={(e) =>
-                  setOrderData({
-                    ...orderData,
-                    phone: e.target.value,
-                  })
-                }
+                onChange={(e) => {
+                  if (e.target.value.includes("-"))
+                    return toastNotify("warn", "Bạn không thể nhập số âm");
+                  else
+                    setOrderData({
+                      ...orderData,
+                      phone: e.target.value,
+                    });
+                }}
+                value={orderData.phone}
               />
 
               <input
@@ -159,13 +161,13 @@ function Payment({ coupon }) {
                 className="form-control"
                 id="address"
                 placeholder="Địa chỉ"
-                value={isDefaultAddress ? shipAddressDefault.address : ""}
                 onChange={(e) =>
                   setOrderData({
                     ...orderData,
                     address: e.target.value,
                   })
                 }
+                value={orderData.address}
               />
               <input
                 type="text"
@@ -178,6 +180,7 @@ function Payment({ coupon }) {
                     note: e.target.value,
                   })
                 }
+                value={orderData.note}
               />
               <select
                 className="form-control"
@@ -187,6 +190,7 @@ function Payment({ coupon }) {
                     shipType: e.target.value,
                   })
                 }
+                value={orderData.shipType}
               >
                 <option value="" selected hidden>
                   Hình thức vận chuyển
@@ -209,7 +213,7 @@ function Payment({ coupon }) {
               </li>
               <li>
                 <a href="#payment-online" data-toggle="tab">
-                  Internet Banking
+                  VNPAY
                 </a>
               </li>
             </ul>

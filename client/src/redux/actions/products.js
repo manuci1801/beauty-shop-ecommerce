@@ -21,6 +21,7 @@ import {
   UPDATE_CATEGORY,
   UPDATE_PRODUCT,
   UPDATE_SUBCATEGORY,
+  DELETE_FROM_CART,
 } from "../types";
 
 export const getProducts = () => (dispatch) => {
@@ -183,7 +184,8 @@ export const getCart = () => (dispatch) => {
 };
 
 export const addToCart = (data) => (dispatch) => {
-  toastNotify("success", "Thêm vào giỏ hàng thành công");
+  toastNotify("success", "Thành công");
+  // console.log(data);
   dispatch({
     type: ADD_CART,
     payload: data,
@@ -194,6 +196,13 @@ export const clearCart = (message) => (dispatch) => {
   toastNotify("success", message);
   dispatch({
     type: CLEAR_CART,
+  });
+};
+
+export const deleteFromCart = (id) => (dispatch) => {
+  dispatch({
+    type: DELETE_FROM_CART,
+    payload: id,
   });
 };
 

@@ -1,20 +1,27 @@
 import axios from "axios";
 import parseHTML from "html-react-parser";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { formatDate } from "../utils/formatDate";
+import { Link, useParams } from "react-router-dom";
+import "../App.css";
 
-function Blog() {
+function BlogDetail() {
+  let { id } = useParams();
+
+  const [blog, setBlog] = useState({});
   const [blogs, setBlogs] = useState([]);
   const [blogCategories, setBlogCategories] = useState([]);
   const [blogTags, setBlogTags] = useState([]);
 
   useEffect(() => {
-    document.title = "Blog";
-
     axios
       .get("/api/blogs")
-      .then((res) => setBlogs(res.data))
+      .then((res) => {
+        if (res.data.length > 0) {
+          setBlogs(res.data);
+          const blog = res.data.find((e) => e._id == id);
+          setBlog(blog);
+        }
+      })
       .catch((err) => console.log(err));
 
     axios
@@ -26,7 +33,7 @@ function Blog() {
       .get("/api/blogs/tags")
       .then((res) => setBlogTags(res.data))
       .catch((err) => console.log(err));
-  }, []);
+  }, [id]);
 
   return (
     <>
@@ -134,54 +141,27 @@ function Blog() {
                 ))}
             </li>
           </ul>
-          <div className="blog-list pull-left col-md-9 col-sm-8 col-xs-12">
-            {blogs &&
-              blogs.length > 0 &&
-              blogs.map((blog) => (
-                <div className="col-item col-xs-12">
-                  <div className="item-container">
-                    <div className="blog-img">
-                      <Link to={`/blog/${blog._id}`}>
-                        <img
-                          src={`/images/${blog.cover}`}
-                          className="img-responsive"
-                          alt="image"
-                        />
-                        <span className="cross" />
-                      </Link>
-                    </div>
-                    <div className="blog-content-small">
-                      <h3>
-                        <Link className="max-2-line" to={`/blog/${blog._id}`}>
-                          {blog.title}
-                        </Link>
-                      </h3>
-                      <span className="blog-info">
-                        <span className="date">
-                          <i className="fa fa-clock-o" />
-                          {formatDate(blog.createdAt)}
-                        </span>
-                        <span className="author">
-                          <i className="fa fa-pencil-square-o" />
-                          <span>{blog.author.name}</span>
-                        </span>
-                        {/* <span className="comments">
-                          <i className="fa fa-comments-o" />
-                          <a href="#">2</a>
-                        </span> */}
-                      </span>
-                      <div className="blog-excerpt">
-                        <div class="max-3-line">{parseHTML(blog.content)}</div>
-                        <div className="link-container">
-                          <Link className="link-to" to={`/blog/${blog._id}`}>
-                            Đọc thêm <i className="fa fa-angle-right" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+          <div className="pull-left col-md-9 col-sm-8 col-xs-12">
+            <div
+              style={{
+                textAlign: "center",
+                backgroundColor: "#fff",
+                padding: "0 16px",
+                marginBottom: "16px",
+              }}
+            >
+              {blog && Object.keys(blog).length > 0 && (
+                <div>
+                  <h1 style={{ fontSize: "32px", padding: "16px" }}>
+                    {blog.title}
+                  </h1>
+                  <img class="img-responsive" src={`/images/${blog.cover}`} />
+                  <div style={{ fontSize: "16px", padding: "16px" }}>
+                    {blog.content ? parseHTML(blog.content) : null}
                   </div>
                 </div>
-              ))}
+              )}
+            </div>
           </div>
           {/* <nav className="col-xs-12 col-sm-8 col-md-9">
             <div className="pagination">
@@ -214,4 +194,4 @@ function Blog() {
   );
 }
 
-export default Blog;
+export default BlogDetail;

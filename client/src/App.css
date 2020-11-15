@@ -3961,6 +3961,14 @@ button.save-change:hover {
   padding: 12px 16px;
 }
 
+/* max 0 line */
+.max-0-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 0; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
 /* max 1 line */
 .max-1-line {
   overflow: hidden;
@@ -3968,4 +3976,27 @@ button.save-change:hover {
   display: -webkit-box;
   -webkit-line-clamp: 1; /* number of lines to show */
   -webkit-box-orient: vertical;
+}
+
+.max-2-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
+
+.max-3-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
+
+.bg-img-responsive {
+  padding-top: 100%;
+  background-size: 90% auto;
+  background-repeat: no-repeat;
+  background-position: center center;
 }

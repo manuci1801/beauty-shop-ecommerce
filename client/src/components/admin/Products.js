@@ -23,6 +23,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
   const [amount, setAmount] = useState("");
   const [images, setImages] = useState(null);
   const [description, setDescription] = useState("");
+  const [describeLink, setDescribeLink] = useState("");
 
   const [isUpdate, setIsUpdate] = useState(false);
   const [productId, setProductId] = useState("");
@@ -53,6 +54,9 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     if (!description) {
       return toastNotify("warn", "Mô tả không được để trống");
     }
+    if (!describeLink) {
+      return toastNotify("warn", "Link youtube mô tả không được để trống");
+    }
 
     let formData = new FormData();
     formData.append("name", name);
@@ -62,6 +66,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     formData.append("price", price);
     formData.append("amount", amount);
     formData.append("description", description);
+    formData.append("describeLink", describeLink);
 
     for (const file of images) {
       formData.append("image", file);
@@ -70,6 +75,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     axios.post("/api/products", formData).then((res) => {
       setIsVisible(false);
       dispatch(addProduct(res.data));
+      toastNotify("success", "Thêm sản phẩm thành công");
       resetState();
     });
     // .catch((err) => {
@@ -99,6 +105,9 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     if (!description) {
       return toastNotify("warn", "Mô tả không được để trống");
     }
+    if (!describeLink) {
+      return toastNotify("warn", "Link youtube mô tả không được để trống");
+    }
 
     let formData = new FormData();
     formData.append("name", name);
@@ -108,6 +117,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     formData.append("price", price);
     formData.append("amount", amount);
     formData.append("description", description);
+    formData.append("describeLink", describeLink);
 
     if (images && images.length > 0)
       for (const file of images) {
@@ -117,6 +127,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     axios.put(`/api/products/${productId}`, formData).then((res) => {
       setIsVisible(false);
       dispatch(updateProduct(res.data));
+      toastNotify("success", "Cập nhật sản phẩm thành công");
       resetState();
     });
   };
@@ -134,6 +145,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     if (product.subcategoryId) setSubcategoryId(product.subcategoryId._id);
     setPrice(product.price);
     setAmount(product.amount);
+    setDescribeLink(product.describeLink);
     setImages(null);
     setDescription(product.description);
     setIsVisible(true);
@@ -151,6 +163,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     setPrice("");
     setAmount("");
     setIsUpdate(false);
+    setDescribeLink("");
     fileRef.current.value = null;
   };
 
@@ -196,10 +209,20 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
       ),
     },
     {
+      title: "Link mô tả",
+      dataIndex: "describeLink",
+      key: "describeLink",
+      render: (text) => (
+        <a href={text} target="_blank">
+          {text}
+        </a>
+      ),
+    },
+    {
       title: "Mô tả",
       dataIndex: "description",
       key: "description",
-      render: (text) => parseHTML(text),
+      render: (text) => <div className="max-3-line">{parseHTML(text)}</div>,
     },
     { title: "Giá", dataIndex: "price", key: "price" },
     { title: "Số lượng", dataIndex: "amount", key: "amount" },
@@ -208,9 +231,11 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
       dataIndex: "images",
       key: "images",
       render: (text) =>
-        text.map((e, index) => (
-          <img key={index} src={`/images/${e}`} alt="img" />
-        )),
+        text
+          .slice(0, 2)
+          .map((e, index) => (
+            <img key={index} src={`/images/${e}`} alt="img" />
+          )),
     },
     {
       title: "Hành động",
@@ -445,13 +470,31 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
               />
             </div>
           </div>
+
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
+                htmlFor="describeLink"
+              >
+                Link mô tả
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="describeLink"
+                type="text"
+                value={describeLink}
+                onChange={(e) => setDescribeLink(e.target.value)}
+              />
+            </div>
+          </div>
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full px-3">
               <label
                 className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="description"
               >
-                Description
+                Thông tin
               </label>
               {/* <textarea
                 className=" no-resize appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 h-48 resize-none"
