@@ -209,7 +209,30 @@ const getById = async (req, res) => {
       .populate("subcategoryId", ["_id", "name"])
       .lean();
 
-    const _product = { ...product, comments: _comments };
+    let _product = { ...product, comments: _comments };
+
+    const discounts = await Discount.find().lean();
+
+    let _isDiscount = discounts.find(
+      (e) =>
+        `${e.brand}` === `${product.brandId._id}` ||
+        `${e.category}` === `${product.categoryId._id}` ||
+        `${e.subcategory}` ===
+          (Boolean(product.subcategoryId)
+            ? `${product.subcategoryId._id}`
+            : "") ||
+        e.applyFor === "all"
+    );
+    if (typeof _isDiscount !== "undefined") {
+      let priceDiscount = _isDiscount.discountPrice
+        ? product.price - _isDiscount.discountPrice < 0
+          ? 0
+          : product.price - _isDiscount.discountPrice
+        : product.price -
+          Math.floor((product.price * _isDiscount.discountRate) / 100);
+
+      _product = { ...product, priceDiscount };
+    }
 
     const productsRelated = await Product.find({
       categoryId: product.categoryId._id,

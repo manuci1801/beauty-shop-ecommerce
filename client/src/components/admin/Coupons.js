@@ -160,7 +160,7 @@ function Coupons() {
       </div>
       <Modal
         style={{ top: "20px" }}
-        // title={!isUpdate ? "Add a new product" : "Update product"}
+        title="C"
         visible={isVisible}
         footer={null}
         width="70%"

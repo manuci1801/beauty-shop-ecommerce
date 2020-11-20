@@ -9,6 +9,8 @@ function Blog() {
   const [blogCategories, setBlogCategories] = useState([]);
   const [blogTags, setBlogTags] = useState([]);
 
+  const [searchInput, setSearchInput] = useState("");
+
   useEffect(() => {
     document.title = "Blog";
 
@@ -74,6 +76,8 @@ function Blog() {
                     type="text"
                     className="form-control"
                     placeholder="Search"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                   />
                 </div>
                 <button type="submit" className="btn btn-default">

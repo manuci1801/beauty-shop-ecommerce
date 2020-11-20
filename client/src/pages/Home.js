@@ -1,3 +1,4 @@
+import { Carousel } from "antd";
 import axios from "axios";
 import parseHTML from "html-react-parser";
 import React, { useEffect, useState } from "react";
@@ -37,7 +38,22 @@ function Home() {
   return (
     <>
       <div className="container-fluid banner">
-        <div className="row"></div>
+        <div className="row">
+          <Carousel autoplay>
+            {/* <div>
+              <h3 style={contentStyle}>1</h3>
+            </div>
+            <div>
+              <h3 style={contentStyle}>2</h3>
+            </div>
+            <div>
+              <h3 style={contentStyle}>3</h3>
+            </div>
+            <div>
+              <h3 style={contentStyle}>4</h3>
+            </div> */}
+          </Carousel>
+        </div>
       </div>
       {/* <div className="container-fluid about" id="about-min">
         <div className="section-title">
@@ -202,7 +218,12 @@ function Home() {
                         </div>
                       </div>
                       <div className="price">
-                        <strong>{formatPrice(e.price)}₫</strong>
+                        <strong>
+                          {formatPrice(
+                            e.priceDiscount ? e.priceDiscount : e.price
+                          )}
+                          ₫
+                        </strong>
                       </div>
                     </div>
                   </div>
