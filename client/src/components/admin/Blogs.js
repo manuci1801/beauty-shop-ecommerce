@@ -119,12 +119,11 @@ function Blogs() {
 
     formData.append("title", title);
     formData.append("category", categoryIdSelected);
-    formData.append("cover", image);
     formData.append("content", content);
 
     if (tagsSelected.length > 0)
       formData.append("tags", JSON.stringify(tagsSelected));
-    if (image) formData.append("image", image);
+    if (image) formData.append("cover", image);
 
     axios.put(`/api/blogs/${blogId}`, formData).then((res) => {
       setIsVisible(false);
@@ -136,8 +135,7 @@ function Blogs() {
           res.data,
           ...blogs.slice(_i + 1, blogs.length),
         ]);
-      else blogs.unshift(res.data);
-      setBlogs([res.data, ...blogs.slice(0, _i)]);
+      else setBlogs([res.data, ...blogs.slice(0, _i)]);
       resetState();
     });
   };

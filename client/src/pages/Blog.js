@@ -141,53 +141,60 @@ function Blog() {
           <div className="blog-list pull-left col-md-9 col-sm-8 col-xs-12">
             {blogs &&
               blogs.length > 0 &&
-              blogs.map((blog) => (
-                <div className="col-item col-xs-12">
-                  <div className="item-container">
-                    <div className="blog-img">
-                      <Link to={`/blog/${blog._id}`}>
-                        <img
-                          src={`/images/${blog.cover}`}
-                          className="img-responsive"
-                          alt="image"
-                        />
-                        <span className="cross" />
-                      </Link>
-                    </div>
-                    <div className="blog-content-small">
-                      <h3>
-                        <Link className="max-2-line" to={`/blog/${blog._id}`}>
-                          {blog.title}
+              blogs
+                .filter((blog) =>
+                  new RegExp(searchInput, "gi").test(blog.title)
+                )
+                .map((blog) => (
+                  <div className="col-item col-xs-12">
+                    <div className="item-container">
+                      <div className="blog-img">
+                        <Link to={`/blog/${blog._id}`}>
+                          <img
+                            src={`/images/${blog.cover}`}
+                            className="img-responsive"
+                            alt="image"
+                          />
+                          <span className="cross" />
                         </Link>
-                      </h3>
-                      <span className="blog-info">
-                        <span className="date">
-                          <i className="fa fa-clock-o" />
-                          {formatDate(blog.createdAt)}
-                        </span>
-                        <span className="author">
-                          <i className="fa fa-pencil-square-o" />
-                          <span>{blog.author.name}</span>
-                        </span>
-                        {/* <span className="comments">
+                      </div>
+                      <div className="blog-content-small">
+                        <h3>
+                          <Link className="max-2-line" to={`/blog/${blog._id}`}>
+                            {blog.title}
+                          </Link>
+                        </h3>
+                        <span className="blog-info">
+                          <span className="date">
+                            <i className="fa fa-clock-o" />
+                            {formatDate(blog.createdAt)}
+                          </span>
+                          <span className="author">
+                            <i className="fa fa-pencil-square-o" />
+                            <span>{blog.author.name}</span>
+                          </span>
+                          {/* <span className="comments">
                           <i className="fa fa-comments-o" />
                           <a href="#">2</a>
                         </span> */}
-                      </span>
-                      <div className="blog-excerpt">
-                        <div class="max-2-line" style={{ maxHeight: "100px" }}>
-                          {parseHTML(blog.content)}
-                        </div>
-                        <div className="link-container">
-                          <Link className="link-to" to={`/blog/${blog._id}`}>
-                            Đọc thêm <i className="fa fa-angle-right" />
-                          </Link>
+                        </span>
+                        <div className="blog-excerpt">
+                          <div
+                            class="max-2-line"
+                            style={{ maxHeight: "100px" }}
+                          >
+                            {parseHTML(blog.content)}
+                          </div>
+                          <div className="link-container">
+                            <Link className="link-to" to={`/blog/${blog._id}`}>
+                              Đọc thêm <i className="fa fa-angle-right" />
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
           </div>
           {/* <nav className="col-xs-12 col-sm-8 col-md-9">
             <div className="pagination">

@@ -157,7 +157,7 @@ const updateOne = async (req, res) => {
     const { title, content, category, tags } = req.body;
 
     const updateData = {};
-    if (file) updateData.image = file.filename;
+    if (file) updateData.cover = file.filename;
     if (title) updateData.title = title;
     if (content) updateData.content = content;
     if (category) updateData.category = category;
@@ -171,6 +171,7 @@ const updateOne = async (req, res) => {
 
     res.json(_blog);
   } catch (err) {
+    console.log(err);
     return res.status(500).json(err);
   }
 };
