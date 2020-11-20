@@ -34,10 +34,10 @@ export const getProducts = () => (dispatch) => {
       });
     })
     .catch((err) => {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data.errors,
-      });
+      // dispatch({
+      //   type: GET_ERRORS,
+      //   payload: err.response.data.errors,
+      // });
     });
 };
 
@@ -51,10 +51,10 @@ export const getCategories = () => (dispatch) => {
       });
     })
     .catch((err) => {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data.errors,
-      });
+      // dispatch({
+      //   type: GET_ERRORS,
+      //   payload: err.response.data.errors,
+      // });
     });
 };
 
