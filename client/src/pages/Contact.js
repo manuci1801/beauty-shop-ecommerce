@@ -65,11 +65,11 @@ function Contact() {
                   <h3>Liên Hệ:</h3>
                   <p>
                     <i className="fa fa-mobile-phone" />
-                    0986090925
+                    0985423664
                   </p>
                   <p>
                     <i className="fa fa-envelope-o" />
-                    hieu.do212@gmail.com
+                    tuannhph07234@fpt.edu.vn
                   </p>
                 </div>
               </div>
