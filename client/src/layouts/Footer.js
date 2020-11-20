@@ -20,11 +20,11 @@ function Footer() {
                   </li>
                   <li>
                     <i className="fa fa-mobile" />
-                    Hotline: 0986090925
+                    Hotline: 0985423664
                   </li>
                   <li>
                     <i className="fa fa-envelope-o" />
-                    Email: hieu.do212@gmail.com
+                    Email: tuannhph07234@fpt.edu.vn
                   </li>
                 </ul>
               </div>

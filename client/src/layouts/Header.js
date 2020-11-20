@@ -150,10 +150,10 @@ function Header({ props }) {
         <header>
           <nav className="header-top">
             <span className="quick-mobile">
-              <i className="fa fa-phone" /> 0986090925
+              <i className="fa fa-phone" /> 0985423664
             </span>
             <span className="quick-mail hidden-xs">
-              <i className="fa fa-envelope-o" /> hieu.do212@gmail.com
+              <i className="fa fa-envelope-o" /> tuannhph07234@fpt.edu.vn
             </span>
 
             <span className="pull-right">
