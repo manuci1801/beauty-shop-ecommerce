@@ -23,7 +23,7 @@ const sendMail = async (to, subject, data) => {
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: "123456khj002@gmail.com", // sender address
+    from: "MIN Store", // sender address
     to,
     subject,
     html: data,
