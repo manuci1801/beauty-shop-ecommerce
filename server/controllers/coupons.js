@@ -67,7 +67,7 @@ const checkValidCoupon = async (req, res) => {
         .status(400)
         .json({ field: "code", message: "code is required" });
     else {
-      const coupon = await Coupon.findOne({ code });
+      const coupon = await Coupon.findOne({ $or: [{ code }, { name: code }] });
 
       if (Boolean(coupon) && coupon.usableCount > 0)
         return res.json({ coupon });

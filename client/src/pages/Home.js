@@ -37,45 +37,7 @@ function Home() {
   return (
     <>
       <div className="container-fluid banner">
-        <div className="row">
-          <div className="box-col col-sm-4 pull-left hidden-xs">
-            <div className="box product">
-              <div className="content front">
-                <img className="img-responsive" src="img/chair.png" />
-              </div>
-              <div className="content back">
-                {brands && <div className="count">{brands.length}</div>}
-                <h4>Thương hiệu</h4>
-              </div>
-            </div>
-            <div className="box-title product">
-              <h4>Sản phẩm</h4>
-            </div>
-          </div>
-          <div className="box-col col-sm-4 pull-right hidden-xs">
-            <div className="box project">
-              <div className="content front">
-                <img className="img-responsive" src="img/hammer.png" />
-              </div>
-              <div className="content back">
-                {products && <div className="count">{products.length}</div>}
-                <h4>Sản phẩm</h4>
-              </div>
-            </div>
-            <div className="box-title project">
-              <h4>Thiết kế</h4>
-            </div>
-          </div>
-          <div className="col-xs-12 col-sm-4">
-            <div className="slogan">
-              {/* <h1>MIN</h1>
-              <h3>Hiệu quả &amp; An toàn</h3> */}
-              <a id="to-about" href="#">
-                <img src="img/down.png" />
-              </a>
-            </div>
-          </div>
-        </div>
+        <div className="row"></div>
       </div>
       {/* <div className="container-fluid about" id="about-min">
         <div className="section-title">
