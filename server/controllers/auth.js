@@ -146,7 +146,7 @@ const forgotPassword = async (req, res) => {
       await sendMail(
         email,
         "change password account",
-        `<a href="http://${process.env.CLIENT_URI}/change-password/${resetPasswordToken}">change password</a>`
+        `<a href="http://${process.env.CLIENT_URI}/forgot-password/${resetPasswordToken}">change password</a>`
       );
 
     res.json({ success: true });

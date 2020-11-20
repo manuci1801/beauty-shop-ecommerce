@@ -31,7 +31,7 @@ function Admin() {
   };
 
   const dispatch = useDispatch();
-  const [route, setRoute] = useState("dashboard");
+  const [route, setRoute] = useState("users");
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [contacts, setContacts] = useState([]);
