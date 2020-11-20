@@ -297,7 +297,7 @@ function Payment({ coupon }) {
                   <td>0</td>
                 </tr>
                 <tr className="deli-fee">
-                  Giảm giá
+                  <th>Giảm giá</th>
                   <span className="discount-rate" />
                   <td>
                     {Object.keys(coupon).length > 0
