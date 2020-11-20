@@ -149,6 +149,32 @@ const uploadImgContent = async (req, res) => {
   }
 };
 
+const updateOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const file = req.file;
+    const { title, content, category, tags } = req.body;
+
+    const updateData = {};
+    if (file) updateData.image = file.filename;
+    if (title) updateData.title = title;
+    if (content) updateData.content = content;
+    if (category) updateData.category = category;
+    if (tags) updateData.tags = JSON.parse(tags);
+
+    await Blog.findByIdAndUpdate(id, updateData, { new: true });
+
+    const _blog = await Blog.findById(id)
+      .populate("author", ["name"])
+      .populate("category", ["name"]);
+
+    res.json(_blog);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
 module.exports = {
   addCategory,
   getAllCategories,
@@ -159,4 +185,5 @@ module.exports = {
   getById,
   deleteOne,
   uploadImgContent,
+  updateOne,
 };

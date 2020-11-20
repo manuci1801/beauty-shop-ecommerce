@@ -7,6 +7,7 @@ import toastNotify from "../../utils/toastNotify";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import parseHTML from "html-react-parser";
+import _ from "lodash";
 // import * as ckfinder from "@ckeditor/ckeditor5-ckfinder/src/ckfinder";
 
 function Blogs() {
@@ -20,6 +21,7 @@ function Blogs() {
   const [blogTags, setBlogTags] = useState([]);
 
   const [isVisible, setIsVisible] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const [title, setTitle] = useState("");
   const [categoryIdSelected, setCategoryIdSelected] = useState("");
@@ -30,7 +32,7 @@ function Blogs() {
   // const [endAt, setEndAt] = useState("");
   const fileRef = useRef();
 
-  const [isUpdate, setIsUpdate] = useState(false);
+  const [blogId, setBlogId] = useState("");
 
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
@@ -72,12 +74,12 @@ function Blogs() {
     setContent("");
     setImage(null);
     fileRef.current.value = null;
+
+    setBlogId("");
+    setIsUpdate(false);
   }
 
   const handleAdd = () => {
-    console.log(title);
-    console.log(categoryIdSelected);
-    console.log(tagsSelected);
     if (!title) return toastNotify("warn", "Tiêu đề không được để trống");
     else if (!categoryIdSelected)
       return toastNotify("warn", "Danh mục không được để trống");
@@ -106,7 +108,49 @@ function Blogs() {
     }
   };
 
-  const handleUpdate = () => {};
+  const handleUpdate = () => {
+    if (!title) return toastNotify("warn", "Tiêu đề không được để trống");
+    else if (!categoryIdSelected)
+      return toastNotify("warn", "Danh mục không được để trống");
+    else if (!content)
+      return toastNotify("warn", "Nội dung không được để trống");
+
+    let formData = new FormData();
+
+    formData.append("title", title);
+    formData.append("category", categoryIdSelected);
+    formData.append("cover", image);
+    formData.append("content", content);
+
+    if (tagsSelected.length > 0)
+      formData.append("tags", JSON.stringify(tagsSelected));
+    if (image) formData.append("image", image);
+
+    axios.put(`/api/blogs/${blogId}`, formData).then((res) => {
+      setIsVisible(false);
+      // dispatch(updateBrand(res.data));
+      let _i = _.findIndex(blogs, { _id: res.data._id });
+      if (_i > -1)
+        setBlogs([
+          ...blogs.slice(0, _i),
+          res.data,
+          ...blogs.slice(_i + 1, blogs.length),
+        ]);
+      else blogs.unshift(res.data);
+      setBlogs([res.data, ...blogs.slice(0, _i)]);
+      resetState();
+    });
+  };
+
+  const showDataUpdate = (blog) => {
+    setIsVisible(true);
+    setTitle(blog.title);
+    setCategoryIdSelected(blog.category._id);
+    setTagsSelected(blog.tags);
+    setContent(blog.content);
+    setBlogId(blog._id);
+    setIsUpdate(true);
+  };
 
   const columns = [
     {
@@ -163,6 +207,9 @@ function Blogs() {
       width: 200,
       render: (text, record) => (
         <>
+          <Button onClick={() => showDataUpdate(record)} type="primary">
+            Sửa
+          </Button>
           <Button
             type="primary"
             danger
@@ -196,15 +243,12 @@ function Blogs() {
               Thêm
             </Button>
             <div style={{ display: "flex" }}>
-              <Button type="primary" icon={<DownloadOutlined />} size="large">
-                Xuất Excel
-              </Button>
               <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
             </div>
           </div>
           <Modal
             style={{ top: "20px" }}
-            // title={!isUpdate ? "Add a new product" : "Update product"}
+            title={!isUpdate ? "Thêm blog mới" : "Cập nhật blog"}
             visible={isVisible}
             footer={null}
             width="70%"
@@ -342,7 +386,7 @@ function Blogs() {
                     type="button"
                     onClick={() => {
                       if (!isUpdate) handleAdd();
-                      // else handleUpdate();
+                      else handleUpdate();
                     }}
                   >
                     OK

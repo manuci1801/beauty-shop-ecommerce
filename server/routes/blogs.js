@@ -25,6 +25,7 @@ router
 router
   .route("/:id")
   .get(blogController.getById)
+  .put(isAuth, isAdmin, uploadFile("cover", false), blogController.updateOne)
   .delete(isAuth, isAdmin, blogController.deleteOne);
 
 // router.route("/check").post(blogController.checkValidCoupon);

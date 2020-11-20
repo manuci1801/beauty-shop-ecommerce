@@ -24,6 +24,8 @@ function Header({ props }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
 
+  const [isShowPass, setIsShowPass] = useState(false);
+
   const [isForgotPassword, setIsForgotPassword] = useState(false);
 
   const [user, isAuthenticated, cart] = useSelector(({ auth, products }) => [
@@ -44,6 +46,13 @@ function Header({ props }) {
     setName("");
     setPhone("");
   }
+
+  useEffect(() => {
+    if (isShowPass) {
+      const password = document.getElementById("password");
+      if (password) password.type = "text";
+    }
+  }, [isShowPass]);
 
   const getToken = () => {
     const token = localStorage.getItem("jwtToken");
@@ -403,7 +412,13 @@ function Header({ props }) {
                         />
                       </div>
                       <div className="input-field check-field">
-                        <input type="checkbox" id="remember" name="remember" />
+                        <input
+                          type="checkbox"
+                          id="remember"
+                          name="remember"
+                          checked={isShowPass}
+                          onChange={(e) => setIsShowPass(!isShowPass)}
+                        />
                         <label htmlFor="remember">Hiển thị mật khẩu</label>
                         <br />
                       </div>

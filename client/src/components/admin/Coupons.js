@@ -41,8 +41,11 @@ function Coupons() {
   };
 
   function resetState() {
+    setName("");
     setDiscount("");
     setDiscountType("price");
+    setCount("");
+    setDescription("");
   }
 
   const handleAdd = () => {
@@ -152,9 +155,6 @@ function Coupons() {
           Thêm
         </Button>
         <div style={{ display: "flex" }}>
-          <Button type="primary" icon={<DownloadOutlined />} size="large">
-            Xuất Excel
-          </Button>
           <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
         </div>
       </div>
