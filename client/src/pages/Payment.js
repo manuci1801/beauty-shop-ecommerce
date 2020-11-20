@@ -241,16 +241,8 @@ function Payment({ coupon }) {
                   <option disabled selected hidden>
                     Tên ngân hàng
                   </option>
-                  <option>Vietcombank</option>
-                  <option>Techcombank</option>
-                  <option>VPBank</option>
+                  <option>NCB - Ngân hàng Quốc Dân</option>
                 </select>
-                <input
-                  className="form-control"
-                  type="text"
-                  name="bankID"
-                  placeholder="Nhập số tài khoản"
-                />
               </div>
             </div>
           </div>
