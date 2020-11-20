@@ -219,10 +219,23 @@ function Home() {
                       </div>
                       <div className="price">
                         <strong>
-                          {formatPrice(
-                            e.priceDiscount ? e.priceDiscount : e.price
+                          {e.priceDiscount && (
+                            <del
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: 600,
+                                marginRight: "8px",
+                                color: "#FF0000",
+                              }}
+                            >
+                              {formatPrice(e.price)}₫
+                            </del>
                           )}
-                          ₫
+                          {e.priceDiscount ? (
+                            <ins>{formatPrice(e.priceDiscount)}₫</ins>
+                          ) : (
+                            <ins>{formatPrice(e.price)}₫</ins>
+                          )}
                         </strong>
                       </div>
                     </div>

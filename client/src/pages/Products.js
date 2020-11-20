@@ -435,12 +435,25 @@ function Products() {
                             </div>
                             <div className="price">
                               <strong>
-                                {formatPrice(
-                                  product.priceDiscount
-                                    ? product.priceDiscount
-                                    : product.price
+                                {product.priceDiscount && (
+                                  <del
+                                    style={{
+                                      fontSize: "16px",
+                                      fontWeight: 600,
+                                      marginRight: "8px",
+                                      color: "#FF0000",
+                                    }}
+                                  >
+                                    {formatPrice(product.price)}₫
+                                  </del>
                                 )}
-                                ₫
+                                {product.priceDiscount ? (
+                                  <ins>
+                                    {formatPrice(product.priceDiscount)}₫
+                                  </ins>
+                                ) : (
+                                  <ins>{formatPrice(product.price)}₫</ins>
+                                )}
                               </strong>
                             </div>
                           </div>
