@@ -68,8 +68,8 @@ function Home() {
           </div>
           <div className="col-xs-12 col-sm-4">
             <div className="slogan">
-              <h1>MIN</h1>
-              <h3>Hiệu quả &amp; An toàn</h3>
+              {/* <h1>MIN</h1>
+              <h3>Hiệu quả &amp; An toàn</h3> */}
               <a id="to-about" href="#">
                 <img src="img/down.png" />
               </a>
@@ -77,7 +77,7 @@ function Home() {
           </div>
         </div>
       </div>
-      <div className="container-fluid about" id="about-min">
+      {/* <div className="container-fluid about" id="about-min">
         <div className="section-title">
           <h2>Giới thiệu về MIN</h2>
         </div>
@@ -99,7 +99,7 @@ function Home() {
           </Link>
         </div>
       </div>
-      {/* Sản phẩm mới */}
+      Sản phẩm mới */}
       <div className="container-fluid">
         <div className="section-title">
           {/* <h2>Sản phẩm mới</h2> */}
