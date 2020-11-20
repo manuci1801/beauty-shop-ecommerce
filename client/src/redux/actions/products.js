@@ -184,7 +184,7 @@ export const getCart = () => (dispatch) => {
 };
 
 export const addToCart = (data) => (dispatch) => {
-  toastNotify("success", "Thành công");
+  // toastNotify("success", "Thành công");
   // console.log(data);
   dispatch({
     type: ADD_CART,
