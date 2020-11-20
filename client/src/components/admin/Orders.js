@@ -32,20 +32,18 @@ function Orders({ orders }) {
       render: (_, __, index) =>
         index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
-    {
-      title: "Người dùng",
-      dataIndex: "user",
-      key: "user",
-      width: 200,
-      fixed: "left",
-      render: (text) => (
-        <div style={{ fontWeight: 600 }}>
-          {text && text.name ? text.name : ""}
-          <br />
-          {text && text.email}
-        </div>
-      ),
-    },
+    // {
+    //   title: "Người dùng",
+    //   dataIndex: "user",
+    //   key: "user",
+    //   render: (text) => (
+    //     <div style={{ fontWeight: 600 }}>
+    //       {text && text.name ? text.name : ""}
+    //       <br />
+    //       {text && text.email}
+    //     </div>
+    //   ),
+    // },
     {
       title: "Họ tên",
       dataIndex: "name",
@@ -96,6 +94,17 @@ function Orders({ orders }) {
       dataIndex: "total",
       key: "total",
       render: (text) => formatPrice(text),
+    },
+    {
+      title: "Tranh toán",
+      dataIndex: "isPaid",
+      key: "isPaid",
+      render: (text) =>
+        text ? (
+          <Tag color="#87d068">Đã thanh toán</Tag>
+        ) : (
+          <Tag color="#ff4d4f">Chưa thanh toán</Tag>
+        ),
     },
     {
       title: "Trạng thái",

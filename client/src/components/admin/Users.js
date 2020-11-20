@@ -161,26 +161,26 @@ function Users({ users, addUser, deleteUser }) {
     { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
     { title: "Ngày sinh", dataIndex: "birthday", key: "birthday" },
     { title: "Giới tính", dataIndex: "gender", key: "gender" },
-    {
-      title: "Hành động",
-      key: "actions",
-      fixed: "right",
-      width: 200,
-      render: (text, record) => (
-        <>
-          {/* <Button onClick={() => showDataUpdate(record)} type="primary">
-            Sửa
-          </Button> */}
-          <Button
-            type="primary"
-            danger
-            onClick={() => handleDelete(record._id)}
-          >
-            Xóa
-          </Button>
-        </>
-      ),
-    },
+    // {
+    //   title: "Hành động",
+    //   key: "actions",
+    //   fixed: "right",
+    //   width: 200,
+    //   render: (text, record) => (
+    //     <>
+    //       {/* <Button onClick={() => showDataUpdate(record)} type="primary">
+    //         Sửa
+    //       </Button> */}
+    //       <Button
+    //         type="primary"
+    //         danger
+    //         onClick={() => handleDelete(record._id)}
+    //       >
+    //         Xóa
+    //       </Button>
+    //     </>
+    //   ),
+    // },
   ];
 
   return (
@@ -206,19 +206,20 @@ function Users({ users, addUser, deleteUser }) {
       </div>
       <Modal
         style={{ top: "20px" }}
-        title={!isUpdate ? "Add a new product" : "Update product"}
+        title={!isUpdate ? "Thêm mới người dùng" : "Cập nhật người dùng"}
         visible={isVisible}
         footer={null}
+        width="70%"
         onCancel={() => {
           setIsVisible(false);
           resetState();
         }}
       >
-        <form className="w-full max-w-md m-auto">
+        <form className="w-full m-auto" style={{ fontSize: "14px" }}>
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full md:w-1/2 px-3">
               <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="name"
               >
                 Name
@@ -233,7 +234,7 @@ function Users({ users, addUser, deleteUser }) {
             </div>
             <div className="w-full md:w-1/2 px-3">
               <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="email"
               >
                 Email
@@ -251,7 +252,7 @@ function Users({ users, addUser, deleteUser }) {
             <div className="flex flex-wrap -mx-3 mb-6">
               <div className="w-full md:w-1/2 px-3">
                 <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                  className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                   htmlFor="password1"
                 >
                   Password
@@ -266,7 +267,7 @@ function Users({ users, addUser, deleteUser }) {
               </div>
               <div className="w-full md:w-1/2 px-3">
                 <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                  className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                   htmlFor="password2"
                 >
                   Password Confirm
@@ -284,7 +285,7 @@ function Users({ users, addUser, deleteUser }) {
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full md:w-1/2 px-3">
               <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="role"
               >
                 Role
@@ -316,7 +317,7 @@ function Users({ users, addUser, deleteUser }) {
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full px-3">
               <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="phone"
               >
                 Phone
@@ -333,7 +334,7 @@ function Users({ users, addUser, deleteUser }) {
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full px-3">
               <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="address"
               >
                 Address
