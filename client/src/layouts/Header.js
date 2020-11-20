@@ -260,9 +260,9 @@ function Header({ props }) {
               </div>
             </div>
             <div className="cart-box">
-              <Link to="/wishlist">
+              {/* <Link to="/wishlist">
                 <i className="fa fa-heart-o" />
-              </Link>
+              </Link> */}
               <Link to="/cart">
                 <i className="fa fa-shopping-cart" />
                 <small>{cart && cart.length}</small>

@@ -66,6 +66,11 @@ function Blogs() {
   };
 
   function resetState() {
+    setTitle("");
+    setCategoryIdSelected("");
+    setTagsSelected([]);
+    setContent("");
+    setImage(null);
     fileRef.current.value = null;
   }
 
@@ -147,7 +152,7 @@ function Blogs() {
       title: "Nội dung",
       dataIndex: "content",
       key: "content",
-      render: (text) => parseHTML(text),
+      render: (text) => <div class="max-3-line">{parseHTML(text)}</div>,
     },
     // { title: "Bắt đầu", dataIndex: "startAt", key: "startAt" },
     // { title: "Bắt đầu", dataIndex: "endAt", key: "endAt" },

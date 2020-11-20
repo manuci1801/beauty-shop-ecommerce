@@ -171,7 +171,9 @@ function Blog() {
                         </span> */}
                       </span>
                       <div className="blog-excerpt">
-                        <div class="max-3-line">{parseHTML(blog.content)}</div>
+                        <div class="max-2-line" style={{ maxHeight: "100px" }}>
+                          {parseHTML(blog.content)}
+                        </div>
                         <div className="link-container">
                           <Link className="link-to" to={`/blog/${blog._id}`}>
                             Đọc thêm <i className="fa fa-angle-right" />

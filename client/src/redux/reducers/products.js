@@ -1,4 +1,5 @@
 import _ from "lodash";
+import toastNotify from "../../utils/toastNotify";
 
 import {
   GET_PRODUCTS,
@@ -228,9 +229,13 @@ export default function (state = initialState, action) {
             }
           }
         } else {
+          toastNotify("success", "Thêm thành công");
           newCart = [...state.cart, action.payload];
         }
-      } else newCart.push(action.payload);
+      } else {
+        toastNotify("success", "Thêm thành công");
+        newCart.push(action.payload);
+      }
 
       localStorage.setItem("cart", JSON.stringify(newCart));
       return {

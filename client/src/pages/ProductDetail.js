@@ -17,7 +17,7 @@ function ProductDetail() {
 
   const dispatch = useDispatch();
 
-  // const [products] = useSelector(({ products }) => [products.products]);
+  const [isAuthenticated] = useSelector(({ auth }) => [auth.isAuthenticated]);
 
   // const product = products.find((p) => p._id == id);
   useEffect(() => {
@@ -183,9 +183,9 @@ function ProductDetail() {
                   >
                     Thêm vào giỏ hàng
                   </button>
-                  <a href="#">
+                  {/* <a href="#">
                     <i className="fa fa-heart-o" />
-                  </a>
+                  </a> */}
                 </div>
               </form>
               <div className="product-category">
@@ -405,9 +405,9 @@ function ProductDetail() {
                           </div>
                         </div>
                         <div className="vertical-icon">
-                          <a>
+                          {/* <a>
                             <i className="fa fa-heart-o" />
-                          </a>
+                          </a> */}
                           <a
                             href="#"
                             onClick={(event) => {

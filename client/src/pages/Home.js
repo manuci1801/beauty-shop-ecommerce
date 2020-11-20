@@ -217,9 +217,9 @@ function Home() {
                           </div>
                         </div>
                         <div className="vertical-icon">
-                          <a href="#">
+                          {/* <a href="#">
                             <i className="fa fa-heart-o" />
-                          </a>
+                          </a> */}
                           <a
                             href="#"
                             onClick={(event) => {
