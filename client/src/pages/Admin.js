@@ -31,7 +31,7 @@ function Admin() {
   };
 
   const dispatch = useDispatch();
-  const [route, setRoute] = useState("users");
+  const [route, setRoute] = useState("dashboard");
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [contacts, setContacts] = useState([]);
@@ -192,7 +192,7 @@ function Admin() {
               icon={<SettingOutlined />}
               title="Quản lý đơn hàng"
             >
-              <Menu.Item key="orders">Đơn hàng</Menu.Item>
+              <Menu.Item key="orders">Danh sách đơn hàng</Menu.Item>
             </SubMenu>
             <SubMenu
               key="promotion-management"

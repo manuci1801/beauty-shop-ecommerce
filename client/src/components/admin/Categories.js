@@ -401,9 +401,6 @@ function Categories({ categories, subcategories, dispatch }) {
               Thêm
             </Button>
             <div style={{ display: "flex" }}>
-              <Button type="primary" icon={<DownloadOutlined />} size="large">
-                Xuất Excel
-              </Button>
               <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
             </div>
           </div>
@@ -437,9 +434,6 @@ function Categories({ categories, subcategories, dispatch }) {
               Thêm
             </Button>
             <div style={{ display: "flex" }}>
-              <Button type="primary" icon={<DownloadOutlined />} size="large">
-                Xuất Excel
-              </Button>
               <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
             </div>
           </div>

@@ -179,9 +179,6 @@ function Discounts({ brands, categories, subcategories }) {
           Thêm
         </Button>
         <div style={{ display: "flex" }}>
-          <Button type="primary" icon={<DownloadOutlined />} size="large">
-            Xuất Excel
-          </Button>
           <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
         </div>
       </div>

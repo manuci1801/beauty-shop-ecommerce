@@ -181,9 +181,6 @@ function Brands({ brands, dispatch }) {
           Thêm
         </Button>
         <div style={{ display: "flex" }}>
-          <Button type="primary" icon={<DownloadOutlined />} size="large">
-            Xuất Excel
-          </Button>
           <Input
             onChange={(e) => setSearchInput(e.target.value)}
             style={{ marginLeft: "4px" }}
