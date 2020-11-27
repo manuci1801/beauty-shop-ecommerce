@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import formatPrice from "../../utils/formatPrice";
-import { Button, Input, Table, Modal, Radio } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
+import { Button, Input, Table, Modal, Radio, DatePicker } from "antd";
 import toastNotify from "../../utils/toastNotify";
+import moment from "moment";
+import { formatDate } from "../../utils/formatDate";
 
 function Discounts({ brands, categories, subcategories }) {
   const [discounts, setDiscounts] = useState([]);
@@ -14,8 +15,8 @@ function Discounts({ brands, categories, subcategories }) {
   const [applyId, setApplyId] = useState("");
   const [discount, setDiscount] = useState("");
   const [discountType, setDiscountType] = useState("price");
-  const [startAt, setStartAt] = useState("");
-  const [endAt, setEndAt] = useState("");
+  const [startAt, setStartAt] = useState(moment(new Date(), "DD/MM/YYYY"));
+  const [endAt, setEndAt] = useState(moment(new Date(), "DD/MM/YYYY"));
 
   const [isUpdate, setIsUpdate] = useState(false);
 
@@ -23,7 +24,7 @@ function Discounts({ brands, categories, subcategories }) {
 
   useEffect(() => {
     axios
-      .get("/api/discounts")
+      .get("/api/discounts/admin")
       .then((res) => {
         setDiscounts(res.data);
       })
@@ -53,6 +54,8 @@ function Discounts({ brands, categories, subcategories }) {
           return toastNotify("warn", "Chi tiết khuyến mãi không được để trống");
         else {
           let data = { applyFor };
+          if (startAt) data.startAt = startAt;
+          if (endAt) data.endAt = endAt;
           if (discountType === "rate") data.discountRate = discount;
           else if (discountType === "price") data.discountPrice = discount;
           axios.post("/api/discounts", data).then((res) => {
@@ -69,6 +72,8 @@ function Discounts({ brands, categories, subcategories }) {
             return toastNotify("warn", "Chọn loại áp dụng chi tiết");
           else {
             let data = { applyFor, id: applyId };
+            if (startAt) data.startAt = startAt;
+            if (endAt) data.endAt = endAt;
             if (discountType === "rate") data.discountRate = discount;
             else if (discountType === "price") data.discountPrice = discount;
             axios.post("/api/discounts", data).then((res) => {
@@ -98,17 +103,17 @@ function Discounts({ brands, categories, subcategories }) {
       title: "Áp dụng",
       dataIndex: "applyFor",
       key: "applyFor",
-      render: (_, record) => {
-        if (record.applyFor === "all") {
+      render: (text, record) => {
+        if (text === "all") {
           return <div>Tất cả các mặt hàng</div>;
         }
-        if (record.applyFor === "brand" && record.brand) {
+        if (text === "brand" && record.brand) {
           return <div>Thương hiệu</div>;
         }
-        if (record.applyFor === "category" && record.category) {
+        if (text === "category" && record.category) {
           return <div>Danh mục</div>;
         }
-        if (record.applyFor === "subcategory" && record.subcategory) {
+        if (text === "subcategory" && record.subcategory) {
           return <div>Danh mục phụ</div>;
         }
       },
@@ -143,8 +148,18 @@ function Discounts({ brands, categories, subcategories }) {
           <div>-{formatPrice(record.discountPrice)}₫</div>
         ) : null,
     },
-    // { title: "Bắt đầu", dataIndex: "startAt", key: "startAt" },
-    // { title: "Bắt đầu", dataIndex: "endAt", key: "endAt" },
+    {
+      title: "Bắt đầu",
+      dataIndex: "startAt",
+      key: "startAt",
+      render: (text) => formatDate(text),
+    },
+    {
+      title: "Kết  đầu",
+      dataIndex: "endAt",
+      key: "endAt",
+      render: (text) => text && formatDate(text),
+    },
     {
       title: "Hành động",
       key: "actions",
@@ -163,6 +178,12 @@ function Discounts({ brands, categories, subcategories }) {
       ),
     },
   ];
+
+  // disable day before today
+  function disabledDate(current) {
+    // Can not select days before today and today
+    return current < moment().endOf("day");
+  }
 
   return (
     <>
@@ -186,6 +207,7 @@ function Discounts({ brands, categories, subcategories }) {
         style={{ top: "20px" }}
         title={!isUpdate ? "Thêm khuyến mãi" : "Cập nhật khuyến mãi"}
         visible={isVisible}
+        maskClosable={false}
         footer={null}
         width="70%"
         onCancel={() => {
@@ -341,7 +363,7 @@ function Discounts({ brands, categories, subcategories }) {
             </div>
           ) : null}
           <div className="flex flex-wrap -mx-3 mb-6">
-            <div className="w-full px-3">
+            <div className="w-1/2 px-3">
               <label
                 className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="price"
@@ -351,14 +373,13 @@ function Discounts({ brands, categories, subcategories }) {
               <Radio.Group
                 onChange={(e) => setDiscountType(e.target.value)}
                 value={discountType}
+                className="w-full flex justify-between px-12"
               >
                 <Radio value="price">Giá (₫)</Radio>
                 <Radio value="rate">Phần trăm (%)</Radio>
               </Radio.Group>
             </div>
-          </div>
-          <div className="flex flex-wrap -mx-3 mb-6">
-            <div className="w-full px-3">
+            <div className="w-1/2 px-3">
               <label
                 className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
                 htmlFor="price"
@@ -376,6 +397,44 @@ function Discounts({ brands, categories, subcategories }) {
                     setDiscount(e.target.value);
                   else toastNotify("warn", "Bạn chỉ có thể nhập số dương");
                 }}
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-1/2 px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
+                htmlFor="startAt"
+              >
+                Bắt đầu
+              </label>
+              <DatePicker
+                // disabledDate={disabledDate}
+                style={{
+                  width: "100%",
+                }}
+                defaultValue={startAt}
+                onChange={(date, dateString) => setStartAt(dateString)}
+                id="startAt"
+                format="DD/MM/YYYY"
+              />
+            </div>
+            <div className="w-1/2 px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
+                htmlFor="endAt"
+              >
+                Kết thúc
+              </label>
+              <DatePicker
+                // disabledDate={disabledDate}
+                style={{
+                  width: "100%",
+                }}
+                defaultValue={endAt}
+                onChange={(date, dateString) => setEndAt(dateString)}
+                id="endAt"
+                format="DD/MM/YYYY"
               />
             </div>
           </div>

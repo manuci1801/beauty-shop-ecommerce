@@ -10,4 +10,6 @@ router
 
 router.route("/:id").delete(isAuth, isAdmin, discountController.deleteOne);
 
+router.route("/admin").get(isAuth, isAdmin, discountController.getAllByAdmin);
+
 module.exports = router;

@@ -160,8 +160,9 @@ function Coupons() {
       </div>
       <Modal
         style={{ top: "20px" }}
-        title="C"
+        title="Mã khuyễn mãi"
         visible={isVisible}
+        maskClosable={false}
         footer={null}
         width="70%"
         onCancel={() => {

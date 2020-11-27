@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import formatPrice from "../../utils/formatPrice";
-import { Button, Input, Table, Modal, Select, Tabs } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
+import { Button, Input, Table, Modal, Select } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import toastNotify from "../../utils/toastNotify";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -12,7 +11,6 @@ import _ from "lodash";
 
 function Blogs() {
   const { Option } = Select;
-  const { TabPane } = Tabs;
 
   const [currentTab, setCurrentTab] = useState("blogs");
 
@@ -23,22 +21,25 @@ function Blogs() {
   const [isVisible, setIsVisible] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
 
+  //add blog category and blog tag
+  const [categoryName, setCategoryName] = useState("");
+  const [tagName, setTagName] = useState("");
+  const [isAddCategory, setIsAddCategory] = useState(false);
+  const [isAddTag, setIsAddTag] = useState(false);
+
   const [title, setTitle] = useState("");
   const [categoryIdSelected, setCategoryIdSelected] = useState("");
   const [tagsSelected, setTagsSelected] = useState([]);
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
-  // const [startAt, setStartAt] = useState("");
-  // const [endAt, setEndAt] = useState("");
+
+  const categoryRef = useRef();
+  const tagRef = useRef();
   const fileRef = useRef();
 
   const [blogId, setBlogId] = useState("");
 
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
-
-  function callback(key) {
-    setCurrentTab(key);
-  }
 
   useEffect(() => {
     axios
@@ -150,7 +151,7 @@ function Blogs() {
     setIsUpdate(true);
   };
 
-  const columns = [
+  const blogColumns = [
     {
       title: "STT",
       width: 60,
@@ -220,59 +221,56 @@ function Blogs() {
     },
   ];
 
+  // handle on add tag
+  const handleOnAddTag = () => {
+    if (tagName) {
+      axios
+        .post("/api/blogs/tags", { tag: tagName })
+        .then((res) => {
+          toastNotify("success", "Thêm thành công");
+          setBlogTags([...blogTags, res.data]);
+          setIsAddTag(false);
+          tagRef.current.select();
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   return (
     <>
-      <Tabs defaultActiveKey={currentTab} onChange={callback}>
-        <TabPane tab="Blog" key="blogs">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingBottom: "8px",
-              borderBottom: "1px solid #999",
-            }}
-          >
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => setIsVisible(true)}
-            >
-              Thêm
-            </Button>
-            <div style={{ display: "flex" }}>
-              <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+      <Modal
+        style={{ top: "20px" }}
+        title={!isUpdate ? "Thêm blog mới" : "Cập nhật blog"}
+        visible={isVisible}
+        maskClosable={false}
+        footer={null}
+        width="70%"
+        onCancel={() => {
+          setIsVisible(false);
+          // resetState();
+        }}
+      >
+        <form className="w-full m-auto" style={{ fontSize: "14px" }}>
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
+                htmlFor="price"
+              >
+                Tiêu đề
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="price"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
             </div>
           </div>
-          <Modal
-            style={{ top: "20px" }}
-            title={!isUpdate ? "Thêm blog mới" : "Cập nhật blog"}
-            visible={isVisible}
-            footer={null}
-            width="70%"
-            onCancel={() => {
-              setIsVisible(false);
-              // resetState();
-            }}
-          >
-            <form className="w-full m-auto" style={{ fontSize: "14px" }}>
-              <div className="flex flex-wrap -mx-3 mb-6">
-                <div className="w-full px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
-                    htmlFor="price"
-                  >
-                    Tiêu đề
-                  </label>
-                  <input
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="price"
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </div>
-              </div>
+          {currentTab === "blogs" && (
+            <>
+              {" "}
               <div className="flex flex-wrap -mx-3 mb-6">
                 <div className="w-full px-3">
                   <label
@@ -317,22 +315,46 @@ function Blogs() {
                   >
                     Tags
                   </label>
-                  <Select
-                    mode="multiple"
-                    allowClear
-                    style={{ width: "100%" }}
-                    placeholder="Chọn tag cho blog"
-                    onChange={(value) => setTagsSelected(value)}
-                    value={tagsSelected}
-                  >
-                    {blogTags &&
-                      blogTags.length > 0 &&
-                      blogTags.map((tag) => (
-                        <Option key={tag._id} value={tag.tag}>
-                          {tag.tag}
-                        </Option>
-                      ))}
-                  </Select>
+                  <div className="flex">
+                    <Select
+                      mode="multiple"
+                      allowClear
+                      style={{ width: "100%" }}
+                      placeholder="Chọn tag cho blog"
+                      onChange={(value) => setTagsSelected(value)}
+                      value={tagsSelected}
+                      ref={tagRef}
+                    >
+                      {blogTags &&
+                        blogTags.length > 0 &&
+                        blogTags.map((tag) => (
+                          <Option key={tag._id} value={tag.tag}>
+                            {tag.tag}
+                          </Option>
+                        ))}
+                    </Select>
+                    <div className="w-1/2 flex justify-start items-center">
+                      <Button type="primary" onClick={() => setIsAddTag(true)}>
+                        Thêm tag
+                      </Button>
+                      {isAddTag && (
+                        <>
+                          <input
+                            type="text"
+                            className="border border-gray-400 p-1 ml-3"
+                            value={tagName}
+                            onChange={(e) => setTagName(e.target.value)}
+                          />
+                          <Button
+                            type="primary"
+                            onClick={() => handleOnAddTag()}
+                          >
+                            Save
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex flex-wrap -mx-3 mb-6">
@@ -369,45 +391,102 @@ function Blogs() {
                       setContent(data);
                       console.log({ event, editor, data });
                     }}
-                    // config={{
-                    //   ckfinder: {
-                    //     upl: "/api/blogs/uploads",
-                    //   },
-                    // }}
                   />
                 </div>
               </div>
-              <div className="md:flex md:items-center">
-                <div className="md:w-1/3">
-                  <button
-                    className="shadow bg-teal-400 hover:bg-teal-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-8 rounded"
-                    type="button"
-                    onClick={() => {
-                      if (!isUpdate) handleAdd();
-                      else handleUpdate();
-                    }}
-                  >
-                    OK
-                  </button>
-                </div>
-                <div className="md:w-2/3" />
-              </div>
-            </form>
-          </Modal>
-          <Table
-            columns={columns}
-            dataSource={blogs}
-            rowKey={(record) => record._id}
-            pagination={pagination}
-            onChange={(_pagination, filters, sorter) =>
-              setPagination(_pagination)
-            }
-            scroll={{ x: "125%" }}
-          />
+            </>
+          )}
+          <div className="md:flex md:items-center">
+            <div className="md:w-1/3">
+              <button
+                className="shadow bg-teal-400 hover:bg-teal-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-8 rounded"
+                type="button"
+                onClick={() => {
+                  if (!isUpdate) handleAdd();
+                  else handleUpdate();
+                }}
+              >
+                OK
+              </button>
+            </div>
+            <div className="md:w-2/3" />
+          </div>
+        </form>
+      </Modal>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingBottom: "8px",
+          borderBottom: "1px solid #999",
+        }}
+      >
+        <Button type="primary" size="large" onClick={() => setIsVisible(true)}>
+          Thêm
+        </Button>
+        <div style={{ display: "flex" }}>
+          <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+        </div>
+      </div>
+
+      <Table
+        columns={blogColumns}
+        dataSource={blogs}
+        rowKey={(record) => record._id}
+        pagination={pagination}
+        onChange={(_pagination, filters, sorter) => setPagination(_pagination)}
+        scroll={{ x: "125%" }}
+      />
+      {/* <Tabs defaultActiveKey={currentTab} onChange={handleChangeTab}>
+        <TabPane tab="Blog" key="blogs">
+          
         </TabPane>
-        <TabPane tab="Danh mục" key="blog-categories"></TabPane>
-        <TabPane tab="Tags" key="blog-tags"></TabPane>
-      </Tabs>
+        <TabPane tab="Danh mục" key="blog-categories">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingBottom: "8px",
+              borderBottom: "1px solid #999",
+            }}
+          >
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => setIsVisible(true)}
+            >
+              Thêm
+            </Button>
+            <div style={{ display: "flex" }}>
+              <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+            </div>
+          </div>
+        </TabPane>
+        <TabPane tab="Tags" key="blog-tags">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingBottom: "8px",
+              borderBottom: "1px solid #999",
+            }}
+          >
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => setIsVisible(true)}
+            >
+              Thêm
+            </Button>
+            <div style={{ display: "flex" }}>
+              <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+            </div>
+          </div>
+        </TabPane>
+      </Tabs> */}
     </>
   );
 }

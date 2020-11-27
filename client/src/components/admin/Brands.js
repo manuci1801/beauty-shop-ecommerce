@@ -91,9 +91,17 @@ function Brands({ brands, dispatch }) {
   };
 
   const handleDelete = (id) => {
-    axios.delete(`/api/brands/${id}`).then((res) => {
-      dispatch(deleteBrand(id));
-    });
+    axios
+      .delete(`/api/brands/${id}`)
+      .then((res) => {
+        dispatch(deleteBrand(id));
+      })
+      .catch((err) => {
+        const { msg } = err.response.data;
+        if (msg) return toastNotify("warn", msg);
+
+        toastNotify("warn", "Có lỗi xảy ra");
+      });
   };
 
   const showDataUpdate = (brand) => {
@@ -192,6 +200,7 @@ function Brands({ brands, dispatch }) {
         style={{ top: "20px" }}
         title={!isUpdate ? "Thêm thương hiệu" : "Cập nhật thương hiệu"}
         visible={isVisible}
+        maskClosable={false}
         footer={null}
         width="70%"
         onCancel={() => {

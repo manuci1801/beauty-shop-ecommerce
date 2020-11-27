@@ -36,11 +36,10 @@ const discountSchema = mongoose.Schema({
   },
   startAt: {
     type: Date,
-    default: "",
+    default: new Date(),
   },
   endAt: {
     type: Date,
-    default: "",
   },
   createdAt: {
     type: Date,

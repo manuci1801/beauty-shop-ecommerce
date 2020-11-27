@@ -13,19 +13,23 @@ function Home() {
 
   const [blogs, setBlogs] = useState([]);
 
+  // tab product of MIN
+  const [currentTab, setCurrentTab] = useState("new-products");
+
   const [
     products,
     categories,
     brands,
     isLoading,
-  ] = useSelector(({ products, errors }) => [
+    keys,
+  ] = useSelector(({ products, errors, auth }) => [
     products.products,
     products.categories,
     products.brands,
     errors.isLoading,
+    auth.keys,
   ]);
 
-  console.log(brands);
   useEffect(() => {
     document.title = "Trang chủ";
 
@@ -34,6 +38,16 @@ function Home() {
       .then((res) => setBlogs(res.data))
       .catch((err) => console.log(err));
   }, []);
+
+  useEffect(() => {
+    if (Object.keys(keys).length) {
+      const { brand, category, price } = keys;
+      if (brand || category || price) setCurrentTab("user-favorites");
+    }
+  }, [keys]);
+
+  console.log(keys);
+  console.log(products);
 
   return (
     <>
@@ -78,173 +92,258 @@ function Home() {
         </div>
       </div>
       Sản phẩm mới */}
-      <div className="container-fluid">
-        <div className="section-title">
-          {/* <h2>Sản phẩm mới</h2> */}
-          {/* <p>Những sản phẩm mới nhất T4/2017</p> */}
-        </div>
-        {/* <div className="row block-container">
-          <div className="block block1 col-xs-6 col-sm-6 col-md-3">
-            <div className="banner-content">
-              <h3>Bộ bàn ghế sân vườn BJ Pappilon</h3>
-              <a href="shop-detail.html">
-                Xem chi tiết <i className="fa fa-long-arrow-right" />
-              </a>
-            </div>
-            <img src="img/banner_1.jpg" className="img-responsive" />
-          </div>
-          <div className="block single block2 col-xs-6 col-sm-6 col-md-3">
-            <img src="img/banner_2.jpg" className="img-responsive" />
-          </div>
-          <div className="block single block5 col-xs-6 col-sm-6 col-md-3">
-            <img src="img/banner_5.jpg" className="img-responsive" />
-          </div>
-          <div className="block double block4 col-xs-12 col-md-6">
-            <div className="banner-content">
-              <h3>Bộ gốm sứ Kakiemon Unique</h3>
-              <a href="shop-detail.html">
-                Xem chi tiết <i className="fa fa-long-arrow-right" />
-              </a>
-            </div>
-            <img src="img/banner_4.jpg" className="img-responsive" />
-          </div>
-          <div className="block double block3 col-xs-12 col-md-6">
-            <div className="banner-content">
-              <h3>Bộ sofa DH Breland</h3>
-              <a href="shop-detail.html">
-                Xem chi tiết <i className="fa fa-long-arrow-right" />
-              </a>
-            </div>
-            <img src="img/banner_3.jpg" className="img-responsive" />
-          </div>
-        </div>
-       */}
-      </div>
       {/* Sản phẩm nổi bật */}
       <div className="container-fluid featured">
         <div className="section-title">
-          <h2>Sản phẩm gần đây</h2>
+          <h2>Sản phẩm của MIN</h2>
           {/* <p>Top những sản phẩm được đánh giá cao</p> */}
         </div>
         <div className="row">
           <ul className="nav nav-tabs">
-            <li className="active">
-              <a href="#new-products" data-toggle="tab">
+            <li className={currentTab === "user-favorites" ? "active" : ""}>
+              <a
+                href="#for-user"
+                onClick={() => setCurrentTab("user-favorites")}
+                data-toggle="tab"
+              >
+                Dành cho bạn
+              </a>
+            </li>
+            <li className={currentTab === "new-products" ? "active" : ""}>
+              <a
+                href="#new-products"
+                onClick={() => setCurrentTab("new-products")}
+                data-toggle="tab"
+              >
                 Mới nhất
               </a>
             </li>
-            {/* <li>
-              <a href="#table" data-toggle="tab">
-                Bàn
-              </a>
-            </li>
-            <li>
-              <a href="#cabinet" data-toggle="tab">
-                Tủ &amp; Giá
-              </a>
-            </li> */}
           </ul>
-          <div className="tab-content">
-            <div className="tab-pane active fade in" id="new-products">
-              {products &&
-                products.length > 0 &&
-                products.slice(0, 4).map((e) => (
-                  <div className="col-item col-xs-6 col-md-3">
-                    <div className="item-container">
-                      <div>
-                        <div
-                          className="max-1-line"
-                          style={{
-                            fontWeight: 600,
-                            fontSize: "16px",
-                            margin: "8px",
-                          }}
-                          className="max-1-line"
-                        >
-                          {e.name}
-                        </div>
-                        <p className="max-1-line">by {e.brandId.name}</p>
-                      </div>
-                      <div className="photo">
-                        <div
-                          id={e._id}
-                          className="carousel slide"
-                          data-ride="carousel"
-                          data-interval="false"
-                        >
-                          <ol className="carousel-indicators">
-                            <li
-                              data-target={`#${e._id}`}
-                              data-slide-to={0}
-                              className="active"
-                            />
-                            <li data-target={`#${e._id}`} data-slide-to={1} />
-                          </ol>
-                          <div className="carousel-inner" role="listbox">
-                            {e.images &&
-                              e.images.map((image, index) => (
-                                <div
-                                  style={{
-                                    backgroundImage: `url("/images/${image}")`,
-                                  }}
-                                  className={
-                                    index === 0 ? "item active" : "item"
-                                  }
-                                ></div>
-                              ))}
-                          </div>
-                        </div>
-                        <div className="vertical-icon">
-                          {/* <a href="#">
-                            <i className="fa fa-heart-o" />
-                          </a> */}
-                          <a
-                            href="#"
-                            onClick={(event) => {
-                              event.preventDefault();
-                              dispatch(
-                                addToCart({
-                                  productId: e._id,
-                                  amount: 1,
-                                })
-                              );
+          {currentTab === "new-products" && (
+            <div className="tab-content">
+              <div className="tab-pane active fade in" id="new-products">
+                {products &&
+                  products.length > 0 &&
+                  products.slice(0, 4).map((e) => (
+                    <div className="col-item col-xs-6 col-md-3">
+                      <div className="item-container">
+                        <div>
+                          <div
+                            className="max-1-line"
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "16px",
+                              margin: "8px",
                             }}
+                            className="max-1-line"
                           >
-                            <i className="fa fa-shopping-cart" />
-                          </a>
-                          <Link to={`/products/${e._id}`}>
-                            <i className="fa fa-search-plus" />
-                          </Link>
+                            {e.name}
+                          </div>
+                          <p className="max-1-line">by {e.brandId.name}</p>
                         </div>
-                      </div>
-                      <div className="price">
-                        <strong>
-                          {e.priceDiscount && (
-                            <del
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: 600,
-                                marginRight: "8px",
-                                color: "#FF0000",
+                        <div className="photo">
+                          <div
+                            id={e._id}
+                            className="carousel slide"
+                            data-ride="carousel"
+                            data-interval="false"
+                          >
+                            <ol className="carousel-indicators">
+                              <li
+                                data-target={`#${e._id}`}
+                                data-slide-to={0}
+                                className="active"
+                              />
+                              <li data-target={`#${e._id}`} data-slide-to={1} />
+                            </ol>
+                            <div className="carousel-inner" role="listbox">
+                              {e.images &&
+                                e.images.map((image, index) => (
+                                  <div
+                                    style={{
+                                      backgroundImage: `url("/images/${image}")`,
+                                    }}
+                                    className={
+                                      index === 0 ? "item active" : "item"
+                                    }
+                                  ></div>
+                                ))}
+                            </div>
+                          </div>
+                          <div className="vertical-icon">
+                            <a
+                              href="#"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                dispatch(
+                                  addToCart({
+                                    productId: e._id,
+                                    amount: 1,
+                                  })
+                                );
                               }}
                             >
-                              {formatPrice(e.price)}₫
-                            </del>
-                          )}
-                          {e.priceDiscount ? (
-                            <ins>{formatPrice(e.priceDiscount)}₫</ins>
-                          ) : (
-                            <ins>{formatPrice(e.price)}₫</ins>
-                          )}
-                        </strong>
+                              <i className="fa fa-shopping-cart" />
+                            </a>
+                            <Link to={`/products/${e._id}`}>
+                              <i className="fa fa-search-plus" />
+                            </Link>
+                          </div>
+                        </div>
+                        <div className="price">
+                          <strong>
+                            {e.priceDiscount && (
+                              <del
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: 600,
+                                  marginRight: "8px",
+                                  color: "#FF0000",
+                                }}
+                              >
+                                {formatPrice(e.price)}₫
+                              </del>
+                            )}
+                            {e.priceDiscount ? (
+                              <ins>{formatPrice(e.priceDiscount)}₫</ins>
+                            ) : (
+                              <ins>{formatPrice(e.price)}₫</ins>
+                            )}
+                          </strong>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+              </div>
+              <div className="tab-pane fade" id="table"></div>
+              <div className="tab-pane fade" id="cabinet"></div>
             </div>
-            <div className="tab-pane fade" id="table"></div>
-            <div className="tab-pane fade" id="cabinet"></div>
-          </div>
+          )}
+          {Object.keys(keys).length > 0 && currentTab === "user-favorites" && (
+            <div className="tab-content">
+              <div className="tab-pane active fade in" id="for-user">
+                {products &&
+                  products.length > 0 &&
+                  products
+                    .filter((e) => {
+                      if (keys) {
+                        const { brand, category, price } = keys;
+                        if (brand || category || price) {
+                          if (price)
+                            return (
+                              e.brandId._id == brand &&
+                              e.categoryId._id == category &&
+                              e.price >= +price.split("-")[0] &&
+                              e.price <= +price.split("-")[1]
+                            );
+                          else
+                            return (
+                              e.brandId._id == brand &&
+                              e.categoryId._id == category
+                            );
+                        }
+                      }
+                      return true;
+                    })
+                    .slice(0, 4)
+                    .map((e) => (
+                      <div className="col-item col-xs-6 col-md-3">
+                        <div className="item-container">
+                          <div>
+                            <div
+                              className="max-1-line"
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "16px",
+                                margin: "8px",
+                              }}
+                              className="max-1-line"
+                            >
+                              {e.name}
+                            </div>
+                            <p className="max-1-line">by {e.brandId.name}</p>
+                          </div>
+                          <div className="photo">
+                            <div
+                              id={e._id}
+                              className="carousel slide"
+                              data-ride="carousel"
+                              data-interval="false"
+                            >
+                              <ol className="carousel-indicators">
+                                <li
+                                  data-target={`#${e._id}`}
+                                  data-slide-to={0}
+                                  className="active"
+                                />
+                                <li
+                                  data-target={`#${e._id}`}
+                                  data-slide-to={1}
+                                />
+                              </ol>
+                              <div className="carousel-inner" role="listbox">
+                                {e.images &&
+                                  e.images.map((image, index) => (
+                                    <div
+                                      style={{
+                                        backgroundImage: `url("/images/${image}")`,
+                                      }}
+                                      className={
+                                        index === 0 ? "item active" : "item"
+                                      }
+                                    ></div>
+                                  ))}
+                              </div>
+                            </div>
+                            <div className="vertical-icon">
+                              <a
+                                href="#"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  dispatch(
+                                    addToCart({
+                                      productId: e._id,
+                                      amount: 1,
+                                    })
+                                  );
+                                }}
+                              >
+                                <i className="fa fa-shopping-cart" />
+                              </a>
+                              <Link to={`/products/${e._id}`}>
+                                <i className="fa fa-search-plus" />
+                              </Link>
+                            </div>
+                          </div>
+                          <div className="price">
+                            <strong>
+                              {e.priceDiscount && (
+                                <del
+                                  style={{
+                                    fontSize: "16px",
+                                    fontWeight: 600,
+                                    marginRight: "8px",
+                                    color: "#FF0000",
+                                  }}
+                                >
+                                  {formatPrice(e.price)}₫
+                                </del>
+                              )}
+                              {e.priceDiscount ? (
+                                <ins>{formatPrice(e.priceDiscount)}₫</ins>
+                              ) : (
+                                <ins>{formatPrice(e.price)}₫</ins>
+                              )}
+                            </strong>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+              </div>
+              <div className="tab-pane fade" id="table"></div>
+              <div className="tab-pane fade" id="cabinet"></div>
+            </div>
+          )}
         </div>
         <div className="link-container">
           <Link className="link-to" to="/products">

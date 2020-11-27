@@ -70,7 +70,7 @@ const getAll = async (req, res) => {
           as: "replies",
         },
       },
-    ]).match({});
+    ]);
     console.log(data);
     res.json(data);
   } catch (err) {

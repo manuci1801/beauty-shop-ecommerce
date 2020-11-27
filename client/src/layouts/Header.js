@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Button, Modal, Steps, message, Radio, Divider } from "antd";
 import jwt_decode from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { GoogleLogin } from "react-google-login";
@@ -15,29 +16,57 @@ import {
 import setAuthToken from "../utils/setAuthToken";
 import toastNotify from "../utils/toastNotify";
 
+const { Step } = Steps;
+
 function Header({ props }) {
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+  // step survey
+  const [current, setCurrent] = useState(0);
+  const next = () => {
+    setCurrent(current + 1);
+  };
+  const prev = () => {
+    setCurrent(current - 1);
+  };
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  // user data input
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [email1, setEmail1] = useState("");
   const [password1, setPassword1] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-
   const [isShowPass, setIsShowPass] = useState(false);
-
   const [isForgotPassword, setIsForgotPassword] = useState(false);
 
-  const [user, isAuthenticated, cart] = useSelector(({ auth, products }) => [
+  // data of user's favorites
+  const [brand, setBrand] = useState("");
+  const [category, setCategory] = useState("");
+  const [price, setPrice] = useState("");
+
+  // get data from redux
+  const [
+    user,
+    isAuthenticated,
+    brands,
+    categories,
+    cart,
+  ] = useSelector(({ auth, products }) => [
     auth.user,
     auth.isAuthenticated,
+    products.brands,
+    products.categories,
     products.cart,
   ]);
-  const dispatch = useDispatch();
-  const location = useLocation();
 
+  // check is admin route
   const isAdminRoute = location.pathname.includes("/admin");
 
+  // reset state to initial
   function resetState() {
     setEmail("");
     setPassword("");
@@ -47,6 +76,133 @@ function Header({ props }) {
     setPhone("");
   }
 
+  const radioStyle = {
+    display: "block",
+    height: "30px",
+    lineHeight: "30px",
+  };
+
+  const steps = [
+    {
+      // title: "First",
+      content: (
+        <>
+          <div className="text-4xl my-8 font-bold">
+            Liệu đây có phải những hãng bạn đang quan tâm?
+          </div>
+          <Radio.Group
+            className="grid grid-cols-3 mb-8"
+            onChange={(e) => setBrand(e.target.value)}
+            value={brand}
+          >
+            {brands &&
+              brands.length > 0 &&
+              brands.slice(0, 6).map((e) => (
+                <div className="text-center">
+                  <Radio style={radioStyle} value={e._id}>
+                    {e.name}
+                  </Radio>
+                  <img className="h-32" src={`/images/${e.image}`} alt="" />
+                  <Divider />
+                </div>
+              ))}
+          </Radio.Group>
+        </>
+      ),
+    },
+    {
+      // title: "Second",
+      content: (
+        <>
+          <div className="text-4xl my-8 font-bold">
+            Một vài danh mục nổi bật của hãng, bạn có thể tham khảo!
+          </div>
+
+          <Radio.Group
+            className="grid grid-cols-2 text-4xl mb-8"
+            onChange={(e) => setCategory(e.target.value)}
+            value={category}
+          >
+            {categories &&
+              categories.slice(0, 6).map((e) => (
+                <Radio style={radioStyle} value={e._id}>
+                  {e.name}
+                </Radio>
+              ))}
+          </Radio.Group>
+        </>
+      ),
+    },
+    {
+      // title: "Third",
+      content: (
+        <>
+          <div className="text-4xl my-8 font-bold">
+            Tầm giá nào phù hợp cho bạn
+          </div>
+          <Radio.Group onChange={(e) => setPrice(e.target.value)} value={price}>
+            <Radio style={radioStyle} value="0-1000000">
+              Dưới 1 triệu
+            </Radio>
+            <Radio style={radioStyle} value="1000000-3000000">
+              Từ 1 triệu đến 3 triệu
+            </Radio>
+            <Radio style={radioStyle} value="3000000-5000000">
+              Từ 1 triệu đến 3 triệu
+            </Radio>
+            <Radio style={radioStyle} value="5000000-9999999999999">
+              Từ 5 triệu trở lên
+            </Radio>
+          </Radio.Group>
+        </>
+      ),
+    },
+    // {
+    //   // title: "Fourth",
+    //   content: (
+    //     <Radio.Group onChange={(e) => setBrand(e.target.value)} value={brand}>
+    //       <Radio style={radioStyle} value="hoa">
+    //         Nước hoa
+    //       </Radio>
+    //       <Radio style={radioStyle} value="son">
+    //         Son
+    //       </Radio>
+    //       <Radio style={radioStyle} value="phấn">
+    //         Phấn
+    //       </Radio>
+    //     </Radio.Group>
+    //   ),
+    // },
+    // {
+    //   // title: "Last",
+    //   content: (
+    //     <Radio.Group onChange={(e) => setBrand(e.target.value)} value={brand}>
+    //       <Radio style={radioStyle} value="hoa">
+    //         Nước hoa
+    //       </Radio>
+    //       <Radio style={radioStyle} value="son">
+    //         Son
+    //       </Radio>
+    //       <Radio style={radioStyle} value="phấn">
+    //         Phấn
+    //       </Radio>
+    //     </Radio.Group>
+    //   ),
+    // },
+  ];
+  // get user's favorite
+  useEffect(() => {
+    const favorites = localStorage.getItem("user-favorites");
+    if (!favorites) return setIsVisible(true);
+    const userKeys = JSON.parse(favorites);
+    if (userKeys && Object.keys(userKeys).length > 0) {
+      dispatch({
+        type: "SET_KEYS",
+        payload: userKeys,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     if (isShowPass) {
       const password = document.getElementById("password");
@@ -54,11 +210,15 @@ function Header({ props }) {
     }
   }, [isShowPass]);
 
+  // get auth token
   const getToken = () => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
       const decoded = jwt_decode(token.split(" ")[1]);
-      if (decoded.exp < new Date().getTime() / 1000) {
+      if (
+        decoded.exp < new Date().getTime() / 1000 ||
+        decoded.role === "ROLE_ADMIN"
+      ) {
         localStorage.removeItem("jwtToken");
       } else {
         setAuthToken(token);
@@ -157,6 +317,60 @@ function Header({ props }) {
     <>
       {!isAdminRoute ? (
         <header>
+          <Modal
+            style={{ top: "20px" }}
+            // title={!isUpdate ? "Thêm danh mục" : "Cập nhật danh mục"}
+            visible={isVisible}
+            maskClosable={false}
+            footer={null}
+            width="50%"
+            onCancel={() => {
+              setIsVisible(false);
+              // resetState();
+            }}
+            className="rounded-full"
+          >
+            <Steps current={current}>
+              {steps.map((item) => (
+                <Step key={item.title} title={item.title} />
+              ))}
+            </Steps>
+            <div className="steps-content">{steps[current].content}</div>
+            <div className="steps-action">
+              {current < steps.length - 1 && (
+                <Button type="primary" onClick={() => next()}>
+                  Next
+                </Button>
+              )}
+              {current === steps.length - 1 && (
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    dispatch({
+                      type: "SET_KEYS",
+                      payload: { brand, category, price },
+                    });
+                    localStorage.setItem(
+                      "user-favorites",
+                      JSON.stringify({ brand, category, price })
+                    );
+                    message.success(
+                      "Cám ơn bạn đã hoàn thành khảo sát của chúng tôi!"
+                    );
+                    setIsVisible(false);
+                  }}
+                >
+                  Done
+                </Button>
+              )}
+              {current > 0 && (
+                <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
+                  Previous
+                </Button>
+              )}
+            </div>
+          </Modal>
+
           <nav className="header-top">
             <span className="quick-mobile">
               <i className="fa fa-phone" /> 0985423664

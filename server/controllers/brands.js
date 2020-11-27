@@ -1,4 +1,5 @@
 const Brand = require("../models/Brand");
+const Product = require("../models/Product");
 
 // get all brands
 const getMany = async (req, res) => {
@@ -35,6 +36,13 @@ const addOne = async (req, res) => {
 // delete a brand by id
 const deleteOne = async (req, res) => {
   const { id } = req.params;
+
+  // check is any products exists  in brand
+  const product = await Product.findOne({ brandId: id });
+  if (product)
+    return res
+      .status(400)
+      .json({ msg: "Trong thương hiệu này đang có sản phẩm" });
 
   await Brand.findByIdAndDelete(id);
 

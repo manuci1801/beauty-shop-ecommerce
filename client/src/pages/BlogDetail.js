@@ -83,7 +83,12 @@ function BlogDetail() {
                   <img class="img-responsive" src={`/images/${blog.cover}`} />
                   <div style={{ fontSize: "16px", padding: "16px" }}>
                     {blog.content ? (
-                      <div style={{ textAlign: "justify", margin: "0 auto" }}>
+                      <div
+                        style={{
+                          textAlign: "justify",
+                          margin: "0 auto !important",
+                        }}
+                      >
                         {parseHTML(blog.content)}
                       </div>
                     ) : null}

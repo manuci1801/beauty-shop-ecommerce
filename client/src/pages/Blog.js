@@ -10,6 +10,8 @@ function Blog() {
   const [blogTags, setBlogTags] = useState([]);
 
   const [searchInput, setSearchInput] = useState("");
+  const [tag, setTag] = useState("");
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     document.title = "Blog";
@@ -85,7 +87,7 @@ function Blog() {
                 </button>
               </form>
             </li>
-            <li className="nav-title">
+            <li className="nav-title" onClick={() => setCategory("")}>
               <a data-toggle="display-all">
                 <h4>Danh mục bài viết</h4>
               </a>
@@ -99,6 +101,7 @@ function Blog() {
                     type="button"
                     // data-toggle="filter-display"
                     // data-target=".room"
+                    onClick={() => setCategory(category._id)}
                   >
                     <h4>{category.name}</h4>
                     <span className="number" />
@@ -119,7 +122,7 @@ function Blog() {
                 </li>
               ))}
 
-            <li className="nav-title">
+            <li className="nav-title" onClick={() => setTag("")}>
               <a data-toggle="display-all">
                 <h4>Blog Tag</h4>
               </a>
@@ -132,6 +135,7 @@ function Blog() {
                     type="button"
                     // data-toggle="filter-display"
                     // data-target=".dining-room"
+                    onClick={() => setTag(tag.tag)}
                   >
                     <h5>{tag.tag}</h5>
                   </button>
@@ -143,7 +147,11 @@ function Blog() {
               blogs.length > 0 &&
               blogs
                 .filter((blog) =>
-                  new RegExp(searchInput, "gi").test(blog.title)
+                  new RegExp(searchInput, "gi").test(blog.title) && tag
+                    ? blog.tags.includes(tag)
+                    : true && category
+                    ? blog.category._id === category
+                    : true
                 )
                 .map((blog) => (
                   <div className="col-item col-xs-12">
@@ -196,31 +204,6 @@ function Blog() {
                   </div>
                 ))}
           </div>
-          {/* <nav className="col-xs-12 col-sm-8 col-md-9">
-            <div className="pagination">
-              <a className="prev page-no" href="#">
-                <i className="fa fa-long-arrow-left" />
-              </a>
-              <a href="#" className="page-no">
-                1
-              </a>
-              <a href="#" className="page-no current">
-                2
-              </a>
-              <a href="#" className="page-no">
-                3
-              </a>
-              <a href="#" className="page-no">
-                4
-              </a>
-              <a href="#" className="page-no">
-                5
-              </a>
-              <a className="next page-no" href="#">
-                <i className="fa fa-long-arrow-right" />
-              </a>
-            </div>
-          </nav> */}
         </div>
       </div>
     </>

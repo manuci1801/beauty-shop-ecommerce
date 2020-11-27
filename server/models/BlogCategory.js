@@ -4,6 +4,7 @@ const blogCategorySchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
   },
   createdAt: {
     type: Date,

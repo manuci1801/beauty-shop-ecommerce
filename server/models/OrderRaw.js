@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const orderSchema = mongoose.Schema({
+const orderRawSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
@@ -59,7 +59,7 @@ const orderSchema = mongoose.Schema({
   },
   isCreatedByAdmin: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   createdAt: {
     type: Date,
@@ -67,4 +67,4 @@ const orderSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("orders", orderSchema);
+module.exports = mongoose.model("order-raws", orderRawSchema);

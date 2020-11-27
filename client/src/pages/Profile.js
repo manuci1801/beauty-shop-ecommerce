@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { DatePicker, Steps } from "antd";
+import Modal from "antd/lib/modal/Modal";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import moment from "moment";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { setCurrentUser } from "../redux/actions/auth";
 import { formatDate } from "../utils/formatDate";
 import formatPrice from "../utils/formatPrice";
-import { login, logout, setCurrentUser } from "../redux/actions/auth";
-import {
-  getBrands,
-  getCategories,
-  getProducts,
-} from "../redux/actions/products";
-import { DatePicker } from "antd";
 import setAuthToken from "../utils/setAuthToken";
-import { toast } from "react-toastify";
 import toastNotify from "../utils/toastNotify";
+
+const { Step } = Steps;
 
 function Profile() {
   const dispatch = useDispatch();
@@ -41,6 +38,11 @@ function Profile() {
   const [isAddressPaymentDefault, setIsAddressPaymentDefault] = useState(false);
   const [addressUpdate, setAddressUpdate] = useState({});
 
+  // show order histories
+  const [visible, setVisible] = useState(false);
+  const [histories, setHistories] = useState([]);
+
+  // pagination
   const [page, setPage] = useState(0);
 
   const [user, isAuthenticated] = useSelector(({ auth }) => [
@@ -219,6 +221,26 @@ function Profile() {
 
   return (
     <>
+      <Modal
+        style={{ top: "30px" }}
+        visible={histories.length > 0 ? visible : false}
+        maskClosable={false}
+        footer={null}
+        width="50%"
+        onCancel={() => {
+          setVisible(false);
+        }}
+      >
+        <Steps progressDot current={histories.length} direction="vertical">
+          {histories.map((e) => (
+            <Step
+              title={e.name}
+              subTitle={formatDate(e.createdAt)}
+              description={e.description}
+            />
+          ))}
+        </Steps>
+      </Modal>
       <button
         type="button"
         className="navbar-toggle side-nav-toggle collapsed"
@@ -352,23 +374,78 @@ function Profile() {
                                 </td>
                                 {e.status === "pending" ? (
                                   <td className="order-status out-stock">
-                                    Chờ xử lý
+                                    Đang xử lý
+                                    <a
+                                      className="text-blue-800 ml-2"
+                                      onClick={() => {
+                                        if (e.histories.length > 0) {
+                                          setVisible(true);
+                                          setHistories(e.histories);
+                                        }
+                                      }}
+                                    >
+                                      Xem lịch sử
+                                    </a>
                                   </td>
                                 ) : e.status === "packed" ? (
                                   <td className="order-status order-closed">
                                     Đã đóng
+                                    <a
+                                      className="text-blue-800 ml-2"
+                                      onClick={() => {
+                                        if (e.histories.length > 0) {
+                                          setVisible(true);
+                                          setHistories(e.histories);
+                                        }
+                                      }}
+                                    >
+                                      Xem lịch sử
+                                    </a>
                                   </td>
                                 ) : e.status === "delivered" ? (
                                   <td className="order-status in-stock">
                                     Đã chuyển đi
+                                    <a
+                                      className="text-blue-800 ml-2"
+                                      onClick={() => {
+                                        if (e.histories.length > 0) {
+                                          setVisible(true);
+                                          setHistories(e.histories);
+                                        }
+                                      }}
+                                    >
+                                      Xem lịch sử
+                                    </a>
                                   </td>
                                 ) : e.status === "success" ? (
                                   <td className="order-status in-stock">
                                     Đã chuyển đi
+                                    <a
+                                      className="text-blue-800 ml-2"
+                                      onClick={() => {
+                                        if (e.histories.length > 0) {
+                                          setVisible(true);
+                                          setHistories(e.histories);
+                                        }
+                                      }}
+                                    >
+                                      Xem lịch sử
+                                    </a>
                                   </td>
                                 ) : e.status === "cancel" ? (
                                   <td className="order-status order-canceled">
                                     Đã hủy
+                                    <a
+                                      className="text-blue-800 ml-2"
+                                      onClick={() => {
+                                        if (e.histories.length > 0) {
+                                          setVisible(true);
+                                          setHistories(e.histories);
+                                        }
+                                      }}
+                                    >
+                                      Xem lịch sử
+                                    </a>
                                   </td>
                                 ) : null}
                               </tr>
@@ -453,7 +530,7 @@ function Profile() {
                             }}
                             defaultValue={
                               birthdayUpdate
-                                ? moment(birthdayUpdate, "DD?MM/YYYY")
+                                ? moment(birthdayUpdate, "DD/MM/YYYY")
                                 : ""
                             }
                             onChange={(date, dateString) =>
@@ -705,22 +782,77 @@ function Profile() {
                               {e.status === "pending" ? (
                                 <td className="order-status out-stock">
                                   Chờ xử lý
+                                  <a
+                                    className="text-blue-800 ml-2"
+                                    onClick={() => {
+                                      if (e.histories.length > 0) {
+                                        setVisible(true);
+                                        setHistories(e.histories);
+                                      }
+                                    }}
+                                  >
+                                    Xem lịch sử
+                                  </a>
                                 </td>
                               ) : e.status === "packed" ? (
                                 <td className="order-status order-closed">
                                   Đã đóng
+                                  <a
+                                    className="text-blue-800 ml-2"
+                                    onClick={() => {
+                                      if (e.histories.length > 0) {
+                                        setVisible(true);
+                                        setHistories(e.histories);
+                                      }
+                                    }}
+                                  >
+                                    Xem lịch sử
+                                  </a>
                                 </td>
                               ) : e.status === "delivered" ? (
                                 <td className="order-status in-stock">
                                   Đã chuyển đi
+                                  <a
+                                    className="text-blue-800 ml-2"
+                                    onClick={() => {
+                                      if (e.histories.length > 0) {
+                                        setVisible(true);
+                                        setHistories(e.histories);
+                                      }
+                                    }}
+                                  >
+                                    Xem lịch sử
+                                  </a>
                                 </td>
                               ) : e.status === "success" ? (
                                 <td className="order-status in-stock">
                                   Đã chuyển đi
+                                  <a
+                                    className="text-blue-800 ml-2"
+                                    onClick={() => {
+                                      if (e.histories.length > 0) {
+                                        setVisible(true);
+                                        setHistories(e.histories);
+                                      }
+                                    }}
+                                  >
+                                    Xem lịch sử
+                                  </a>
                                 </td>
                               ) : e.status === "cancel" ? (
                                 <td className="order-status order-canceled">
                                   Đã hủy
+                                  <a
+                                    className="text-blue-800 ml-2"
+                                    onClick={() => {
+                                      if (e.histories.length > 0) {
+                                        setVisible(true);
+                                        setHistories(e.histories);
+                                      }
+                                    }}
+                                  >
+                                    Xem lịch sử
+                                  </a>
                                 </td>
                               ) : null}
                             </tr>

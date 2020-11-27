@@ -208,6 +208,7 @@ function Users({ users, addUser, deleteUser }) {
         style={{ top: "20px" }}
         title={!isUpdate ? "Thêm mới người dùng" : "Cập nhật người dùng"}
         visible={isVisible}
+        maskClosable={false}
         footer={null}
         width="70%"
         onCancel={() => {

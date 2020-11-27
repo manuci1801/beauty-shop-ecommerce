@@ -20,6 +20,8 @@ import Orders from "../components/admin/Orders";
 import Discounts from "../components/admin/Discounts";
 import Coupons from "../components/admin/Coupons";
 import Blogs from "../components/admin/Blogs";
+import OrdersRaw from "../components/admin/OrdersRaw";
+import OrdersCOD from "../components/admin/OrdersCOD";
 
 function Admin() {
   const { SubMenu } = Menu;
@@ -97,6 +99,25 @@ function Admin() {
     setUsers(users.filter((u) => u._id != id));
   };
 
+  const handleOnAddOrder = () => {
+    setCurrentTab("orders-raw");
+  };
+
+  const addOrder = (order) => {
+    setOrders([order, ...orders]);
+    setCurrentTab("orders");
+  };
+
+  const updateOrders = (order) => {
+    const idx = orders.findIndex((e) => e._id === order._id);
+    console.log(idx);
+    setOrders([
+      ...orders.slice(0, idx),
+      order,
+      ...orders.slice(idx + 1, orders.length),
+    ]);
+  };
+
   const bodyContainer =
     currentTab === "statistical" ? (
       <Dashboard
@@ -130,7 +151,28 @@ function Admin() {
     ) : currentTab === "contacts" ? (
       <Contacts contacts={contacts} deleteContact={deleteContact} />
     ) : currentTab === "orders" ? (
-      <Orders orders={orders} />
+      <Orders
+        orders={orders}
+        products={products}
+        handleOnAddOrder={handleOnAddOrder}
+        updateOrders={updateOrders}
+      />
+    ) : currentTab === "orders-raw" ? (
+      <OrdersRaw products={products} addOrder={addOrder} />
+    ) : currentTab === "orders-cod" ? (
+      <OrdersCOD
+        orders={orders.filter((e) => e.orderType === "COD")}
+        products={products}
+        handleOnAddOrder={handleOnAddOrder}
+        updateOrders={updateOrders}
+      />
+    ) : currentTab === "orders-vnpay" ? (
+      <OrdersCOD
+        orders={orders.filter((e) => e.orderType === "VNPAY")}
+        products={products}
+        handleOnAddOrder={handleOnAddOrder}
+        updateOrders={updateOrders}
+      />
     ) : currentTab === "discounts" ? (
       <Discounts
         brands={brands}
@@ -193,6 +235,9 @@ function Admin() {
               title="Quản lý đơn hàng"
             >
               <Menu.Item key="orders">Danh sách đơn hàng</Menu.Item>
+              <Menu.Item key="orders-raw">Đơn hàng nháp</Menu.Item>
+              <Menu.Item key="orders-cod">Đơn hàng COD</Menu.Item>
+              <Menu.Item key="orders-vnpay">Đơn hàng VNPAY</Menu.Item>
             </SubMenu>
             <SubMenu
               key="promotion-management"

@@ -9,6 +9,7 @@ const commentSchema = mongoose.Schema({
   title: {
     type: String,
     required: true,
+    trim: true,
   },
   cover: {
     type: String,

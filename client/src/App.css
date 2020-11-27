@@ -4010,3 +4010,7 @@ button.save-change:hover {
   background-repeat: no-repeat;
   background-position: center center;
 }
+
+img {
+  margin: 0 auto;
+}

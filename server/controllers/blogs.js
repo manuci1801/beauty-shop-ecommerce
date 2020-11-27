@@ -101,8 +101,8 @@ const getAll = async (req, res) => {
   try {
     const blogs = await Blog.find()
       .sort({ createdAt: -1 })
-      .populate("author", ["name"])
-      .populate("category", ["name"]);
+      .populate("author", ["_id", "name"])
+      .populate("category", ["_id", "name"]);
 
     res.json(blogs);
     // await newBlog.save();

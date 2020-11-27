@@ -284,6 +284,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
         style={{ top: "20px" }}
         title={!isUpdate ? "Add a new product" : "Update product"}
         visible={isVisible}
+        maskClosable={false}
         footer={null}
         width="70%"
         onCancel={() => {

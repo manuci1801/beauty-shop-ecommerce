@@ -1,11 +1,12 @@
-import { SET_CURRENT_USER } from '../types'
+import { SET_CURRENT_USER, SET_KEYS } from "../types";
 
-import isEmpty from '../../utils/isEmpty'
+import isEmpty from "../../utils/isEmpty";
 
 const initialState = {
   isAuthenticated: false,
-  user: {}
-}
+  user: {},
+  keys: {},
+};
 
 export default function (state = initialState, action) {
   switch (action.type) {
@@ -13,9 +14,14 @@ export default function (state = initialState, action) {
       return {
         ...state,
         isAuthenticated: !isEmpty(action.payload),
-        user: action.payload
-      }
+        user: action.payload,
+      };
+    case SET_KEYS:
+      return {
+        ...state,
+        keys: action.payload,
+      };
     default:
-      return state
+      return state;
   }
 }

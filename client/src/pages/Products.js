@@ -310,14 +310,14 @@ function Products() {
                     </button>
                   </form>
                 </li>
-                <li className="nav-title">
+                <li className="nav-title" onClick={() => setCategory("")}>
                   <a data-toggle="display-all">
                     <h4>Danh mục sản phẩm</h4>
                   </a>
                 </li>
                 {categories &&
                   categories.map((category) => (
-                    <li>
+                    <li className="text-2xl">
                       <button
                         className={
                           categoryFilter == category._id

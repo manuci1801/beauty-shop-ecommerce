@@ -1,3 +1,4 @@
+const Product = require("../models/Product");
 const SubCategory = require("../models/Subcategory");
 const Subcategory = require("../models/Subcategory");
 
@@ -52,6 +53,13 @@ const addOne = async (req, res) => {
 // delete a category by id
 const deleteOne = async (req, res) => {
   const { id } = req.params;
+
+  // check is any products exists  in subcategory
+  const product = await Product.findOne({ subcategoryId: id });
+  if (product)
+    return res
+      .status(400)
+      .json({ msg: "Trong danh mục phụ này đang có sản phẩm" });
 
   await SubCategory.findByIdAndDelete(id);
 

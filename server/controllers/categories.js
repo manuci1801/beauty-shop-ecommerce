@@ -1,4 +1,5 @@
 const Category = require("../models/Category");
+const Product = require("../models/Product");
 
 // get all categories
 const getMany = async (req, res) => {
@@ -47,11 +48,17 @@ const addOne = async (req, res) => {
 const deleteOne = async (req, res) => {
   const { id } = req.params;
 
+  const product = await Product.findOne({ categoryId: id });
+
+  if (product)
+    return res.status(400).json({ msg: "Trong danh mục này đang có sản phẩm" });
+
   await Category.findByIdAndDelete(id);
 
   res.json({ success: true });
 };
 
+// update category by id
 const updateOne = async (req, res) => {
   try {
     const { id } = req.params;

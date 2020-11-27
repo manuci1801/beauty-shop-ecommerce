@@ -40,7 +40,10 @@ function getDiscountPrice(products, discounts) {
 // get all products
 const getMany = async (req, res) => {
   try {
-    const discounts = await Discount.find().lean();
+    const discounts = await Discount.find({
+      startAt: { $lt: new Date() },
+      $or: [{ endAt: null }, { endAt: { $gte: new Date() } }],
+    }).lean();
     const products = await Product.find()
       .populate("brandId", ["_id", "name"])
       .populate("categoryId", ["_id", "name"])

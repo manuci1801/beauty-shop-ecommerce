@@ -12,7 +12,7 @@ const fileType =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
 const fileExtension = ".xlsx";
 
-function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
+function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
   const { TabPane } = Tabs;
 
   const [currentTab, setCurrentTab] = useState("orders-all");
@@ -70,12 +70,21 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
       dataIndex: "stt",
       key: "stt",
       fixed: "left",
-      render: (_, record, index) => (
-        <a onClick={() => setOrderSelected(record)}>
-          {index + 1 + (pagination.current - 1) * pagination.pageSize}
-        </a>
-      ),
+      render: (_, __, index) =>
+        index + 1 + (pagination.current - 1) * pagination.pageSize,
     },
+    // {
+    //   title: "Người dùng",
+    //   dataIndex: "user",
+    //   key: "user",
+    //   render: (text) => (
+    //     <div style={{ fontWeight: 600 }}>
+    //       {text && text.name ? text.name : ""}
+    //       <br />
+    //       {text && text.email}
+    //     </div>
+    //   ),
+    // },
     {
       title: "Họ tên",
       dataIndex: "name",
@@ -90,15 +99,15 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
       title: "Sản phẩm",
       dataIndex: "products",
       key: "products",
-      render: (text, record) =>
+      render: (text) =>
         text.map((e, index) => (
-          <a onClick={() => setOrderSelected(record)}>
+          <div>
             <span style={{ fontSize: "20px", fontWeight: "800" }}>
               {e.amount}
             </span>
             {" x "}
             {e.productId.name}
-          </a>
+          </div>
         )),
     },
     {
@@ -259,11 +268,6 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
                   setPagination(_pagination)
                 }
                 scroll={{ x: "200%" }}
-                onRow={(record) => ({
-                  // onClick: () => {
-                  //   alert("1");
-                  // },
-                })}
               />
             </TabPane>
             <TabPane tab="Đang xử lý" key="orders-pending">
@@ -298,11 +302,6 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
                   setPagination(_pagination)
                 }
                 scroll={{ x: "200%" }}
-                onRow={(record) => ({
-                  onClick: () => {
-                    alert("1");
-                  },
-                })}
               />
             </TabPane>
             <TabPane tab="Đã đóng gói" key="orders-packed">
@@ -351,18 +350,14 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
             <TabPane tab="Bị hủy" key="orders-cancel">
               <Table
                 columns={columns}
+                dataSource={orders.filter((order) => order.status === "cancel")}
+                rowKey={(record) => record._id}
                 pagination={pagination}
                 // rowSelection={rowSelection}
                 onChange={(_pagination, filters, sorter) =>
                   setPagination(_pagination)
                 }
                 scroll={{ x: "200%" }}
-                onRow={(record) => ({
-                  onClick: () => {
-                    alert("1");
-                  },
-                })}
-                dataSource={orders.filter((order) => order.status === "cancel")}
               />
             </TabPane>
           </Tabs>
@@ -372,4 +367,4 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
   );
 }
 
-export default Orders;
+export default OrdersCOD;

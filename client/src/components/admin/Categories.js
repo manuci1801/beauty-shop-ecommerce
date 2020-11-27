@@ -34,11 +34,11 @@ function Categories({ categories, subcategories, dispatch }) {
   }
 
   const handleAddCategory = () => {
-    if (!name) {
+    if (!name.trim()) {
       return toastNotify("warn", "Tên không được để trống");
     }
 
-    if (!description) {
+    if (!description.trim()) {
       return toastNotify("warn", "Mô tả không được để trống");
     }
 
@@ -134,15 +134,31 @@ function Categories({ categories, subcategories, dispatch }) {
 
   const handleDelete = (id) => {
     if (currentTab == "categories") {
-      axios.delete(`/api/categories/${id}`).then((res) => {
-        dispatch(deleteCategory(id));
-        toastNotify("success", "Xóa thành công");
-      });
+      axios
+        .delete(`/api/categories/${id}`)
+        .then((res) => {
+          dispatch(deleteCategory(id));
+          toastNotify("success", "Xóa thành công");
+        })
+        .catch((err) => {
+          const { msg } = err.response.data;
+          if (msg) return toastNotify("warn", msg);
+
+          toastNotify("warn", "Có lỗi xảy ra");
+        });
     } else {
-      axios.delete(`/api/subcategories/${id}`).then((res) => {
-        dispatch(deleteSubcategory(id));
-        toastNotify("success", "Xóa thành công");
-      });
+      axios
+        .delete(`/api/subcategories/${id}`)
+        .then((res) => {
+          dispatch(deleteSubcategory(id));
+          toastNotify("success", "Xóa thành công");
+        })
+        .catch((err) => {
+          const { msg } = err.response.data;
+          if (msg) return toastNotify("warn", msg);
+
+          toastNotify("warn", "Có lỗi xảy ra");
+        });
     }
   };
 
@@ -267,6 +283,7 @@ function Categories({ categories, subcategories, dispatch }) {
         style={{ top: "20px" }}
         title={!isUpdate ? "Thêm danh mục" : "Cập nhật danh mục"}
         visible={isVisible}
+        maskClosable={false}
         footer={null}
         width="70%"
         onCancel={() => {
@@ -381,30 +398,25 @@ function Categories({ categories, subcategories, dispatch }) {
           </div>
         </form>
       </Modal>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingBottom: "8px",
+          borderBottom: "1px solid #999",
+        }}
+      >
+        <Button type="primary" size="large" onClick={() => setIsVisible(true)}>
+          Thêm
+        </Button>
+        <div style={{ display: "flex" }}>
+          <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+        </div>
+      </div>
 
       <Tabs defaultActiveKey={currentTab} onChange={callback}>
         <TabPane tab="Danh mục" key="categories">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingBottom: "8px",
-              borderBottom: "1px solid #999",
-            }}
-          >
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => setIsVisible(true)}
-            >
-              Thêm
-            </Button>
-            <div style={{ display: "flex" }}>
-              <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
-            </div>
-          </div>
-
           <Table
             columns={categoryColumns}
             dataSource={categories}
@@ -417,27 +429,6 @@ function Categories({ categories, subcategories, dispatch }) {
           />
         </TabPane>
         <TabPane tab="Danh mục phụ" key="subcategories">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingBottom: "8px",
-              borderBottom: "1px solid #999",
-            }}
-          >
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => setIsVisible(true)}
-            >
-              Thêm
-            </Button>
-            <div style={{ display: "flex" }}>
-              <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
-            </div>
-          </div>
-
           <Table
             columns={subcategoryColumns}
             dataSource={subcategories}
