@@ -30,6 +30,10 @@ function ProductDetail() {
       .catch((err) => console.log(err));
   }, [id]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   function addComment() {}
 
   return (
