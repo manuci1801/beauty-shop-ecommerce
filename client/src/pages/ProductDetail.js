@@ -389,7 +389,12 @@ function ProductDetail() {
                             />
                             <li data-target="#casiers" data-slide-to={1} />
                           </ol>
-                          <div className="carousel-inner" role="listbox">
+
+                          <Link
+                            to={`/products/${product._id}`}
+                            className="carousel-inner"
+                            role="listbox"
+                          >
                             {e.images &&
                               e.images.length > 0 &&
                               e.images.map((img, index) => (
@@ -402,7 +407,7 @@ function ProductDetail() {
                                   }}
                                 ></div>
                               ))}
-                          </div>
+                          </Link>
                         </div>
                         <div className="vertical-icon">
                           {/* <a>
