@@ -346,13 +346,17 @@ function Header({ props }) {
                 <Button
                   type="primary"
                   onClick={() => {
+                    let data = {};
+                    if (brand) data.brand = brand;
+                    if (category) data.category = category;
+                    if (price) data.price = price;
                     dispatch({
                       type: "SET_KEYS",
-                      payload: { brand, category, price },
+                      payload: data,
                     });
                     localStorage.setItem(
                       "user-favorites",
-                      JSON.stringify({ brand, category, price })
+                      JSON.stringify(data)
                     );
                     message.success(
                       "Cám ơn bạn đã hoàn thành khảo sát của chúng tôi!"
