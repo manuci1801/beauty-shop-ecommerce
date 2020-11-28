@@ -92,13 +92,21 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
       key: "products",
       render: (text, record) =>
         text.map((e, index) => (
-          <a onClick={() => setOrderSelected(record)}>
-            <span style={{ fontSize: "20px", fontWeight: "800" }}>
-              {e.amount}
-            </span>
-            {" x "}
-            {e.productId.name}
-          </a>
+          <div>
+            <a onClick={() => setOrderSelected(record)}>
+              <span style={{ fontSize: "20px", fontWeight: "800" }}>
+                {e.amount}
+              </span>
+              {" x "}
+              <span className=" italic">
+                {e.productId && e.productId.name ? (
+                  e.productId.name
+                ) : (
+                  <span className="text-red-600">Sản phẩm đã bị xóa</span>
+                )}
+              </span>
+            </a>
+          </div>
         )),
     },
     {

@@ -230,17 +230,21 @@ function Home() {
                         const { brand, category, price } = keys;
                         if (brand || category || price) {
                           if (price)
-                            return (
-                              e.brandId._id == brand &&
-                              e.categoryId._id == category &&
-                              e.price >= +price.split("-")[0] &&
-                              e.price <= +price.split("-")[1]
-                            );
+                            return brand
+                              ? e.brandId._id == brand
+                              : true && category
+                              ? e.categoryId._id == category
+                              : true && price
+                              ? e.price >= +price.split("-")[0]
+                              : true && price
+                              ? e.price <= +price.split("-")[1]
+                              : true;
                           else
-                            return (
-                              e.brandId._id == brand &&
-                              e.categoryId._id == category
-                            );
+                            return brand
+                              ? e.brandId._id == brand
+                              : true && category
+                              ? e.categoryId._id == category
+                              : true;
                         }
                       }
                       return true;
