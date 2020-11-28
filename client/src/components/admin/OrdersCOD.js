@@ -106,7 +106,13 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
               {e.amount}
             </span>
             {" x "}
-            {e.productId.name}
+            <span className=" italic">
+              {e.productId && e.productId.name ? (
+                e.productId.name
+              ) : (
+                <span className="text-red-600">Sản phẩm đã bị xóa</span>
+              )}
+            </span>
           </div>
         )),
     },

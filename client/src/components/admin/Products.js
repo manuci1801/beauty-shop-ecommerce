@@ -5,12 +5,15 @@ import { Button, Input, Modal, Table } from "antd";
 import axios from "axios";
 import parseHTML from "html-react-parser";
 import React, { useRef, useState } from "react";
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
 import {
   addProduct,
   deleteProduct,
   updateProduct,
 } from "../../redux/actions/products";
 import toastNotify from "../../utils/toastNotify";
+import { formatDate } from "../../utils/formatDate";
 
 function Products({ products, brands, categories, subcategories, dispatch }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -167,7 +170,16 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
     fileRef.current.value = null;
   };
 
-  console.log(products);
+  const exportToCSV = (csvData, fileName) => {
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
+    const ws = XLSX.utils.json_to_sheet(csvData);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension);
+  };
 
   const columns = [
     {
@@ -274,7 +286,14 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
           Thêm
         </Button>
         <div style={{ display: "flex" }}>
-          <Button type="primary" icon={<DownloadOutlined />} size="large">
+          <Button
+            onClick={() =>
+              exportToCSV(products, `products ${formatDate(new Date())}`)
+            }
+            type="primary"
+            icon={<DownloadOutlined />}
+            size="large"
+          >
             Xuất Excel
           </Button>
           <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
