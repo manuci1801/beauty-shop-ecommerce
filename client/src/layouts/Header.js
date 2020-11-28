@@ -346,22 +346,30 @@ function Header({ props }) {
                 <Button
                   type="primary"
                   onClick={() => {
-                    let data = {};
-                    if (brand) data.brand = brand;
-                    if (category) data.category = category;
-                    if (price) data.price = price;
-                    dispatch({
-                      type: "SET_KEYS",
-                      payload: data,
-                    });
-                    localStorage.setItem(
-                      "user-favorites",
-                      JSON.stringify(data)
-                    );
-                    message.success(
-                      "Cám ơn bạn đã hoàn thành khảo sát của chúng tôi!"
-                    );
-                    setIsVisible(false);
+                    if (brand || category || price) {
+                      let data = {};
+                      if (brand) data.brand = brand;
+                      if (category) data.category = category;
+                      if (price) data.price = price;
+                      if (Object.keys(data)) {
+                        dispatch({
+                          type: "SET_KEYS",
+                          payload: data,
+                        });
+                        localStorage.setItem(
+                          "user-favorites",
+                          JSON.stringify(data)
+                        );
+                        message.success(
+                          "Cám ơn bạn đã hoàn thành khảo sát của chúng tôi!"
+                        );
+                        setIsVisible(false);
+                      }
+                    } else {
+                      return message.warning(
+                        "Bạn vui lòng trả lời 1 trong các câu hỏi!"
+                      );
+                    }
                   }}
                 >
                   Done
