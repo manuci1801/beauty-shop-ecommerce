@@ -177,30 +177,32 @@ function OrdersRaw({ products, addOrder }) {
                 //   new RegExp(searchName, "gi").test(product.name)
                 // )
                 .map((product) => (
-                  <div value={product._id}>
-                    <div className="flex justify-between">
-                      <div className="w-1/2 flex justify-start">
-                        <img
-                          className="h-24"
-                          src={`/images/${product.images[0]}`}
-                          alt=""
-                        />
-                        <div className="my-auto ml-4">
-                          {product.name.length > 50
-                            ? `${product.name.slice(0, 50)}...`
-                            : product.name}
+                  <Option value={product.name}>
+                    <div>
+                      <div className="flex justify-between">
+                        <div className="w-1/2 flex justify-start">
+                          <img
+                            className="h-24"
+                            src={`/images/${product.images[0]}`}
+                            alt=""
+                          />
+                          <div className="my-auto ml-4">
+                            {product.name.length > 50
+                              ? `${product.name.slice(0, 50)}...`
+                              : product.name}
+                          </div>
+                        </div>
+                        <div className="w-1/2 flex justify-end text-right my-auto pl-24">
+                          <span className="flex-1">
+                            {product.amount} sản phẩm
+                          </span>
+                          <span className="flex-1">
+                            {formatPrice(product.price)}₫
+                          </span>
                         </div>
                       </div>
-                      <div className="w-1/2 flex justify-end text-right my-auto pl-24">
-                        <span className="flex-1">
-                          {product.amount} sản phẩm
-                        </span>
-                        <span className="flex-1">
-                          {formatPrice(product.price)}₫
-                        </span>
-                      </div>
                     </div>
-                  </div>
+                  </Option>
                 ))
             ) : (
               <Option value="">Chưa có sản phẩm nào</Option>
