@@ -25,19 +25,27 @@ function OrdersRaw({ products, addOrder }) {
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
 
-  async function handleAddProductsSelected(value) {
+  function handleAddProductsSelected(value) {
     let product = products.find((product) => product._id === value);
     let _product = productsSelected.find((product) => product._id === value);
     if (product && !_product) {
-      await _setProductsSelected([
+      _setProductsSelected([
         { productId: product._id, amount: 1 },
         ..._productsSelected,
       ]);
 
-      await setProductsSelected([product, ...productsSelected]);
+      setProductsSelected([product, ...productsSelected]);
 
       setSearchName("");
     }
+  }
+
+  function handleDeleteProductSelected(id) {
+    _setProductsSelected([
+      ..._productsSelected.filter((e) => e.productId !== id),
+    ]);
+
+    setProductsSelected([...productsSelected.filter((e) => e._id !== id)]);
   }
 
   function onBlur() {
@@ -146,6 +154,12 @@ function OrdersRaw({ products, addOrder }) {
                     )}
                     ₫
                   </span>
+                  <button
+                    className="flex-1"
+                    onClick={() => handleDeleteProductSelected(product._id)}
+                  >
+                    <i className="fa fa-trash-o" />
+                  </button>
                 </div>
               </div>
             ))}
