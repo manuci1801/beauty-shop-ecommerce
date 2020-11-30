@@ -8,7 +8,10 @@ router
   .get(discountController.getAll)
   .post(isAuth, isAdmin, discountController.addOne);
 
-router.route("/:id").delete(isAuth, isAdmin, discountController.deleteOne);
+router
+  .route("/:id")
+  .put(isAuth, isAdmin, discountController.updateOne)
+  .delete(isAuth, isAdmin, discountController.deleteOne);
 
 router.route("/admin").get(isAuth, isAdmin, discountController.getAllByAdmin);
 

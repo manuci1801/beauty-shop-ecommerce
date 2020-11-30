@@ -548,13 +548,24 @@ function Header({ props }) {
                         <>
                           <div className="input-field">
                             <input
-                              type="password"
+                              type={isShowPass ? "text" : "password"}
                               name="Password"
                               id="password"
                               placeholder="Mật khẩu"
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
                             />
+                          </div>
+                          <div className="input-field check-field">
+                            <input
+                              type="checkbox"
+                              id="remember"
+                              name="remember"
+                              checked={isShowPass}
+                              onChange={(e) => setIsShowPass(!isShowPass)}
+                            />
+                            <label htmlFor="remember">Hiển thị mật khẩu</label>
+                            <br />
                           </div>
                         </>
                       ) : null}
@@ -626,7 +637,7 @@ function Header({ props }) {
                       </div>
                       <div className="input-field">
                         <input
-                          type="password"
+                          type={isShowPass ? "text" : "password"}
                           name="Password"
                           id="password"
                           placeholder="Mật khẩu"

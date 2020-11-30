@@ -8,7 +8,10 @@ router
   .get(isAuth, isAdmin, couponController.getAll)
   .post(isAuth, isAdmin, couponController.addOne);
 
-router.route("/:id").delete(isAuth, isAdmin, couponController.deleteOne);
+router
+  .route("/:id")
+  .put(isAuth, isAdmin, couponController.updateOne)
+  .delete(isAuth, isAdmin, couponController.deleteOne);
 
 router.route("/check").post(couponController.checkValidCoupon);
 

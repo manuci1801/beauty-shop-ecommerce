@@ -93,9 +93,75 @@ const deleteOne = async (req, res) => {
   res.json({ success: true });
 };
 
+const updateOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const {
+      discountRate,
+      discountPrice,
+      applyFor,
+      id: applyForId,
+      startAt,
+      endAt,
+    } = req.body;
+    console.log(req.body);
+    let data = {};
+    if (startAt) {
+      const _startAt = startAt.split("/");
+      data = {
+        ...data,
+        startAt:
+          _startAt.length > 1
+            ? new Date(_startAt[2], _startAt[1] - 1, _startAt[0])
+            : new Date(startAt),
+      };
+    }
+    if (endAt) {
+      const _endAt = endAt.split("/");
+      data = {
+        ...data,
+        endAt:
+          _endAt.length > 1
+            ? new Date(_endAt[2], _endAt[1] - 1, _endAt[0])
+            : new Date(endAt),
+      };
+    }
+    if (!discountRate) {
+      data = { ...data, discountPrice, discountRate: "", applyFor };
+    }
+    if (!discountPrice) {
+      data = { ...data, discountRate, discountPrice: "", applyFor };
+    }
+    if (applyFor === "category")
+      data = { ...data, brand: null, category: applyForId, subcategory: null };
+    if (applyFor === "subcategory")
+      data = { ...data, brand: null, category: null, subcategory: applyForId };
+    if (applyFor === "brand")
+      data = { ...data, brand: applyForId, category: null, subcategory: null };
+    if (applyFor === "all")
+      data = { ...data, brand: null, category: null, subcategory: null };
+
+    const discount = await Discount.findByIdAndUpdate(id, data, {
+      new: true,
+      upsert: true,
+    });
+    const _discount = await Discount.findById(discount._id)
+      .populate("category", "name")
+      .populate("brand", "name")
+      .populate("subcategory", "name");
+
+    res.json(_discount);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
 module.exports = {
   addOne,
   getAll,
   deleteOne,
   getAllByAdmin,
+  updateOne,
 };

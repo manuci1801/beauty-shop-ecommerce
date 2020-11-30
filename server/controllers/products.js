@@ -212,7 +212,7 @@ const getById = async (req, res) => {
       .populate("subcategoryId", ["_id", "name"])
       .lean();
 
-    let _product = { ...product, comments: _comments };
+    let _product = { ...product };
 
     const discounts = await Discount.find().lean();
 
@@ -234,7 +234,7 @@ const getById = async (req, res) => {
         : product.price -
           Math.floor((product.price * _isDiscount.discountRate) / 100);
 
-      _product = { ...product, priceDiscount };
+      _product = { ..._product, priceDiscount };
     }
 
     const productsRelated = await Product.find({
@@ -247,9 +247,8 @@ const getById = async (req, res) => {
       .populate("categoryId", ["_id", "name"])
       .populate("subcategoryId", ["_id", "name"])
       .lean();
-    // console.log(comments);
-    // console.log(_product);
-    res.json({ product: _product, productsRelated });
+
+    res.json({ product: _product, comments: _comments, productsRelated });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);

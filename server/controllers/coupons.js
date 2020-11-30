@@ -27,33 +27,130 @@ const generateUniqueCoupon = () => {
 const addOne = async (req, res) => {
   try {
     const {
-      name,
+      code,
       description,
       usableCount,
       discountRate,
       discountPrice,
+      startAt,
+      endAt,
+      isAutoGenerate,
     } = req.body;
 
-    let code = await generateUniqueCoupon();
-
-    if (!Boolean(discountPrice) && !Boolean(discountRate))
+    if (!discountPrice && !discountRate)
       return res.status(400).json({
         field: "discount",
         message: "discount rate or price is required",
       });
 
-    let data = { name, usableCount };
+    let data = { usableCount };
 
-    if (Boolean(description)) data = { ...data, description };
-    if (Boolean(discountRate)) data = { ...data, discountRate };
-    else if (Boolean(discountPrice)) data = { ...data, discountPrice };
+    if (description) data = { ...data, description };
+    if (discountRate) data = { ...data, discountRate };
+    else if (discountPrice) data = { ...data, discountPrice };
+    if (startAt) {
+      const _startAt = startAt.split("/");
+      data = {
+        ...data,
+        startAt:
+          _startAt.length > 1
+            ? new Date(_startAt[2], _startAt[1] - 1, _startAt[0])
+            : new Date(startAt),
+      };
+    }
+    if (endAt) {
+      const _endAt = endAt.split("/");
+      data = {
+        ...data,
+        endAt:
+          _endAt.length > 1
+            ? new Date(_endAt[2], _endAt[1] - 1, _endAt[0])
+            : new Date(endAt),
+      };
+    }
+    let codeGen;
+    if (isAutoGenerate) codeGen = await generateUniqueCoupon();
+    else codeGen = code;
 
-    const newCoupon = new Coupon({ ...data, code });
+    const newCoupon = new Coupon({ ...data, code: codeGen });
     await newCoupon.save();
 
     res.json(newCoupon);
   } catch (err) {
     console.log(err);
+    if (err.code === 11000) {
+      let key = Object.keys(err.keyValue)[0];
+      if (key) {
+        return res.status(400).json({ [key]: "Mã code đã tồn tại" });
+      }
+    }
+    return res.status(500).json(err);
+  }
+};
+
+const updateOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const {
+      code,
+      description,
+      usableCount,
+      discountRate,
+      discountPrice,
+      startAt,
+      endAt,
+      isAutoGenerate,
+    } = req.body;
+
+    if (!discountPrice && !discountRate)
+      return res.status(400).json({
+        field: "discount",
+        message: "discount rate or price is required",
+      });
+
+    let data = { usableCount };
+
+    if (description) data = { ...data, description };
+    if (discountRate) data = { ...data, discountRate };
+    else if (discountPrice) data = { ...data, discountPrice };
+    if (startAt) {
+      const _startAt = startAt.split("/");
+      data = {
+        ...data,
+        startAt:
+          _startAt.length > 1
+            ? new Date(_startAt[2], _startAt[1] - 1, _startAt[0])
+            : new Date(startAt),
+      };
+    }
+    if (endAt) {
+      const _endAt = endAt.split("/");
+      data = {
+        ...data,
+        endAt:
+          _endAt.length > 1
+            ? new Date(_endAt[2], _endAt[1] - 1, _endAt[0])
+            : new Date(endAt),
+      };
+    }
+    let codeGen;
+    if (isAutoGenerate) codeGen = await generateUniqueCoupon();
+    else codeGen = code;
+
+    data = { ...data, code: codeGen };
+
+    const coupon = await Coupon.findByIdAndUpdate(id, data, { new: true });
+
+    res.json(coupon);
+  } catch (err) {
+    console.log(err);
+    if (err.code === 11000) {
+      let key = Object.keys(err.keyValue)[0];
+      if (key) {
+        return res.status(400).json({ [key]: "Mã code đã tồn tại" });
+      }
+    }
     return res.status(500).json(err);
   }
 };
@@ -62,15 +159,14 @@ const checkValidCoupon = async (req, res) => {
   try {
     const { code } = req.body;
 
-    if (!Boolean(code))
+    if (!code)
       return res
         .status(400)
         .json({ field: "code", message: "code is required" });
     else {
-      const coupon = await Coupon.findOne({ $or: [{ code }, { name: code }] });
+      const coupon = await Coupon.findOne({ code });
 
-      if (Boolean(coupon) && coupon.usableCount > 0)
-        return res.json({ coupon });
+      if (coupon && coupon.usableCount > 0) return res.json({ coupon });
       else
         return res.status(400).json({ field: "code", message: "code invalid" });
     }
@@ -104,4 +200,5 @@ module.exports = {
   checkValidCoupon,
   getAll,
   deleteOne,
+  updateOne,
 };

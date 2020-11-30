@@ -7,13 +7,18 @@ import { addToCart } from "../redux/actions/products";
 import parseHTML from "html-react-parser";
 import toastNotify from "../utils/toastNotify";
 import formatPrice from "../utils/formatPrice";
+import { formatDate } from "../utils/formatDate";
 
 function ProductDetail() {
   let { id } = useParams();
 
   const [product, setProduct] = useState({});
   const [productsRelated, setProductsRelated] = useState([]);
+  const [comments, setComments] = useState([]);
   const [amount, setAmount] = useState(1);
+
+  // comment
+  const [comment, setComment] = useState("");
 
   const dispatch = useDispatch();
 
@@ -25,6 +30,7 @@ function ProductDetail() {
       .get(`/api/products/${id}`)
       .then((res) => {
         setProduct(res.data.product);
+        setComments(res.data.comments);
         setProductsRelated(res.data.productsRelated);
       })
       .catch((err) => console.log(err));
@@ -34,7 +40,16 @@ function ProductDetail() {
     window.scrollTo(0, 0);
   }, [id]);
 
-  function addComment() {}
+  function addComment() {
+    axios
+      .post("/api/comments", { content: comment, productId: id })
+      .then((res) => {
+        setComment("");
+        toastNotify("success", "Đã gửi bình luận");
+        setComments([...comments, res.data]);
+      })
+      .catch((err) => console.log(err));
+  }
 
   return (
     <>
@@ -267,38 +282,41 @@ function ProductDetail() {
                   <p>{parseHTML(product.description)}</p>
                 </div>
                 <div id="tab-reviews" className="tab-pane fade">
-                  <div className="comments-section">
-                    <ul className="comments-list">
-                      {product.comments &&
-                        product.comments.length > 0 &&
-                        product.comments.map((e) => (
-                          <li className="comment">
-                            <div className="comment-wrap">
-                              <div className="comment-img">
-                                <img src="/img/feedback_2.jpg" />
-                              </div>
-                              <div className="comment-block">
-                                <div className="comment-header">
-                                  <span className="comment-author">
-                                    <a href="#">{e.user.name}</a>
-                                  </span>
-                                  {/* <span>2 tuần trước </span>
-                                  <span className="pull-right">
-                                    <a className="comment-reply-link" href="#">
-                                      <i className="fa fa-reply" />
-                                      <span className="hidden-sm">
-                                        {" "}
-                                        Trả lời
-                                      </span>
-                                    </a>
-                                  </span> */}
+                  {isAuthenticated ? (
+                    <div className="comments-section">
+                      <ul className="comments-list">
+                        {comments &&
+                          comments.map((e) => (
+                            <li className="comment">
+                              <div className="comment-wrap">
+                                <div className="comment-img">
+                                  <img src="/img/user-default.jpg" />
                                 </div>
-                                <div className="comment-content">
-                                  <p>{e.content}</p>
+                                <div className="comment-block">
+                                  <div className="comment-header">
+                                    <span className="comment-author">
+                                      <a href="#">{e.user.name}</a>
+                                    </span>
+                                    <span>{formatDate(e.createdAt)}</span>
+                                    {/* <span className="pull-right">
+                                      <a
+                                        className="comment-reply-link"
+                                        href="#"
+                                      >
+                                        <i className="fa fa-reply" />
+                                        <span className="hidden-sm">
+                                          {" "}
+                                          Trả lời
+                                        </span>
+                                      </a>
+                                    </span> */}
+                                  </div>
+                                  <div className="comment-content">
+                                    <p>{e.content}</p>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            {/* <ul className="children">
+                              {/* <ul className="children">
                               {e.replies &&
                                 e.replies.length > 0 &&
                                 e.replies.map((reply) => (
@@ -335,60 +353,43 @@ function ProductDetail() {
                                 ))}
                             </ul>
                           */}
-                          </li>
-                        ))}
-                    </ul>
-                    <div className="respond-wrap">
-                      <h3 className="comment-reply-title">Viết bình luận</h3>
-                      <form className="comment-form">
-                        <div className="row">
-                          <div className="comment-form-author col-md-6">
-                            <input
-                              id="author"
-                              name="author"
-                              type="text"
-                              placeholder="Họ tên *"
-                              defaultValue
-                              size={30}
-                            />
-                          </div>
-                          <div className="comment-form-email col-md-6">
-                            <input
-                              id="email"
-                              name="email"
-                              type="text"
-                              placeholder="Email *"
-                              defaultValue
-                              size={30}
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="comment-form-comment col-md-12">
-                            <textarea
-                              placeholder="Bình luận *"
-                              id="comment"
-                              name="comment"
-                              cols={40}
-                              rows={6}
-                              defaultValue={""}
-                            />
-                          </div>
-                          <div className="col-md-12 submit-wrap">
-                            <div className="form-submit">
-                              <input
-                                name="submit"
-                                type="submit"
-                                id="submit"
-                                className="submit"
-                                defaultValue="Gửi bình luận"
+                            </li>
+                          ))}
+                      </ul>
+                      <div className="respond-wrap">
+                        <h3 className="comment-reply-title">Viết bình luận</h3>
+                        <form className="comment-form">
+                          <div className="row">
+                            <div className="comment-form-comment col-md-12">
+                              <textarea
+                                placeholder="Bình luận *"
+                                id="comment"
+                                name="comment"
+                                cols={40}
+                                rows={6}
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
                               />
                             </div>
+                            <div
+                              className="col-md-12 submit-wrap"
+                              onClick={() => {
+                                if (!comment.trim()) return;
+                                addComment();
+                              }}
+                              style={{ cursor: "pointer" }}
+                            >
+                              <div className="form-submit">Gửi bình luận</div>
+                            </div>
                           </div>
-                        </div>
-                      </form>
+                        </form>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="text-4xl text-blue-600 mt-8 text-center">
+                      Bạn cần đăng nhập để thực hiện tính năng này
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -15,9 +15,10 @@ function Discounts({ brands, categories, subcategories }) {
   const [applyId, setApplyId] = useState("");
   const [discount, setDiscount] = useState("");
   const [discountType, setDiscountType] = useState("price");
-  const [startAt, setStartAt] = useState(moment(new Date(), "DD/MM/YYYY"));
-  const [endAt, setEndAt] = useState(moment(new Date(), "DD/MM/YYYY"));
+  const [startAt, setStartAt] = useState(moment().format("DD/MM/YYYY"));
+  const [endAt, setEndAt] = useState(moment().format("DD/MM/YYYY"));
 
+  const [discountId, setDiscountId] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
 
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
@@ -42,8 +43,10 @@ function Discounts({ brands, categories, subcategories }) {
     setApplyId("");
     setDiscount("");
     setDiscountType("price");
-    setStartAt("");
-    setEndAt("");
+    setStartAt(moment().format("DD/MM/YYYY"));
+    setEndAt(moment().format("DD/MM/YYYY"));
+    setDiscountId("");
+    setIsUpdate(false);
   }
 
   const handleAdd = () => {
@@ -60,8 +63,9 @@ function Discounts({ brands, categories, subcategories }) {
           else if (discountType === "price") data.discountPrice = discount;
           axios.post("/api/discounts", data).then((res) => {
             resetState();
-            setIsVisible(false);
             setDiscounts([...discounts, res.data]);
+            toastNotify("success", "Thêm thành công");
+            setIsVisible(false);
           });
         }
       } else {
@@ -78,8 +82,9 @@ function Discounts({ brands, categories, subcategories }) {
             else if (discountType === "price") data.discountPrice = discount;
             axios.post("/api/discounts", data).then((res) => {
               resetState();
-              setIsVisible(false);
               setDiscounts([...discounts, res.data]);
+              toastNotify("success", "Thêm thành công");
+              setIsVisible(false);
             });
           }
         }
@@ -87,7 +92,84 @@ function Discounts({ brands, categories, subcategories }) {
     }
   };
 
-  const handleUpdate = () => {};
+  const showDataUpdate = (record) => {
+    console.log(record);
+    setApplyFor(record.applyFor);
+    setApplyId(
+      record.applyFor === "category"
+        ? record.category._id
+        : record.applyFor === "subcategory"
+        ? record.subcategory._id
+        : record.applyFor === "brand"
+        ? record.brand._id
+        : ""
+    );
+    setDiscount(
+      record.discountRate ? record.discountRate + "" : record.discountPrice + ""
+    );
+    setDiscountType(record.discountRate ? "rate" : "price");
+    setStartAt(moment(new Date(record.startAt), "DD/MM/YYYY"));
+    setEndAt(record.endAt ? moment(new Date(record.endAt), "DD/MM/YYYY") : "");
+    setDiscountId(record._id);
+    setIsUpdate(true);
+    setIsVisible(true);
+  };
+  const handleUpdate = () => {
+    if (!applyFor) return toastNotify("warn", "Chọn loại áp dụng");
+    else {
+      if (applyFor === "all") {
+        if (!discount)
+          return toastNotify("warn", "Chi tiết khuyến mãi không được để trống");
+        else {
+          let data = { applyFor };
+          if (startAt) data.startAt = startAt;
+          if (endAt) data.endAt = endAt;
+          if (discountType === "rate") data.discountRate = discount;
+          else if (discountType === "price") data.discountPrice = discount;
+          axios.put(`/api/discounts/${discountId}`, data).then((res) => {
+            let idx = discounts.findIndex((e) => e._id === discountId);
+            if (idx >= 0) {
+              resetState();
+              setDiscounts([
+                ...discounts.slice(0, idx),
+                res.data,
+                ...discounts.slice(idx + 1, discounts.length),
+              ]);
+              toastNotify("success", "Cập nhật thành công");
+              setIsVisible(false);
+            }
+          });
+        }
+      } else {
+        if (!discount)
+          return toastNotify("warn", "Chi tiết khuyến mãi không được để trống");
+        else {
+          if (!applyId)
+            return toastNotify("warn", "Chọn loại áp dụng chi tiết");
+          else {
+            let data = { applyFor, id: applyId };
+            if (startAt) data.startAt = startAt;
+            if (endAt) data.endAt = endAt;
+            if (discountType === "rate") data.discountRate = discount;
+            else if (discountType === "price") data.discountPrice = discount;
+            axios.put(`/api/discounts/${discountId}`, data).then((res) => {
+              let idx = discounts.findIndex((e) => e._id === discountId);
+              if (idx >= 0) {
+                resetState();
+                setDiscounts([
+                  ...discounts.slice(0, idx),
+                  res.data,
+                  ...discounts.slice(idx + 1, discounts.length),
+                ]);
+                toastNotify("success", "Cập nhật thành công");
+                setIsVisible(false);
+              }
+            });
+          }
+        }
+      }
+    }
+  };
 
   const columns = [
     {
@@ -145,7 +227,7 @@ function Discounts({ brands, categories, subcategories }) {
         record.discountRate ? (
           <div>-{record.discountRate}%</div>
         ) : record.discountPrice ? (
-          <div>-{formatPrice(record.discountPrice)}₫</div>
+          <div>-{formatPrice(record.discountPrice + "")}₫</div>
         ) : null,
     },
     {
@@ -155,7 +237,7 @@ function Discounts({ brands, categories, subcategories }) {
       render: (text) => formatDate(text),
     },
     {
-      title: "Kết  đầu",
+      title: "Kết  thúc",
       dataIndex: "endAt",
       key: "endAt",
       render: (text) => text && formatDate(text),
@@ -167,6 +249,9 @@ function Discounts({ brands, categories, subcategories }) {
       width: 200,
       render: (text, record) => (
         <>
+          <Button onClick={() => showDataUpdate(record)} type="primary">
+            Sửa
+          </Button>
           <Button
             type="primary"
             danger
@@ -212,7 +297,7 @@ function Discounts({ brands, categories, subcategories }) {
         width="70%"
         onCancel={() => {
           setIsVisible(false);
-          // resetState();
+          resetState();
         }}
       >
         <form className="w-full m-auto" style={{ fontSize: "14px" }}>
@@ -268,7 +353,7 @@ function Discounts({ brands, categories, subcategories }) {
                     class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="grid-state"
                     onChange={(e) => setApplyId(e.target.value)}
-                    // value={brandId}
+                    value={applyId}
                   >
                     <option value="">Chọn thương hiệu</option>
                     {brands && brands.length > 0
@@ -304,7 +389,7 @@ function Discounts({ brands, categories, subcategories }) {
                     class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="grid-state"
                     onChange={(e) => setApplyId(e.target.value)}
-                    // value={categoryId}
+                    value={applyId}
                   >
                     <option value="">Chọn danh mục</option>
                     {categories && categories.length > 0
@@ -341,7 +426,7 @@ function Discounts({ brands, categories, subcategories }) {
                   class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                   id="grid-state"
                   onChange={(e) => setApplyId(e.target.value)}
-                  // value={subcategoryId}
+                  value={applyId}
                 >
                   <option value="">Chọn danh mục phụ</option>
                   {subcategories && subcategories.length > 0
@@ -389,13 +474,14 @@ function Discounts({ brands, categories, subcategories }) {
               <input
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="price"
-                type="number"
+                type="text"
                 min="1"
-                value={discount}
+                value={formatPrice(discount)}
                 onChange={(e) => {
-                  if (!e.target.value.includes("-"))
-                    setDiscount(e.target.value);
-                  else toastNotify("warn", "Bạn chỉ có thể nhập số dương");
+                  if (e.target.value.match(/^[0-9]+\.?/) || !e.target.value)
+                    setDiscount(e.target.value.split(",").join(""));
+                  else
+                    return toastNotify("warn", "Bạn chỉ có thể nhập số dương");
                 }}
               />
             </div>
@@ -413,7 +499,10 @@ function Discounts({ brands, categories, subcategories }) {
                 style={{
                   width: "100%",
                 }}
-                defaultValue={startAt}
+                value={moment(
+                  new Date(moment(startAt, "DD/MM/YYYY").format("YYYY/MM/DD")),
+                  "DD/MM/YYYY"
+                )}
                 onChange={(date, dateString) => setStartAt(dateString)}
                 id="startAt"
                 format="DD/MM/YYYY"
@@ -431,7 +520,10 @@ function Discounts({ brands, categories, subcategories }) {
                 style={{
                   width: "100%",
                 }}
-                defaultValue={endAt}
+                value={moment(
+                  new Date(moment(endAt, "DD/MM/YYYY").format("YYYY/MM/DD")),
+                  "DD/MM/YYYY"
+                )}
                 onChange={(date, dateString) => setEndAt(dateString)}
                 id="endAt"
                 format="DD/MM/YYYY"
@@ -445,7 +537,7 @@ function Discounts({ brands, categories, subcategories }) {
                 type="button"
                 onClick={() => {
                   if (!isUpdate) handleAdd();
-                  // else handleUpdate();
+                  else handleUpdate();
                 }}
               >
                 OK

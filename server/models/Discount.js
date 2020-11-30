@@ -1,10 +1,6 @@
 const mongoose = require("mongoose");
 
 const discountSchema = mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
-  },
   discountRate: {
     type: Number,
     min: 0,

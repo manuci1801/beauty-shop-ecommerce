@@ -17,8 +17,12 @@ const addComment = async (req, res) => {
 
     const newComment = new Comment({ user: req.user.id, content, productId });
     await newComment.save();
+    const comment = await Comment.findById(newComment._id).populate("user", [
+      "_id",
+      "name",
+    ]);
 
-    res.json(newComment);
+    res.json(comment);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);

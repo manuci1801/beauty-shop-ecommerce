@@ -40,6 +40,8 @@ function Users({ users, addUser, deleteUser }) {
 
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
+  const [searchInput, setSearchInput] = useState("");
+
   const handleAdd = () => {
     if (!name) {
       return alert("Name field is required");
@@ -191,19 +193,20 @@ function Users({ users, addUser, deleteUser }) {
         <Button type="primary" size="large" onClick={() => setIsVisible(true)}>
           Thêm
         </Button>
-        <div style={{ display: "flex" }}>
-          <Button
-            type="primary"
-            onClick={() =>
-              exportToCSV(users, `users ${formatDate(new Date())}`)
-            }
-            icon={<DownloadOutlined />}
-            size="large"
-          >
-            Xuất Excel
-          </Button>
-          <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
-        </div>
+        <Input
+          onChange={(e) => setSearchInput(e.target.value)}
+          style={{ margin: "4px 40px" }}
+          placeholder="Tìm kiếm"
+        />
+
+        <Button
+          type="primary"
+          onClick={() => exportToCSV(users, `users ${formatDate(new Date())}`)}
+          icon={<DownloadOutlined />}
+          size="large"
+        >
+          Xuất Excel
+        </Button>
       </div>
       <Modal
         style={{ top: "20px" }}
@@ -370,7 +373,9 @@ function Users({ users, addUser, deleteUser }) {
       </Modal>
       <Table
         columns={columns}
-        dataSource={users}
+        dataSource={users.filter((e) =>
+          new RegExp(searchInput, "gi").test(e.name)
+        )}
         rowKey={(record) => record._id}
         pagination={pagination}
         onChange={(_pagination, filters, sorter) => setPagination(_pagination)}

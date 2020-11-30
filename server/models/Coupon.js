@@ -1,10 +1,6 @@
 const mongoose = require("mongoose");
 
 const promotionCodeSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
   code: {
     type: String,
     required: true,
@@ -22,14 +18,12 @@ const promotionCodeSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  // startAt: {
-  //   type: Date,
-  //   required: true,
-  // },
-  // endAt: {
-  //   type: Date,
-  //   required: false,
-  // },
+  startAt: {
+    type: Date,
+  },
+  endAt: {
+    type: Date,
+  },
   usableCount: {
     type: Number,
     default: 0,
