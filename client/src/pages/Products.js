@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { addToCart } from "../redux/actions/products";
 import formatPrice from "../utils/formatPrice";
+import toastNotify from "../utils/toastNotify";
 
 function Products() {
   const dispatch = useDispatch();
@@ -423,6 +424,10 @@ function Products() {
                                           amount: 1,
                                         })
                                       );
+                                      toastNotify(
+                                        "success",
+                                        "Thêm vào giỏ hàng thành công"
+                                      );
                                     }}
                                   >
                                     <i className="fa fa-shopping-cart" />
@@ -434,27 +439,36 @@ function Products() {
                               </div>
                             </div>
                             <div className="price">
-                              <strong>
-                                {product.priceDiscount && (
-                                  <del
-                                    style={{
-                                      fontSize: "16px",
-                                      fontWeight: 600,
-                                      marginRight: "8px",
-                                      color: "#FF0000",
-                                    }}
-                                  >
-                                    {formatPrice(product.price)}₫
-                                  </del>
-                                )}
-                                {product.priceDiscount ? (
-                                  <ins>
-                                    {formatPrice(product.priceDiscount)}₫
-                                  </ins>
-                                ) : (
-                                  <ins>{formatPrice(product.price)}₫</ins>
-                                )}
-                              </strong>
+                              {product.amount > 0 ? (
+                                <strong>
+                                  {product.priceDiscount && (
+                                    <del
+                                      style={{
+                                        fontSize: "16px",
+                                        fontWeight: 600,
+                                        marginRight: "8px",
+                                        color: "#FF0000",
+                                      }}
+                                    >
+                                      {formatPrice(product.price)}₫
+                                    </del>
+                                  )}
+                                  {product.priceDiscount ? (
+                                    <ins>
+                                      {formatPrice(product.priceDiscount)}₫
+                                    </ins>
+                                  ) : (
+                                    <ins>{formatPrice(product.price)}₫</ins>
+                                  )}
+                                </strong>
+                              ) : (
+                                <span
+                                  className="out-stock"
+                                  style={{ marginTop: "4px", fontSize: "16px" }}
+                                >
+                                  Hết hàng
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>

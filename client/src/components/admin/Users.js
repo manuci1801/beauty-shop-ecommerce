@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Form, Input, InputNumber, Button, Modal, Table } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
 
 import toastNotify from "../../utils/toastNotify";
+import { formatDate } from "../../utils/formatDate";
 
 const layout = {
   labelCol: { span: 8 },
@@ -161,27 +164,18 @@ function Users({ users, addUser, deleteUser }) {
     { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
     { title: "Ngày sinh", dataIndex: "birthday", key: "birthday" },
     { title: "Giới tính", dataIndex: "gender", key: "gender" },
-    // {
-    //   title: "Hành động",
-    //   key: "actions",
-    //   fixed: "right",
-    //   width: 200,
-    //   render: (text, record) => (
-    //     <>
-    //       {/* <Button onClick={() => showDataUpdate(record)} type="primary">
-    //         Sửa
-    //       </Button> */}
-    //       <Button
-    //         type="primary"
-    //         danger
-    //         onClick={() => handleDelete(record._id)}
-    //       >
-    //         Xóa
-    //       </Button>
-    //     </>
-    //   ),
-    // },
   ];
+
+  const exportToCSV = (csvData, fileName) => {
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
+    const ws = XLSX.utils.json_to_sheet(csvData);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension);
+  };
 
   return (
     <>
@@ -198,7 +192,14 @@ function Users({ users, addUser, deleteUser }) {
           Thêm
         </Button>
         <div style={{ display: "flex" }}>
-          <Button type="primary" icon={<DownloadOutlined />} size="large">
+          <Button
+            type="primary"
+            onClick={() =>
+              exportToCSV(users, `users ${formatDate(new Date())}`)
+            }
+            icon={<DownloadOutlined />}
+            size="large"
+          >
             Xuất Excel
           </Button>
           <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />

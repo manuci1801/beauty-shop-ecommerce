@@ -22,6 +22,7 @@ import Coupons from "../components/admin/Coupons";
 import Blogs from "../components/admin/Blogs";
 import OrdersRaw from "../components/admin/OrdersRaw";
 import OrdersCOD from "../components/admin/OrdersCOD";
+import Banners from "../components/admin/Banners";
 
 function Admin() {
   const { SubMenu } = Menu;
@@ -181,6 +182,8 @@ function Admin() {
       />
     ) : currentTab === "coupons" ? (
       <Coupons />
+    ) : currentTab === "banners" ? (
+      <Banners />
     ) : currentTab === "blogs" ? (
       <Blogs />
     ) : null;
@@ -253,6 +256,13 @@ function Admin() {
               title="Quản lý blog"
             >
               <Menu.Item key="blogs">Blog</Menu.Item>
+            </SubMenu>
+            <SubMenu
+              key="banners-management"
+              icon={<SettingOutlined />}
+              title="Quản lý banner"
+            >
+              <Menu.Item key="banners">Banners</Menu.Item>
             </SubMenu>
             <div
               style={{

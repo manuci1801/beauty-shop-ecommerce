@@ -215,10 +215,7 @@ function Header({ props }) {
     const token = localStorage.getItem("jwtToken");
     if (token) {
       const decoded = jwt_decode(token.split(" ")[1]);
-      if (
-        decoded.exp < new Date().getTime() / 1000 ||
-        decoded.role === "ROLE_ADMIN"
-      ) {
+      if (decoded.exp < new Date().getTime() / 1000) {
         localStorage.removeItem("jwtToken");
       } else {
         setAuthToken(token);

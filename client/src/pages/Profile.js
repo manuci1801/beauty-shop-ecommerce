@@ -782,77 +782,22 @@ function Profile() {
                               {e.status === "pending" ? (
                                 <td className="order-status out-stock">
                                   Chờ xử lý
-                                  <a
-                                    className="text-blue-800 ml-2"
-                                    onClick={() => {
-                                      if (e.histories.length > 0) {
-                                        setVisible(true);
-                                        setHistories(e.histories);
-                                      }
-                                    }}
-                                  >
-                                    Xem lịch sử
-                                  </a>
                                 </td>
                               ) : e.status === "packed" ? (
                                 <td className="order-status order-closed">
                                   Đã đóng
-                                  <a
-                                    className="text-blue-800 ml-2"
-                                    onClick={() => {
-                                      if (e.histories.length > 0) {
-                                        setVisible(true);
-                                        setHistories(e.histories);
-                                      }
-                                    }}
-                                  >
-                                    Xem lịch sử
-                                  </a>
                                 </td>
                               ) : e.status === "delivered" ? (
                                 <td className="order-status in-stock">
                                   Đã chuyển đi
-                                  <a
-                                    className="text-blue-800 ml-2"
-                                    onClick={() => {
-                                      if (e.histories.length > 0) {
-                                        setVisible(true);
-                                        setHistories(e.histories);
-                                      }
-                                    }}
-                                  >
-                                    Xem lịch sử
-                                  </a>
                                 </td>
                               ) : e.status === "success" ? (
                                 <td className="order-status in-stock">
                                   Đã chuyển đi
-                                  <a
-                                    className="text-blue-800 ml-2"
-                                    onClick={() => {
-                                      if (e.histories.length > 0) {
-                                        setVisible(true);
-                                        setHistories(e.histories);
-                                      }
-                                    }}
-                                  >
-                                    Xem lịch sử
-                                  </a>
                                 </td>
                               ) : e.status === "cancel" ? (
                                 <td className="order-status order-canceled">
                                   Đã hủy
-                                  <a
-                                    className="text-blue-800 ml-2"
-                                    onClick={() => {
-                                      if (e.histories.length > 0) {
-                                        setVisible(true);
-                                        setHistories(e.histories);
-                                      }
-                                    }}
-                                  >
-                                    Xem lịch sử
-                                  </a>
                                 </td>
                               ) : null}
                             </tr>

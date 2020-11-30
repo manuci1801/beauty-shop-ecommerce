@@ -7,11 +7,13 @@ import { Link } from "react-router-dom";
 import "../App.css";
 import { addToCart } from "../redux/actions/products";
 import formatPrice from "../utils/formatPrice";
+import toastNotify from "../utils/toastNotify";
 
 function Home() {
   const dispatch = useDispatch();
 
   const [blogs, setBlogs] = useState([]);
+  const [banners, setBanners] = useState([]);
 
   // tab product of MIN
   const [currentTab, setCurrentTab] = useState("new-products");
@@ -37,6 +39,11 @@ function Home() {
       .get("/api/blogs")
       .then((res) => setBlogs(res.data))
       .catch((err) => console.log(err));
+
+    axios
+      .get("/api/banners")
+      .then((res) => setBanners(res.data))
+      .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
@@ -46,28 +53,22 @@ function Home() {
     }
   }, [keys]);
 
-  console.log(keys);
-  console.log(products);
-
   return (
     <>
-      <div className="container-fluid banner">
-        <div className="row">
-          <Carousel autoplay>
-            {/* <div>
-              <h3 style={contentStyle}>1</h3>
-            </div>
-            <div>
-              <h3 style={contentStyle}>2</h3>
-            </div>
-            <div>
-              <h3 style={contentStyle}>3</h3>
-            </div>
-            <div>
-              <h3 style={contentStyle}>4</h3>
-            </div> */}
-          </Carousel>
-        </div>
+      <div className="container-fluid">
+        <Carousel autoplay>
+          {banners &&
+            banners.map((banner) => (
+              <div>
+                <div
+                  style={{
+                    backgroundImage: `url("/images/${banner.image}")`,
+                  }}
+                  className="banner"
+                ></div>
+              </div>
+            ))}
+        </Carousel>
       </div>
       {/* <div className="container-fluid about" id="about-min">
         <div className="section-title">
@@ -180,6 +181,10 @@ function Home() {
                                     productId: e._id,
                                     amount: 1,
                                   })
+                                );
+                                toastNotify(
+                                  "success",
+                                  "Thêm vào giỏ hàng thành công"
                                 );
                               }}
                             >
@@ -309,6 +314,10 @@ function Home() {
                                       productId: e._id,
                                       amount: 1,
                                     })
+                                  );
+                                  toastNotify(
+                                    "success",
+                                    "Thêm vào giỏ hàng thành công"
                                   );
                                 }}
                               >

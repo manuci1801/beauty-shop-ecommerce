@@ -182,9 +182,13 @@ function Cart({ coupon, setCoupon }) {
                           </td>
                           <td className="product-remove">
                             <button
-                              onClick={() =>
-                                dispatch(deleteFromCart(e.productId))
-                              }
+                              onClick={() => {
+                                dispatch(deleteFromCart(e.productId));
+                                toastNotify(
+                                  "success",
+                                  "Đã xóa sản phẩm khỏi giỏ hàng"
+                                );
+                              }}
                             >
                               <i className="fa fa-trash-o" />
                             </button>
@@ -196,9 +200,9 @@ function Cart({ coupon, setCoupon }) {
                       <td colSpan={6} className="actions">
                         <button
                           className="empty-cart link-to hidden-mobile"
-                          onClick={() =>
-                            dispatch(clearCart("Đã xóa toàn bộ giỏ hàng"))
-                          }
+                          onClick={() => {
+                            dispatch(clearCart("Đã xóa toàn bộ giỏ hàng"));
+                          }}
                         >
                           Xóa toàn bộ
                         </button>

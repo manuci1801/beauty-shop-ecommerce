@@ -32,7 +32,7 @@ function ProductDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [id]);
 
   function addComment() {}
 
@@ -141,61 +141,92 @@ function ProductDetail() {
                     <span className="in-stock">Còn hàng</span>
                     <br />
                     <div>Có sẵn: {product.amount} sản phẩm</div>
-                  </>
-                ) : (
-                  <span className="out-stock">Hết hàng</span>
-                )}
-              </p>
-              <form className="cart">
-                <span>Số lượng:</span>
-                <div className="quantity">
-                  <button
-                    className="qty-decrease"
-                    onClick={() => (amount > 1 ? setAmount(amount - 1) : null)}
-                    type="button"
-                  >
-                    -
-                  </button>
-                  <input
-                    type="text"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                  />
-                  <button
-                    className="qty-increase"
-                    onClick={() =>
-                      amount < product.amount ? setAmount(amount + 1) : null
-                    }
-                    type="button"
-                  >
-                    +
-                  </button>
-                </div>
-                <div className="cart-button">
-                  <button
-                    disabled={product.amount > 0 ? false : true}
-                    style={{
-                      cursor: product.amount > 0 ? "pointer" : "not-allowed",
-                    }}
-                    className="add-to-cart link-to"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (amount > product.amount)
-                        return toastNotify("warn", "Số sản phẩm không đủ");
-                      dispatch(addToCart({ productId: product._id, amount }));
-                    }}
-                  >
-                    Thêm vào giỏ hàng
-                  </button>
-                  {/* <a href="#">
+                    <form className="cart">
+                      <span>Số lượng:</span>
+                      <div className="quantity">
+                        <button
+                          className="qty-decrease"
+                          onClick={() =>
+                            amount > 1 ? setAmount(amount - 1) : null
+                          }
+                          type="button"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="text"
+                          value={amount}
+                          onChange={(e) => setAmount(e.target.value)}
+                        />
+                        <button
+                          className="qty-increase"
+                          onClick={() =>
+                            amount < product.amount
+                              ? setAmount(amount + 1)
+                              : null
+                          }
+                          type="button"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <div className="cart-button">
+                        <button
+                          disabled={product.amount > 0 ? false : true}
+                          style={{
+                            cursor:
+                              product.amount > 0 ? "pointer" : "not-allowed",
+                          }}
+                          className="add-to-cart link-to"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (amount > product.amount)
+                              return toastNotify(
+                                "warn",
+                                "Số sản phẩm không đủ"
+                              );
+                            dispatch(
+                              addToCart({ productId: product._id, amount })
+                            );
+                            toastNotify(
+                              "success",
+                              "Thêm vào giỏ hàng thành công"
+                            );
+                          }}
+                        >
+                          Thêm vào giỏ hàng
+                        </button>
+                        {/* <a href="#">
                     <i className="fa fa-heart-o" />
                   </a> */}
-                </div>
-              </form>
+                      </div>
+                    </form>
+                  </>
+                ) : (
+                  <>
+                    <span className="out-stock">Hết hàng</span>
+                    <br />
+                    <Link to="/contact" className="cart-button">
+                      <button
+                        style={{
+                          cursor: "pointer",
+                        }}
+                        className="add-to-cart link-to"
+                      >
+                        Liên hệ với chúng tôi
+                      </button>
+                      {/* <a href="#">
+                    <i className="fa fa-heart-o" />
+                  </a> */}
+                    </Link>
+                  </>
+                )}
+              </p>
+
               <div className="product-category">
-                Danh mục: <a href="/products">{product.categoryId.name}</a>,{" "}
+                Danh mục: <Link to="/products">{product.categoryId.name}</Link>,{" "}
                 {product.subcategoryId ? (
-                  <a href="/products">{product.subcategoryId.name}</a>
+                  <Link to="/products">{product.subcategoryId.name}</Link>
                 ) : null}
               </div>
             </div>
@@ -206,7 +237,7 @@ function ProductDetail() {
               <ul className="nav nav-tabs tabs">
                 <li className="active">
                   <a data-toggle="tab" href="#tab-description">
-                    Mô tả
+                    Video
                   </a>
                 </li>
                 <li>
@@ -426,6 +457,10 @@ function ProductDetail() {
                                   productId: product._id,
                                   amount: 1,
                                 })
+                              );
+                              toastNotify(
+                                "success",
+                                "Thêm vào giỏ hàng thành công"
                               );
                             }}
                           >

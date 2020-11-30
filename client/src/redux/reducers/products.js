@@ -222,18 +222,16 @@ export default function (state = initialState, action) {
             if (state.cart[i].productId == action.payload.productId) {
               newCart.push({
                 productId: state.cart[i].productId,
-                amount: state.cart[i].amount + action.payload.amount,
+                amount: +state.cart[i].amount + +action.payload.amount,
               });
             } else {
               newCart.push(state.cart[i]);
             }
           }
         } else {
-          toastNotify("success", "Thêm thành công");
           newCart = [...state.cart, action.payload];
         }
       } else {
-        toastNotify("success", "Thêm thành công");
         newCart.push(action.payload);
       }
 

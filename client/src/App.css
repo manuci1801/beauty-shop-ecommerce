@@ -153,7 +153,9 @@ header .navbar-default .navbar-nav > li > a {
 
 .banner {
   min-height: 100vh;
-  background: url(/img/banner-bg.jpg) center no-repeat;
+  /* background: url(/img/banner-bg.jpg) center no-repeat; */
+  background-position: center;
+  background-repeat: no-repeat;
   background-size: cover;
 }
 .logo img {
