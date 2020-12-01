@@ -178,7 +178,7 @@ export const updateSubcategory = (data) => (dispatch) => {
 };
 
 export const getCart = () => (dispatch) => {
-  dispatch({
+  return dispatch({
     type: GET_CART,
   });
 };
@@ -186,7 +186,7 @@ export const getCart = () => (dispatch) => {
 export const addToCart = (data) => (dispatch) => {
   // toastNotify("success", "Thành công");
   // console.log(data);
-  dispatch({
+  return dispatch({
     type: ADD_CART,
     payload: data,
   });
@@ -194,13 +194,13 @@ export const addToCart = (data) => (dispatch) => {
 
 export const clearCart = (message) => (dispatch) => {
   toastNotify("success", message);
-  dispatch({
+  return dispatch({
     type: CLEAR_CART,
   });
 };
 
 export const deleteFromCart = (id) => (dispatch) => {
-  dispatch({
+  return dispatch({
     type: DELETE_FROM_CART,
     payload: id,
   });

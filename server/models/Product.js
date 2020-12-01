@@ -38,6 +38,10 @@ const productSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

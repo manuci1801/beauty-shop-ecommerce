@@ -12,7 +12,13 @@ const fileType =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
 const fileExtension = ".xlsx";
 
-function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
+function Orders({
+  orders,
+  handleOnAddOrder,
+  products,
+  updateOrders,
+  deleteOrder,
+}) {
   const { TabPane } = Tabs;
 
   const [currentTab, setCurrentTab] = useState("orders-all");
@@ -28,11 +34,10 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
     setCurrentTab(key);
   }
 
-  // const handleDelete = (id) => {
-  //   axios.delete(`/api/contacts/${id}`).then((res) => {
-  //     deleteContact(id);
-  //   });
-  // };
+  const handleDeleteOrder = (id) => {
+    deleteOrder(id);
+    setOrderSelected("");
+  };
 
   const rowSelection = {
     ordersSelected,
@@ -197,6 +202,7 @@ function Orders({ orders, handleOnAddOrder, products, updateOrders }) {
           orderSelected={orderSelected}
           setOrderSelected={setOrderSelected}
           updateOrders={updateOrders}
+          handleDeleteOrder={handleDeleteOrder}
         />
       ) : (
         <>

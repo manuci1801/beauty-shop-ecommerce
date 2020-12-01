@@ -563,7 +563,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
 
       <Table
         columns={columns}
-        dataSource={products}
+        dataSource={products.filter((e) => !e.isDeleted)}
         rowKey={(record) => record._id}
         pagination={pagination}
         onChange={(_pagination, filters, sorter) => setPagination(_pagination)}

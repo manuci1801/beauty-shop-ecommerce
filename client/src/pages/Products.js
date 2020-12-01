@@ -36,7 +36,7 @@ function Products() {
   }, []);
 
   useEffect(() => {
-    setCurrentProducts([...products]);
+    setCurrentProducts([...products.filter((e) => !e.isDeleted)]);
   }, [products]);
 
   useEffect(() => {
@@ -418,16 +418,22 @@ function Products() {
                                     href="#"
                                     onClick={(e) => {
                                       e.preventDefault();
-                                      dispatch(
-                                        addToCart({
-                                          productId: product._id,
-                                          amount: 1,
-                                        })
-                                      );
-                                      toastNotify(
-                                        "success",
-                                        "Thêm vào giỏ hàng thành công"
-                                      );
+                                      if (product.amount > 0) {
+                                        dispatch(
+                                          addToCart({
+                                            productId: product._id,
+                                            amount: 1,
+                                          })
+                                        );
+                                        toastNotify(
+                                          "success",
+                                          "Thêm vào giỏ hàng thành công"
+                                        );
+                                      } else
+                                        toastNotify(
+                                          "warn",
+                                          "Sản phẩm đã hết hàng"
+                                        );
                                     }}
                                   >
                                     <i className="fa fa-shopping-cart" />
@@ -462,12 +468,9 @@ function Products() {
                                   )}
                                 </strong>
                               ) : (
-                                <span
-                                  className="out-stock"
-                                  style={{ marginTop: "4px", fontSize: "16px" }}
-                                >
+                                <strong style={{ color: "red" }}>
                                   Hết hàng
-                                </span>
+                                </strong>
                               )}
                             </div>
                           </div>

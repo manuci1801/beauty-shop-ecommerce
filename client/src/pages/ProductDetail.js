@@ -22,23 +22,28 @@ function ProductDetail() {
 
   const dispatch = useDispatch();
 
-  const [isAuthenticated] = useSelector(({ auth }) => [auth.isAuthenticated]);
+  const [isAuthenticated, products] = useSelector(({ auth, products }) => [
+    auth.isAuthenticated,
+    products.products,
+  ]);
 
   // const product = products.find((p) => p._id == id);
   useEffect(() => {
+    if (products) {
+      const _p = products.find((p) => p._id === id);
+      setProduct(_p);
+    }
     axios
       .get(`/api/products/${id}`)
       .then((res) => {
-        setProduct(res.data.product);
+        // setProduct(res.data.product);
         setComments(res.data.comments);
         setProductsRelated(res.data.productsRelated);
       })
       .catch((err) => console.log(err));
-  }, [id]);
 
-  useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [id, products]);
 
   function addComment() {
     axios
@@ -453,16 +458,19 @@ function ProductDetail() {
                             href="#"
                             onClick={(event) => {
                               event.preventDefault();
-                              dispatch(
-                                addToCart({
-                                  productId: product._id,
-                                  amount: 1,
-                                })
-                              );
-                              toastNotify(
-                                "success",
-                                "Thêm vào giỏ hàng thành công"
-                              );
+                              if (e.amount > 0) {
+                                dispatch(
+                                  addToCart({
+                                    productId: e._id,
+                                    amount: 1,
+                                  })
+                                );
+                                toastNotify(
+                                  "success",
+                                  "Thêm vào giỏ hàng thành công"
+                                );
+                              } else
+                                toastNotify("warn", "Sản phẩm đã hết hàng");
                             }}
                           >
                             <i className="fa fa-shopping-cart" />
@@ -473,7 +481,29 @@ function ProductDetail() {
                         </div>
                       </div>
                       <div className="price">
-                        <strong>{formatPrice(e.price)}₫</strong>
+                        {e.amount > 0 ? (
+                          <strong>
+                            {e.priceDiscount && (
+                              <del
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: 600,
+                                  marginRight: "8px",
+                                  color: "#FF0000",
+                                }}
+                              >
+                                {formatPrice(e.price)}₫
+                              </del>
+                            )}
+                            {e.priceDiscount ? (
+                              <ins>{formatPrice(e.priceDiscount)}₫</ins>
+                            ) : (
+                              <ins>{formatPrice(e.price)}₫</ins>
+                            )}
+                          </strong>
+                        ) : (
+                          <strong style={{ color: "red" }}>Hết hàng</strong>
+                        )}
                       </div>
                     </div>
                   </div>

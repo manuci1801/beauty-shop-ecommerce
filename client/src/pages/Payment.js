@@ -4,11 +4,10 @@ import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import formatPrice from "../utils/formatPrice";
 
-import { checkout } from "../redux/actions/products";
 import toastNotify from "../utils/toastNotify";
 import { CLEAR_CART } from "../redux/types";
 
-function Payment({ coupon }) {
+function Payment({ coupon, checkout, checkoutNoAuth }) {
   const dispatch = useDispatch();
 
   const [totalPrice, setTotalPrice] = useState(0);
@@ -68,28 +67,28 @@ function Payment({ coupon }) {
     }
   }, [cart, products]);
 
-  function checkoutNoAuth() {
-    axios
-      .post("/api/orders/checkout-no-auth", {
-        ...orderData,
-        products: [...cart],
-        total:
-          Object.keys(coupon).length > 0
-            ? coupon.discountPrice
-              ? totalPrice - coupon.discountPrice
-              : totalPrice -
-                Math.floor((coupon.discountRate * totalPrice) / 100)
-            : totalPrice,
-        coupon: Object.keys(coupon).length > 0 ? "coupon" : "",
-      })
-      .then((res) => {
-        toastNotify("success", "Đặt hàng thành công");
-        dispatch({
-          type: CLEAR_CART,
-        });
-        window.location.href = "/cart";
-      });
-  }
+  // function checkoutNoAuth() {
+  //   axios
+  //     .post("/api/orders/checkout-no-auth", {
+  //       ...orderData,
+  //       products: [...cart],
+  //       total:
+  //         Object.keys(coupon).length > 0
+  //           ? coupon.discountPrice
+  //             ? totalPrice - coupon.discountPrice
+  //             : totalPrice -
+  //               Math.floor((coupon.discountRate * totalPrice) / 100)
+  //           : totalPrice,
+  //       coupon: Object.keys(coupon).length > 0 ? "coupon" : "",
+  //     })
+  //     .then((res) => {
+  //       toastNotify("success", "Đặt hàng thành công");
+  //       dispatch({
+  //         type: CLEAR_CART,
+  //       });
+  //       window.location.href = "/cart";
+  //     });
+  // }
 
   return (
     <div className="container payment-main">
@@ -126,7 +125,11 @@ function Payment({ coupon }) {
               )}
               <input
                 type="text"
-                className="form-control"
+                className={
+                  orderData.name
+                    ? "form-control"
+                    : "form-control required-field"
+                }
                 id="name"
                 onChange={(e) =>
                   setOrderData({
@@ -140,7 +143,11 @@ function Payment({ coupon }) {
               <input
                 type="number"
                 min="1"
-                className="form-control"
+                className={
+                  orderData.phone
+                    ? "form-control"
+                    : "form-control required-field"
+                }
                 id="phone"
                 placeholder="Số điện thoại"
                 onChange={(e) => {
@@ -157,7 +164,11 @@ function Payment({ coupon }) {
 
               <input
                 type="text"
-                className="form-control"
+                className={
+                  orderData.address
+                    ? "form-control"
+                    : "form-control required-field"
+                }
                 id="address"
                 placeholder="Địa chỉ"
                 onChange={(e) =>
@@ -182,7 +193,11 @@ function Payment({ coupon }) {
                 value={orderData.note}
               />
               <select
-                className="form-control"
+                className={
+                  orderData.shipType
+                    ? "form-control"
+                    : "form-control required-field"
+                }
                 onChange={(e) =>
                   setOrderData({
                     ...orderData,
@@ -294,11 +309,16 @@ function Payment({ coupon }) {
                 </tr>
                 <tr className="deli-fee">
                   <th>Phí giao hàng</th>
-                  <td>0</td>
+                  <td>
+                    {orderData.shipType
+                      ? orderData.shipType === "standard"
+                        ? 0
+                        : formatPrice(40000)
+                      : 0}
+                  </td>
                 </tr>
                 <tr className="deli-fee">
                   <th>Giảm giá</th>
-                  <span className="discount-rate" />
                   <td>
                     {Object.keys(coupon).length > 0
                       ? formatPrice(
@@ -315,19 +335,27 @@ function Payment({ coupon }) {
                   <th>Tổng tiền</th>
                   <td className="amount">
                     <strong>
-                      {" "}
-                      {Object.keys(coupon).length > 0
+                      {coupon && Object.keys(coupon).length
                         ? formatPrice(
                             coupon.discountPrice
-                              ? formatPrice(totalPrice - coupon.discountPrice)
+                              ? formatPrice(
+                                  totalPrice -
+                                    +coupon.discountPrice +
+                                    (orderData.shipType === "fast" ? 40000 : 0)
+                                )
                               : formatPrice(
                                   totalPrice -
                                     Math.floor(
-                                      (coupon.discountRate * totalPrice) / 100
-                                    )
+                                      (+coupon.discountRate * +totalPrice) / 100
+                                    ) +
+                                    (orderData.shipType === "fast" ? 40000 : 0)
                                 )
                           )
-                        : formatPrice(totalPrice)}
+                        : formatPrice(
+                            orderData.shipType === "fast"
+                              ? totalPrice + 40000
+                              : totalPrice
+                          )}
                     </strong>
                   </td>
                 </tr>
@@ -351,7 +379,16 @@ function Payment({ coupon }) {
                   axios
                     .post("/api/vnpay/create-payment-url", {
                       amount:
-                        Object.keys(coupon).length > 0
+                        orderData.shipType === "fast"
+                          ? (coupon
+                              ? coupon.discountPrice
+                                ? totalPrice - coupon.discountPrice
+                                : totalPrice -
+                                  Math.floor(
+                                    (coupon.discountRate * totalPrice) / 100
+                                  )
+                              : totalPrice) + 40000
+                          : coupon
                           ? coupon.discountPrice
                             ? totalPrice - coupon.discountPrice
                             : totalPrice -
@@ -373,12 +410,16 @@ function Payment({ coupon }) {
                           total:
                             Object.keys(coupon).length > 0
                               ? coupon.discountPrice
-                                ? totalPrice - coupon.discountPrice
+                                ? totalPrice -
+                                  coupon.discountPrice +
+                                  (orderData.shipType === "fast" ? 40000 : 0)
                                 : totalPrice -
                                   Math.floor(
                                     (coupon.discountRate * totalPrice) / 100
-                                  )
-                              : totalPrice,
+                                  ) +
+                                  (orderData.shipType === "fast" ? 40000 : 0)
+                              : totalPrice +
+                                (orderData.shipType === "fast" ? 40000 : 0),
                           coupon:
                             Object.keys(coupon).length > 0 ? "coupon" : "",
                         })
@@ -389,24 +430,26 @@ function Payment({ coupon }) {
                 } else {
                   if (window.confirm("Bạn chắc chắn muốn đặt hàng?")) {
                     if (!isAuthenticated) {
-                      return checkoutNoAuth();
+                      checkoutNoAuth(orderData);
                     } else
-                      dispatch(
-                        checkout({
-                          ...orderData,
-                          products: [...cart],
-                          total:
-                            Object.keys(coupon).length > 0
-                              ? coupon.discountPrice
-                                ? totalPrice - coupon.discountPrice
-                                : totalPrice -
-                                  Math.floor(
-                                    (coupon.discountRate * totalPrice) / 100
-                                  )
-                              : totalPrice,
-                          coupon: Object.keys(coupon).length > 0 ? coupon : "",
-                        })
-                      );
+                      checkout({
+                        ...orderData,
+                        products: [...cart],
+                        total:
+                          Object.keys(coupon).length > 0
+                            ? coupon.discountPrice
+                              ? totalPrice -
+                                coupon.discountPrice +
+                                (orderData.shipType === "fast" ? 40000 : 0)
+                              : totalPrice -
+                                Math.floor(
+                                  (coupon.discountRate * totalPrice) / 100
+                                ) +
+                                (orderData.shipType === "fast" ? 40000 : 0)
+                            : totalPrice +
+                              (orderData.shipType === "fast" ? 40000 : 0),
+                        coupon: Object.keys(coupon).length > 0 ? coupon : "",
+                      });
                   }
                 }
               }}

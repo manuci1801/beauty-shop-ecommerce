@@ -10,12 +10,27 @@ import {
   deleteFromCart,
 } from "../redux/actions/products";
 import toastNotify from "../utils/toastNotify";
+import { Steps, Button, message } from "antd";
+import Payment from "./Payment";
+import { CLEAR_CART } from "../redux/types";
+const { Step } = Steps;
 
-function Cart({ coupon, setCoupon }) {
+function Cart() {
   const dispatch = useDispatch();
 
   const [totalPrice, setTotalPrice] = useState(0);
+
   const [couponString, setCouponString] = useState("");
+  const [coupon, setCoupon] = useState({});
+
+  // steps
+  const [current, setCurrent] = React.useState(0);
+  const next = () => {
+    setCurrent(current + 1);
+  };
+  const prev = () => {
+    setCurrent(current - 1);
+  };
 
   const [
     isAuthenticated,
@@ -60,273 +75,371 @@ function Cart({ coupon, setCoupon }) {
       .catch((err) => toastNotify("warn", "Mã giảm giá không hợp lệ"));
   }
 
-  return (
-    <>
-      <div className="container-fluid page-heading cart-heading">
-        <div className="heading-content">
-          <h1>Giỏ hàng</h1>
-          <p />
-          <ol className="breadcrumb">
-            <li>
-              <a href="home.html">Trang chủ</a>
-            </li>
-            <li className="active">Giỏ hàng</li>
-          </ol>
-        </div>
-      </div>
-      <div className="container">
-        {cart && cart.length > 0 ? (
-          <div className="row">
-            <div className="col-sm-12">
-              <div className="cart-container">
-                <table className="cart">
-                  <thead>
-                    <tr>
-                      <th className="product-thumbnail">Sản phẩm</th>
-                      <th className="product-name">
-                        <span className="hidden-mobile">Tên sản phẩm</span>
-                      </th>
-                      <th className="product-price">
-                        <span className="hidden-mobile">Đơn giá</span>
-                      </th>
-                      <th className="product-quantity">
-                        <span className="hidden-mobile">Số lượng</span>
-                      </th>
-                      <th className="product-subtotal">Thành tiền</th>
-                      <th className="product-remove">&nbsp;</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cart &&
-                      products &&
-                      cart.map((e) => (
-                        <tr key={e.productId} className="cart-item">
-                          <td className="product-thumbnail">
-                            {getProductById(e.productId) ? (
-                              <Link
-                                to={`/products/${
-                                  getProductById(e.productId)._id
-                                }`}
-                              >
-                                <img
-                                  src={`/images/${
-                                    getProductById(e.productId).images[0]
-                                  }`}
-                                />
-                              </Link>
-                            ) : null}
-                          </td>
-                          <td className="product-name">
-                            <Link to={`/products/${e.productId}`}>
-                              {getProductById(e.productId)
-                                ? getProductById(e.productId).name
-                                : null}
-                            </Link>
-                          </td>
-                          <td className="product-price">
-                            {getProductById(e.productId)
-                              ? getProductById(e.productId).priceDiscount
-                                ? formatPrice(
-                                    getProductById(e.productId).priceDiscount
-                                  )
-                                : formatPrice(getProductById(e.productId).price)
-                              : null}
-                          </td>
-                          <td className="product-quantity">
-                            <div className="quantity">
-                              <button
-                                className="qty-decrease"
-                                onClick={() => {
-                                  if (e.amount > 1)
-                                    dispatch(
-                                      addToCart({
-                                        productId: e.productId,
-                                        amount: -1,
-                                      })
+  function checkout(data) {
+    axios
+      .post("/api/orders/checkout", data)
+      .then((res) => {
+        toastNotify("success", "Đặt hàng thành công");
+        setCurrent(2);
+        return dispatch({
+          type: CLEAR_CART,
+        });
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function checkoutNoAuth(orderData) {
+    axios
+      .post("/api/orders/checkout-no-auth", {
+        ...orderData,
+        products: [...cart],
+        total:
+          Object.keys(coupon).length > 0
+            ? coupon.discountPrice
+              ? totalPrice - coupon.discountPrice
+              : totalPrice -
+                Math.floor((coupon.discountRate * totalPrice) / 100)
+            : totalPrice,
+        coupon: Object.keys(coupon).length > 0 ? "coupon" : "",
+      })
+      .then((res) => {
+        toastNotify("success", "Đặt hàng thành công");
+        setCurrent(2);
+        return dispatch({
+          type: CLEAR_CART,
+        });
+      });
+  }
+
+  const steps = [
+    {
+      title: "Giỏ hàng",
+      content: (
+        <>
+          <div className="container">
+            {cart && cart.length > 0 ? (
+              <div className="row">
+                <div className="col-sm-12">
+                  <div className="cart-container">
+                    <table className="cart">
+                      <thead>
+                        <tr>
+                          <th className="product-thumbnail">Sản phẩm</th>
+                          <th className="product-name">
+                            <span className="hidden-mobile">Tên sản phẩm</span>
+                          </th>
+                          <th className="product-price">
+                            <span className="hidden-mobile">Đơn giá</span>
+                          </th>
+                          <th className="product-quantity">
+                            <span className="hidden-mobile">Số lượng</span>
+                          </th>
+                          <th className="product-subtotal">Thành tiền</th>
+                          <th className="product-remove">&nbsp;</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cart &&
+                          products &&
+                          cart.map((e) => (
+                            <tr key={e.productId} className="cart-item">
+                              <td className="product-thumbnail">
+                                {getProductById(e.productId) ? (
+                                  <Link
+                                    to={`/products/${
+                                      getProductById(e.productId)._id
+                                    }`}
+                                  >
+                                    <img
+                                      src={`/images/${
+                                        getProductById(e.productId).images[0]
+                                      }`}
+                                    />
+                                  </Link>
+                                ) : null}
+                              </td>
+                              <td className="product-name">
+                                <Link to={`/products/${e.productId}`}>
+                                  {getProductById(e.productId)
+                                    ? getProductById(e.productId).name
+                                    : null}
+                                </Link>
+                              </td>
+                              <td className="product-price">
+                                {getProductById(e.productId)
+                                  ? getProductById(e.productId).priceDiscount
+                                    ? formatPrice(
+                                        getProductById(e.productId)
+                                          .priceDiscount
+                                      )
+                                    : formatPrice(
+                                        getProductById(e.productId).price
+                                      )
+                                  : null}
+                              </td>
+                              <td className="product-quantity">
+                                <div className="quantity">
+                                  <button
+                                    className="qty-decrease"
+                                    onClick={() => {
+                                      if (e.amount > 1)
+                                        dispatch(
+                                          addToCart({
+                                            productId: e.productId,
+                                            amount: -1,
+                                          })
+                                        );
+                                      else
+                                        dispatch(deleteFromCart(e.productId));
+                                    }}
+                                    type="button"
+                                  >
+                                    -
+                                  </button>
+                                  <input
+                                    type="text"
+                                    value={e.amount}
+                                    onChange={(e) =>
+                                      console.log(e.target.value)
+                                    }
+                                  />
+                                  <button
+                                    className="qty-increase"
+                                    onClick={() => {
+                                      dispatch(
+                                        addToCart({
+                                          productId: e.productId,
+                                          amount: 1,
+                                        })
+                                      );
+                                    }}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </td>
+                              <td className="product-subtotal">
+                                {getProductById(e.productId)
+                                  ? formatPrice(
+                                      (getProductById(e.productId).priceDiscount
+                                        ? getProductById(e.productId)
+                                            .priceDiscount
+                                        : getProductById(e.productId).price) *
+                                        e.amount
+                                    )
+                                  : null}
+                              </td>
+                              <td className="product-remove">
+                                <button
+                                  onClick={() => {
+                                    dispatch(deleteFromCart(e.productId));
+                                    toastNotify(
+                                      "success",
+                                      "Đã xóa sản phẩm khỏi giỏ hàng"
                                     );
-                                  else dispatch(deleteFromCart(e.productId));
-                                }}
-                                type="button"
-                              >
-                                -
-                              </button>
-                              <input
-                                type="text"
-                                value={e.amount}
-                                onChange={(e) => console.log(e.target.value)}
-                              />
-                              <button
-                                className="qty-increase"
-                                onClick={() => {
-                                  dispatch(
-                                    addToCart({
-                                      productId: e.productId,
-                                      amount: 1,
-                                    })
-                                  );
-                                }}
-                              >
-                                +
-                              </button>
-                            </div>
-                          </td>
-                          <td className="product-subtotal">
-                            {getProductById(e.productId)
-                              ? formatPrice(
-                                  (getProductById(e.productId).priceDiscount
-                                    ? getProductById(e.productId).priceDiscount
-                                    : getProductById(e.productId).price) *
-                                    e.amount
-                                )
-                              : null}
-                          </td>
-                          <td className="product-remove">
+                                  }}
+                                >
+                                  <i className="fa fa-trash-o" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+
+                        <>
+                          <td colSpan={6} className="actions">
                             <button
+                              className="empty-cart link-to hidden-mobile"
                               onClick={() => {
-                                dispatch(deleteFromCart(e.productId));
+                                dispatch(clearCart("Đã xóa toàn bộ giỏ hàng"));
                                 toastNotify(
                                   "success",
-                                  "Đã xóa sản phẩm khỏi giỏ hàng"
+                                  "Đã xóa toàn bộ giỏ hàng"
                                 );
                               }}
                             >
-                              <i className="fa fa-trash-o" />
+                              Xóa toàn bộ
                             </button>
+                            <Link to="/products" className="link-to continue">
+                              Tiếp tục mua hàng{" "}
+                              <i className="fa fa-angle-right" />
+                            </Link>
                           </td>
-                        </tr>
-                      ))}
-
-                    <>
-                      <td colSpan={6} className="actions">
-                        <button
-                          className="empty-cart link-to hidden-mobile"
-                          onClick={() => {
-                            dispatch(clearCart("Đã xóa toàn bộ giỏ hàng"));
-                          }}
-                        >
-                          Xóa toàn bộ
-                        </button>
-                        <Link to="/products" className="link-to continue">
-                          Tiếp tục mua hàng <i className="fa fa-angle-right" />
-                        </Link>
-                      </td>
-                    </>
-                  </tbody>
-                </table>
-              </div>
-              <div className="cart-checkout container">
-                <div className="col-xs-12 col-sm-6">
-                  <div className="cart-coupon">
-                    <h3>Mã giảm giá</h3>
-                    <input
-                      type="text"
-                      placeholder="Nhập mã giảm giá"
-                      value={couponString}
-                      onChange={(e) => setCouponString(e.target.value)}
-                    />
-                    <button
-                      onClick={() => checkValidCoupon()}
-                      className="apply-coupon link-to"
-                    >
-                      Áp dụng mã giảm giá
-                    </button>
-                  </div>
-                </div>
-                <div className="col-xs-12 col-sm-6">
-                  <div className="cart-total">
-                    <h3>Tổng tiền</h3>
-                    <table>
-                      <tbody>
-                        <tr className="cart-subtotal">
-                          <th>Tạm tính</th>
-                          <td>{formatPrice(totalPrice)}</td>
-                        </tr>
-                        <tr className="cart-discount">
-                          <th>
-                            Giảm giá
-                            <span className="discount-rate" />
-                          </th>
-                          <td>
-                            {Object.keys(coupon).length > 0
-                              ? formatPrice(
-                                  coupon.discountPrice
-                                    ? coupon.discountPrice
-                                    : Math.floor(
-                                        (coupon.discountRate * totalPrice) / 100
-                                      )
-                                )
-                              : 0}
-                          </td>
-                        </tr>
-                        <tr className="order-total">
-                          <th>Tổng tiền</th>
-                          <td className="amount">
-                            <strong>
-                              {Object.keys(coupon).length > 0
-                                ? formatPrice(
-                                    coupon.discountPrice
-                                      ? formatPrice(
-                                          totalPrice - coupon.discountPrice
-                                        )
-                                      : formatPrice(
-                                          totalPrice -
-                                            Math.floor(
-                                              (coupon.discountRate *
-                                                totalPrice) /
-                                                100
-                                            )
-                                        )
-                                  )
-                                : formatPrice(totalPrice)}
-                            </strong>
-                          </td>
-                        </tr>
+                        </>
                       </tbody>
                     </table>
-                    <Link
-                      to="/payment"
-                      style={{
-                        cursor:
-                          cart && cart.length == 0 ? "not-allowed" : "pointer",
-                      }}
-                      className="checkout-proceed"
-                    >
-                      <div
-                        style={{
-                          margin: "10px 0 0",
-                          padding: "10px",
-                          textAlign: "center",
-                          textTransform: "uppercase",
-                          fontWeight: 500,
-                          textDecoration: "none",
-                          display: "inline-block",
-                          background: "#336699",
-                          color: "#fff",
-                          position: "relative",
-                          cursor: "pointer",
-                        }}
-                        className="link-to checkout-button"
-                      >
-                        Tiến hành đặt hàng <i className="fa fa-angle-right" />
+                  </div>
+                  <div className="cart-checkout container">
+                    <div className="col-xs-12 col-sm-6">
+                      <div className="cart-coupon">
+                        <h3>Mã giảm giá</h3>
+                        <input
+                          type="text"
+                          placeholder="Nhập mã giảm giá"
+                          value={couponString}
+                          onChange={(e) => setCouponString(e.target.value)}
+                        />
+                        <button
+                          onClick={() => checkValidCoupon()}
+                          className="apply-coupon link-to"
+                        >
+                          Áp dụng mã giảm giá
+                        </button>
                       </div>
-                    </Link>
+                    </div>
+                    <div className="col-xs-12 col-sm-6">
+                      <div className="cart-total">
+                        <h3>Tổng tiền</h3>
+                        <table>
+                          <tbody>
+                            <tr className="cart-subtotal">
+                              <th>Tạm tính</th>
+                              <td>{formatPrice(totalPrice)}</td>
+                            </tr>
+                            <tr className="cart-discount">
+                              <th>
+                                Giảm giá
+                                <span className="discount-rate" />
+                              </th>
+                              <td>
+                                {Object.keys(coupon).length > 0
+                                  ? formatPrice(
+                                      coupon.discountPrice
+                                        ? coupon.discountPrice
+                                        : Math.floor(
+                                            (coupon.discountRate * totalPrice) /
+                                              100
+                                          )
+                                    )
+                                  : 0}
+                              </td>
+                            </tr>
+                            <tr className="order-total">
+                              <th>Tổng tiền</th>
+                              <td className="amount">
+                                <strong>
+                                  {Object.keys(coupon).length > 0
+                                    ? formatPrice(
+                                        coupon.discountPrice
+                                          ? formatPrice(
+                                              totalPrice - coupon.discountPrice
+                                            )
+                                          : formatPrice(
+                                              totalPrice -
+                                                Math.floor(
+                                                  (coupon.discountRate *
+                                                    totalPrice) /
+                                                    100
+                                                )
+                                            )
+                                      )
+                                    : formatPrice(totalPrice)}
+                                </strong>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+            ) : (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "20px",
+                  fontSize: "28px",
+                }}
+              >
+                Giỏ hàng trống
+              </div>
+            )}
+          </div>
+        </>
+      ),
+    },
+    {
+      title: "Thanh toán",
+      content: (
+        <Payment
+          coupon={coupon}
+          checkout={checkout}
+          checkoutNoAuth={checkoutNoAuth}
+        />
+      ),
+    },
+    {
+      title: "Hoàn thành",
+      content: (
+        <div className="container">
+          <div className="row text-center m-8">
+            <div className="text-3xl text-bold">Đã đặt đơn hàng thành công</div>
+            <div>
+              <Link className="mt-4" to="/products">
+                <Button type="primary">Tiếp tục mua hàng</Button>
+              </Link>
             </div>
           </div>
-        ) : (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "20px",
-              fontSize: "28px",
-            }}
-          >
-            Giỏ hàng trống
-          </div>
-        )}
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <div className="flex mx-20 mt-12">
+        <div className="flex-1 text-bold text-center">
+          <Steps current={current}>
+            {steps.map((item) => (
+              <Step key={item.title} title={item.title} />
+            ))}
+          </Steps>
+        </div>
+        <div className="flex-1 text-right">
+          {current === 0 && (
+            <Button
+              type="primary"
+              onClick={() => {
+                if (cart && cart.length) next();
+              }}
+              style={{
+                cursor: cart && cart.length == 0 ? "not-allowed" : "pointer",
+              }}
+              className="checkout-proceed"
+            >
+              THANH TOÁN
+            </Button>
+          )}
+          {current === 1 && (
+            <>
+              <Button type="primary" onClick={() => prev()}>
+                Quay lại
+              </Button>
+            </>
+          )}
+        </div>
       </div>
+      <div className="steps-content">{steps[current].content}</div>
+      {/* <div className="steps-action">
+        {current < steps.length - 1 && (
+          <Button type="primary" onClick={() => next()}>
+            Next
+          </Button>
+        )}
+        {current === steps.length - 1 && (
+          <Button
+            type="primary"
+            onClick={() => message.success("Processing complete!")}
+          >
+            Done
+          </Button>
+        )}
+        {current > 0 && (
+          <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
+            Previous
+          </Button>
+        )}
+      </div> */}
     </>
   );
 }

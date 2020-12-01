@@ -1,6 +1,8 @@
-import { Button, Select, Radio, Steps } from "antd";
+import { Button, Select, Radio, Steps, Modal } from "antd";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import ReactToPrint, { useReactToPrint } from "react-to-print";
+
 import { formatDate } from "../../utils/formatDate";
 import formatPrice from "../../utils/formatPrice";
 import toastNotify from "../../utils/toastNotify";
@@ -9,12 +11,16 @@ const { Step } = Steps;
 
 function OrderDetail({
   products,
-  addOrder,
   orderSelected,
   setOrderSelected,
   updateOrders,
+  handleDeleteOrder,
 }) {
   const { Option } = Select;
+
+  // print order
+  const printRef = useRef();
+  const [isShow, setIsShow] = useState(false);
 
   const [currentOrder, setCurrentOrder] = useState({});
 
@@ -22,8 +28,9 @@ function OrderDetail({
   const [_productsSelected, _setProductsSelected] = useState([]);
   const [searchName, setSearchName] = useState("");
 
-  const [isPaid, setIsPaid] = React.useState(false);
-  const [status, setStatus] = React.useState("pending");
+  const [isPaid, setIsPaid] = useState(false);
+  const [status, setStatus] = useState("pending");
+  const [shipType, setShipType] = useState("standard");
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -49,6 +56,7 @@ function OrderDetail({
         ...orderSelected.products.map((e) => getProductById(e.productId._id)),
       ]);
 
+      setShipType(orderSelected.shipType);
       setIsPaid(orderSelected.isPaid);
       setStatus(orderSelected.status);
       setName(orderSelected.name);
@@ -133,214 +141,383 @@ function OrderDetail({
         note,
         isPaid,
         status,
-        total: getTotalPrice(),
+        shipType,
+        total: getTotalPrice() + (shipType === "fast" ? 40000 : 0),
       })
       .then((res) => {
         setHistories([res.data.history, ...histories]);
         updateOrders(res.data.order);
         toastNotify("success", "Cập nhật thành công");
+        setOrderSelected("");
       });
   }
 
-  return (
-    <div className="text-3xl">
-      <Button type="primary" onClick={() => setOrderSelected("")} size="large">
-        Back
-      </Button>
-      <div className="flex mt-4">
-        <div className="w-2/3 bg-white mr-8 px-10 py-6">
-          <div>Chi tiết đơn hàng</div>
-          {productsSelected.length > 0 &&
-            productsSelected.map((product) => (
-              <div className="my-4 flex justify-between">
-                <div className="w-1/2 flex justify-start">
-                  <img
-                    className="h-24"
-                    src={`/images/${product.images[0]}`}
-                    alt=""
-                  />
-                  <div className="my-auto ml-4">{product.name}</div>
-                </div>
-                <div className="w-1/2 flex text-right my-auto pl-24">
-                  <div className="flex-1">{formatPrice(product.price)}₫</div>
-                  <div className="flex-1 mx-4"> x </div>
-                  <input
-                    className="flex-1 mx-4 pl-4 w-4 border border-gray-600"
-                    type="number"
-                    defaultValue={1}
-                    min={1}
-                    onChange={(e) => {
-                      if (!e.target.value.includes("-"))
-                        return toastNotify(
-                          "warn",
-                          "Bạn chỉ có thể nhập số dương"
-                        );
-                      handleUpdateAmountOfProductSelected(
-                        product._id,
-                        e.target.value
-                      );
-                    }}
-                    value={getAmountOfProductSelected(product._id)}
-                    disabled={!Boolean(currentOrder.isCreatedByAdmin)}
-                  />
-                  <span className="flex-1">
-                    {formatPrice(
-                      product.price * getAmountOfProductSelected(product._id)
-                    )}
-                    ₫
-                  </span>
-                </div>
-              </div>
-            ))}
+  function deleteOrder() {
+    axios
+      .delete(`/api/orders/${orderSelected._id}`)
+      .then((res) => {
+        toastNotify("success", "Xóa đơn hàng nháp thành công");
+        handleDeleteOrder(orderSelected._id);
+      })
+      .catch((err) =>
+        toastNotify("error", "Đã có lỗi xảy ra. Không thể xóa đơn hàng")
+      );
+  }
 
-          {currentOrder.isCreatedByAdmin && (
-            <Select
-              showSearch
-              placeholder="Tìm kiếm sản phẩm"
-              className="my-4 w-full"
-              value={null}
-              onChange={(val) => handleAddProductsSelected(val)}
-              onSearch={onSearch}
+  return (
+    <>
+      <Modal
+        style={{ top: "20px" }}
+        title="In hóa đơn"
+        visible={isShow}
+        maskClosable={false}
+        footer={null}
+        width="70%"
+        onCancel={() => {
+          setIsShow(false);
+          // resetState();
+        }}
+      >
+        <form className="w-full m-auto" style={{ fontSize: "14px" }}>
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <ComponentToPrint ref={printRef} order={orderSelected} />
+            </div>
+          </div>
+          <div className="md:flex md:items-center">
+            <div className="md:w-1/3">
+              <ReactToPrint
+                trigger={() => (
+                  <button className="shadow bg-teal-400 hover:bg-teal-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-8 rounded">
+                    OK
+                  </button>
+                )}
+                content={() => printRef.current}
+              />
+            </div>
+            <div className="md:w-2/3" />
+          </div>
+        </form>
+      </Modal>
+      <div className="text-3xl">
+        <div className="flex justify-between">
+          <div>
+            <Button
+              type="primary"
+              onClick={() => setOrderSelected("")}
+              size="large"
+              className="mr-4"
             >
-              {products && products.length > 0 ? (
-                products
-                  // .filter((product) =>
-                  //   new RegExp(searchName, "gi").test(product.name)
-                  // )
-                  .map((product) => (
-                    <div value={product._id}>
-                      <div className="flex justify-between">
-                        <div className="w-1/2 flex justify-start">
-                          <img
-                            className="h-24"
-                            src={`/images/${product.images[0]}`}
-                            alt=""
-                          />
-                          <div className="my-auto ml-4">
-                            {product.name.length > 50
-                              ? `${product.name.slice(0, 50)}...`
-                              : product.name}
+              Back
+            </Button>
+
+            <Button type="primary" onClick={() => setIsShow(true)} size="large">
+              In hóa đơn
+            </Button>
+          </div>
+          {orderSelected.isCreatedByAdmin && (
+            <Button
+              type="primary"
+              danger
+              size="large"
+              onClick={() => deleteOrder()}
+            >
+              Xóa đơn hàng nháp
+            </Button>
+          )}
+        </div>
+        <div className="flex mt-4">
+          <div className="w-2/3 bg-white mr-8 px-10 py-6">
+            <div>
+              {currentOrder.isCreatedByAdmin
+                ? "Chi tiết đơn hàng nháp"
+                : "Chi tiết đơn hàng"}
+            </div>
+            {productsSelected.length > 0 &&
+              productsSelected.map((product) => (
+                <div className="my-4 flex justify-between">
+                  <div className="w-1/2 flex justify-start">
+                    <img
+                      className="h-24"
+                      src={`/images/${product.images[0]}`}
+                      alt=""
+                    />
+                    <div className="my-auto ml-4">{product.name}</div>
+                  </div>
+                  <div className="w-1/2 flex text-right my-auto pl-24">
+                    <div className="flex-1">{formatPrice(product.price)}₫</div>
+                    <div className="flex-1 mx-4"> x </div>
+                    <input
+                      className="flex-1 mx-4 pl-4 w-4 border border-gray-600"
+                      type="number"
+                      defaultValue={1}
+                      min={1}
+                      onChange={(e) => {
+                        if (!e.target.value.includes("-"))
+                          return toastNotify(
+                            "warn",
+                            "Bạn chỉ có thể nhập số dương"
+                          );
+                        handleUpdateAmountOfProductSelected(
+                          product._id,
+                          e.target.value
+                        );
+                      }}
+                      value={getAmountOfProductSelected(product._id)}
+                      disabled={!currentOrder.isCreatedByAdmin}
+                    />
+                    <span className="flex-1">
+                      {formatPrice(
+                        product.price * getAmountOfProductSelected(product._id)
+                      )}
+                      ₫
+                    </span>
+                  </div>
+                </div>
+              ))}
+
+            {currentOrder.isCreatedByAdmin && (
+              <Select
+                showSearch
+                placeholder="Tìm kiếm sản phẩm"
+                className="my-4 w-full"
+                value={null}
+                onChange={(val) => handleAddProductsSelected(val)}
+                onSearch={onSearch}
+              >
+                {products && products.length > 0 ? (
+                  products
+                    .filter((e) => !e.isDeleted)
+                    // .filter((product) =>
+                    //   new RegExp(searchName, "gi").test(product.name)
+                    // )
+                    .map((product) => (
+                      <div value={product._id}>
+                        <div className="flex justify-between">
+                          <div className="w-1/2 flex justify-start">
+                            <img
+                              className="h-24"
+                              src={`/images/${product.images[0]}`}
+                              alt=""
+                            />
+                            <div className="my-auto ml-4">
+                              {product.name.length > 50
+                                ? `${product.name.slice(0, 50)}...`
+                                : product.name}
+                            </div>
+                          </div>
+                          <div className="w-1/2 flex justify-end text-right my-auto pl-24">
+                            <span className="flex-1">
+                              {product.amount} sản phẩm
+                            </span>
+                            <span className="flex-1">
+                              {formatPrice(product.price)}₫
+                            </span>
                           </div>
                         </div>
-                        <div className="w-1/2 flex justify-end text-right my-auto pl-24">
-                          <span className="flex-1">
-                            {product.amount} sản phẩm
-                          </span>
-                          <span className="flex-1">
-                            {formatPrice(product.price)}₫
-                          </span>
-                        </div>
                       </div>
-                    </div>
-                  ))
-              ) : (
-                <Option value="">Chưa có sản phẩm nào</Option>
-              )}
-            </Select>
-          )}
-          <div className="mt-6 mb-4">Tình trạng thanh toán</div>
-          <Radio.Group onChange={() => setIsPaid(!isPaid)} value={isPaid}>
-            <Radio value={true}>Đã thanh toán</Radio>
-            <Radio value={false}>Chưa thanh toán</Radio>
-          </Radio.Group>
-          <div className="mt-6 mb-4">Tình trạng đơn hàng</div>
-          <Radio.Group
-            onChange={(e) => setStatus(e.target.value)}
-            value={status}
-          >
-            <Radio value="pending">Đang xử lý</Radio>
-            <Radio value="packed">Đã đóng gói</Radio>
-            <Radio value="delivered">Đã chuyển hàng</Radio>
-            <Radio value="success">Đã hoàn thành</Radio>
-            <Radio value="cancel">Đã hủy</Radio>
-          </Radio.Group>
-          <div className="my-4 text-right">
-            <div className="flex w-full text-right">
-              <div className="w-1/2">
-                <div>Tạm tính</div>
-                {/* <div>Khuyến mãi</div> */}
-                <div className="my-2">Phương thức vận chuyển</div>
-                <div>Tổng cộng</div>
-              </div>
-              <div className="w-1/2">
-                <div>{formatPrice(getTotalPrice())}₫</div>
-                {/* <div>KM</div> */}
-                <div>Ship</div>
-                <div>{formatPrice(getTotalPrice())}₫</div>
+                    ))
+                ) : (
+                  <Option value="">Chưa có sản phẩm nào</Option>
+                )}
+              </Select>
+            )}
+            <div className="mt-6 mb-4">Tình trạng thanh toán</div>
+            <Radio.Group onChange={() => setIsPaid(!isPaid)} value={isPaid}>
+              <Radio value={true}>Đã thanh toán</Radio>
+              <Radio value={false}>Chưa thanh toán</Radio>
+            </Radio.Group>
+            <div className="mt-6 mb-4">Tình trạng đơn hàng</div>
+            <Radio.Group
+              onChange={(e) => setStatus(e.target.value)}
+              value={status}
+            >
+              <Radio value="pending">Đang xử lý</Radio>
+              <Radio value="packed">Đã đóng gói</Radio>
+              <Radio value="delivered">Đã chuyển hàng</Radio>
+              <Radio value="success">Đã hoàn thành</Radio>
+              <Radio value="cancel">Đã hủy</Radio>
+            </Radio.Group>
+            <div className="my-4 text-right">
+              <div className="flex w-full text-right">
+                <div className="w-1/2">
+                  <div>Tạm tính</div>
+                  {/* <div>Khuyến mãi</div> */}
+                  <div className="my-2">Phương thức vận chuyển</div>
+                  <div>Tổng cộng</div>
+                </div>
+                <div className="w-1/2">
+                  <div>{formatPrice(getTotalPrice())}₫</div>
+                  {/* <div>KM</div> */}
+                  <div>
+                    <Select
+                      value={shipType}
+                      style={{ width: "50%" }}
+                      onChange={(value) => setShipType(value)}
+                    >
+                      <Option value="standard">Giao hàng tiêu chuẩn</Option>
+                      <Option value="fast">Giao hàng nhanh</Option>
+                    </Select>
+                  </div>
+                  <div>
+                    {formatPrice(
+                      getTotalPrice() + +(shipType === "fast" ? 40000 : 0)
+                    )}
+                    ₫
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex-1 bg-white px-10 py-6">
-          <div>Thông tin khách hàng</div>
-          <input
-            type="text"
-            className="form-control my-4"
-            id="name"
-            placeholder="Họ tên"
-            onChange={(e) => setName(e.target.value)}
-            value={name}
-          />
-          <input
-            type="number"
-            min="1"
-            className="form-control my-4"
-            id="phone"
-            placeholder="Số điện thoại"
-            onChange={(e) => {
-              if (e.target.value.includes("-")) {
-                setPhone("");
-                return toastNotify("warn", "Bạn không thể nhập số âm");
-              }
+          <div className="flex-1 bg-white px-10 py-6">
+            <div>Thông tin khách hàng</div>
+            <input
+              type="text"
+              className="form-control my-4"
+              id="name"
+              placeholder="Họ tên"
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              disable={currentOrder.isCreatedByAdmin ? true : false}
+            />
+            <input
+              type="number"
+              min="1"
+              className="form-control my-4"
+              id="phone"
+              placeholder="Số điện thoại"
+              onChange={(e) => {
+                if (e.target.value.includes("-")) {
+                  setPhone("");
+                  return toastNotify("warn", "Bạn không thể nhập số âm");
+                }
 
-              setPhone(e.target.value);
-            }}
-            value={phone}
-          />
+                setPhone(e.target.value);
+              }}
+              value={phone}
+              disable={currentOrder.isCreatedByAdmin ? true : false}
+            />
 
-          <input
-            type="text"
-            className="form-control my-4"
-            id="address"
-            placeholder="Địa chỉ"
-            onChange={(e) => setAddress(e.target.value)}
-            value={address}
-          />
-          <input
-            type="text"
-            className="form-control my-4"
-            id="note"
-            placeholder="Ghi chú"
-            onChange={(e) => setNote(e.target.value)}
-            value={note}
-          />
+            <input
+              type="text"
+              className="form-control my-4"
+              id="address"
+              placeholder="Địa chỉ"
+              onChange={(e) => setAddress(e.target.value)}
+              value={address}
+              disable={currentOrder.isCreatedByAdmin ? true : false}
+            />
+            <input
+              type="text"
+              className="form-control my-4"
+              id="note"
+              placeholder="Ghi chú"
+              onChange={(e) => setNote(e.target.value)}
+              value={note}
+              disable={currentOrder.isCreatedByAdmin ? true : false}
+            />
+          </div>
+        </div>
+        <div className="flex my-4">
+          <Button
+            className="ml-auto"
+            type="primary"
+            size="large"
+            onClick={() => updateOrderDetail()}
+          >
+            Lưu
+          </Button>
+        </div>
+        <div className="bg-white px-10 py-6 mb-8">
+          {histories && (
+            <Steps progressDot current={histories.length} direction="vertical">
+              {histories.map((e) => (
+                <Step
+                  title={e.name}
+                  subTitle={formatDate(e.createdAt)}
+                  description={e.description}
+                />
+              ))}
+            </Steps>
+          )}
         </div>
       </div>
-      <div className="flex my-4">
-        <Button
-          className="ml-auto"
-          type="primary"
-          size="large"
-          onClick={() => updateOrderDetail()}
-        >
-          Lưu
-        </Button>
-      </div>
-      <div className="bg-white px-10 py-6 mb-8">
-        {histories && (
-          <Steps progressDot current={histories.length} direction="vertical">
-            {histories.map((e) => (
-              <Step
-                title={e.name}
-                subTitle={formatDate(e.createdAt)}
-                description={e.description}
-              />
-            ))}
-          </Steps>
-        )}
-      </div>
-    </div>
+    </>
   );
 }
+
+const ComponentToPrint = React.forwardRef((props, ref) => {
+  const { order } = props;
+
+  function getTotalTmp() {
+    return order.products.reduce(
+      (acc, e) => acc + e.productId.price * e.amount,
+      0
+    );
+  }
+
+  return (
+    <div ref={ref} style={{ fontSize: "20px" }}>
+      {order ? (
+        <>
+          <div style={{ fontSize: "24px", fontWeight: "1000" }}>
+            Thông tin người nhận
+          </div>
+          <div>
+            Họ tên: <strong>{order.name}</strong>
+          </div>
+          <div>
+            Địa chỉ: <strong>{order.address}</strong>
+          </div>
+          <div>
+            Số điện thoại: <strong>{order.phone}</strong>
+          </div>
+          <div>
+            Ghi chú: <strong>{order.note}</strong>
+          </div>
+          <div style={{ fontSize: "24px", fontWeight: "1000" }}>
+            Thông tin đơn hàng
+          </div>
+          <table style={{ width: "100%", margin: "auto" }}>
+            <tr>
+              <th>Hàng hóa</th>
+              <th>SL</th>
+              <th>GIá</th>
+            </tr>
+            {order.products.map((e) => (
+              <tr style={{ fontSize: "16px", fontStyle: "italic" }}>
+                <td>{e.productId.name}</td>
+                <td style={{ width: "10%" }}>{e.amount}</td>
+                <td style={{ width: "10%" }}>
+                  {formatPrice(e.productId.price)}₫
+                </td>
+              </tr>
+            ))}
+          </table>
+          <div
+            style={{
+              fontWeight: "1000",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div>
+              <div>Tạm tính</div>
+              <div>Phí ship</div>
+              <div>Tổng tiền</div>
+            </div>
+            <div>
+              <div>{formatPrice(getTotalTmp())}₫</div>
+              <div>{order.shipType === "fast" ? formatPrice(40000) : 0}₫</div>
+              <div>{formatPrice(order.total)}₫</div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div>Loading...</div>
+      )}
+    </div>
+  );
+});
 
 export default OrderDetail;

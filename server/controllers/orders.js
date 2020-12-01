@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Coupon = require("../models/Coupon");
 const Order = require("../models/Order");
 const OrderHistory = require("../models/OrderHistory");
+const { sendMailOrder } = require("../services/nodemailer");
 
 const addOne = async (req, res) => {
   try {
@@ -24,6 +25,12 @@ const addOne = async (req, res) => {
       description: "Mặt hàng được khởi tạo",
     });
     await newOrderHistory.save();
+
+    // send email order
+    const order = await Order.findById(newOrder._id)
+      .populate("products.productId", ["name", "price"])
+      .populate("user", ["name", "email"]);
+    await sendMailOrder("manuci1801@gmail.com", order);
 
     res.json({ success: true });
   } catch (err) {
@@ -84,7 +91,7 @@ const addOneByAdmin = async (req, res) => {
     const newOrder = new Order({ ...req.body, isCreatedByAdmin: true });
     await newOrder.save();
     const order = await Order.findById(newOrder._id)
-      .populate("products.productId", ["name"])
+      .populate("products.productId", ["name", "price"])
       .populate("user", ["name", "email"]);
 
     // save order history
@@ -105,7 +112,7 @@ const addOneByAdmin = async (req, res) => {
 const getAll = async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate("products.productId", ["name"])
+      .populate("products.productId", ["name", "price"])
       .populate("user", ["name", "email"])
       .sort({ createdAt: -1 });
     res.json(orders);
@@ -125,7 +132,7 @@ const cancelOrder = async (req, res) => {
     );
     if (!order) return res.status(404).json({ msg: "Not found" });
     const _order = await Order.findById(order._id)
-      .populate("products.productId", ["name"])
+      .populate("products.productId", ["name", "price"])
       .populate("user", ["name", "email"]);
 
     // save order history
@@ -154,6 +161,7 @@ const updateOrder = async (req, res) => {
       products,
       isPaid,
       status,
+      shipType,
       total,
     } = req.body;
 
@@ -229,6 +237,17 @@ const updateOrder = async (req, res) => {
         }`,
       ];
     }
+    if (shipType !== order.shipType) {
+      updateData = { ...updateData, shipType };
+      orderHistoryData = [
+        ...orderHistoryData,
+        `Thay đổi hình thức vận chuyển từ "${
+          shipType === "fast" ? "Giao hàng nhanh" : "Giao hàng tiêu chuẩn"
+        }" thành "${
+          shipType === "fast" ? "Giao hàng nhanh" : "Giao hàng tiêu chuẩn"
+        }`,
+      ];
+    }
     if (total !== order.total) {
       updateData = { ...updateData, total };
     }
@@ -261,12 +280,28 @@ const updateOrder = async (req, res) => {
     await newOrderHistory.save();
 
     const __order = await Order.findById(order._id)
-      .populate("products.productId", ["name"])
+      .populate("products.productId", ["name", "price"])
       .populate("user", ["name", "email"]);
     res.json({ order: __order, history: newOrderHistory });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
+  }
+};
+
+const deleteOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findOneAndDelete({
+      _id: id,
+      isCreatedByAdmin: true,
+    });
+    if (!order) return res.status(400).json({ success: false });
+    res.json({ success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 };
 
@@ -300,4 +335,5 @@ module.exports = {
   cancelOrder,
   updateOrder,
   getHistoriesByOrderId,
+  deleteOne,
 };

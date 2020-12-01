@@ -134,7 +134,7 @@ const addOne = async (req, res) => {
 const deleteOne = async (req, res) => {
   const { id } = req.params;
 
-  await Product.findByIdAndDelete(id);
+  await Product.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
 
   res.json({ success: true });
 };
@@ -238,6 +238,7 @@ const getById = async (req, res) => {
     }
 
     const productsRelated = await Product.find({
+      isDeleted: false || undefined,
       categoryId: product.categoryId._id,
       _id: {
         $nin: [product._id],

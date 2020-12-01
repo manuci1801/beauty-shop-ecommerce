@@ -20,6 +20,8 @@ function OrdersRaw({ products, addOrder }) {
   const [_productsSelected, _setProductsSelected] = useState([]);
   const [searchName, setSearchName] = useState("");
 
+  const [shipType, setShipType] = useState("standard");
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -98,7 +100,8 @@ function OrdersRaw({ products, addOrder }) {
         phone,
         address,
         note,
-        total: getTotalPrice(),
+        shipType,
+        total: getTotalPrice() + (shipType === "fast" ? 40000 : 0),
       })
       .then((res) => {
         toastNotify("success", "Thêm thành công");
@@ -119,9 +122,9 @@ function OrdersRaw({ products, addOrder }) {
           {productsSelected.length > 0 &&
             productsSelected.map((product) => (
               <div className="my-4 flex justify-between">
-                <div className="w-1/2 flex justify-start">
+                <div className="w-1/2 flex justify-between">
                   <img
-                    className="h-24"
+                    className="h-24 m-0"
                     src={`/images/${product.images[0]}`}
                     alt=""
                   />
@@ -173,16 +176,17 @@ function OrdersRaw({ products, addOrder }) {
           >
             {products && products.length > 0 ? (
               products
-                // .filter((product) =>
-                //   new RegExp(searchName, "gi").test(product.name)
-                // )
+                .filter((e) => !e.isDeleted)
+                .filter((product) =>
+                  new RegExp(searchName, "gi").test(product.name)
+                )
                 .map((product) => (
-                  <Option value={product.name}>
+                  <Option value={product._id}>
                     <div>
                       <div className="flex justify-between">
-                        <div className="w-1/2 flex justify-start">
+                        <div className="w-1/2 flex justify-between">
                           <img
-                            className="h-24"
+                            className="h-24 m-0"
                             src={`/images/${product.images[0]}`}
                             alt=""
                           />
@@ -219,8 +223,25 @@ function OrdersRaw({ products, addOrder }) {
               <div className="w-1/2">
                 <div>{formatPrice(getTotalPrice())}₫</div>
                 {/* <div>KM</div> */}
-                <div>Ship</div>
-                <div>{formatPrice(getTotalPrice())}₫</div>
+                <div className="flex ml-10">
+                  <Select
+                    value={shipType}
+                    style={{ width: "60%" }}
+                    onChange={(value) => setShipType(value)}
+                  >
+                    <Option value="standard">Giao hàng tiêu chuẩn</Option>
+                    <Option value="fast">Giao hàng nhanh</Option>
+                  </Select>
+                  <div className="flex-1">
+                    {shipType === "fast" ? formatPrice(40000) + "₫" : "0₫"}
+                  </div>
+                </div>
+                <div>
+                  {formatPrice(
+                    getTotalPrice() + (shipType === "fast" ? 40000 : 0)
+                  )}
+                  ₫
+                </div>
               </div>
             </div>
           </div>

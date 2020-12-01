@@ -111,12 +111,15 @@ function Admin() {
 
   const updateOrders = (order) => {
     const idx = orders.findIndex((e) => e._id === order._id);
-    console.log(idx);
     setOrders([
       ...orders.slice(0, idx),
       order,
       ...orders.slice(idx + 1, orders.length),
     ]);
+  };
+
+  const deleteOrder = (id) => {
+    setOrders(orders.filter((e) => e._id !== id));
   };
 
   const bodyContainer =
@@ -157,6 +160,7 @@ function Admin() {
         products={products}
         handleOnAddOrder={handleOnAddOrder}
         updateOrders={updateOrders}
+        deleteOrder={deleteOrder}
       />
     ) : currentTab === "orders-raw" ? (
       <OrdersRaw products={products} addOrder={addOrder} />

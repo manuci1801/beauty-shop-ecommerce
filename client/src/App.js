@@ -22,8 +22,6 @@ import VerifyUser from "./pages/VerifyUser";
 import store from "./redux/store";
 
 function App() {
-  const [coupon, setCoupon] = useState({});
-
   return (
     <Provider store={store}>
       <Router>
@@ -55,10 +53,7 @@ function App() {
             <Profile />
           </Route>
           <Route path="/cart" exact>
-            <Cart coupon={coupon} setCoupon={setCoupon} />
-          </Route>
-          <Route path="/payment" exact>
-            <Payment coupon={coupon} />
+            <Cart />
           </Route>
           <Route path="/payment/check" exact>
             <CheckPayment />
