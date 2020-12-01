@@ -127,7 +127,7 @@ function Home() {
                   products.length > 0 &&
                   products
                     .filter((e) => !e.isDeleted)
-                    .slice(0, 8)
+                    .slice(0, 4)
                     .map((e) => (
                       <div className="col-item col-xs-6 col-md-3">
                         <div className="item-container">
@@ -268,7 +268,7 @@ function Home() {
                       }
                       return true;
                     })
-                    .slice(0, 8)
+                    .slice(0, 4)
                     .map((e) => (
                       <div className="col-item col-xs-6 col-md-3">
                         <div className="item-container">
@@ -379,6 +379,129 @@ function Home() {
             </div>
           )}
         </div>
+        <div className="section-title">
+          <h2>Sản phẩm nổi bật</h2>
+          {/* <p>Top những sản phẩm được đánh giá cao</p> */}
+        </div>
+        <div className="row">
+          <div className="tab-content">
+            <div
+              className="tab-pane active fade in"
+              id="new-products-hightlight"
+            >
+              {products &&
+                products.length > 0 &&
+                products
+                  .filter((e) => !e.isDeleted)
+                  .sort((a, b) => b.amount - a.amount)
+                  .slice(0, 4)
+                  .map((e) => (
+                    <div className="col-item col-xs-6 col-md-3">
+                      <div className="item-container">
+                        <div>
+                          <div
+                            className="max-1-line"
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "16px",
+                              margin: "8px",
+                            }}
+                            className="max-1-line"
+                          >
+                            {e.name}
+                          </div>
+                          <p className="max-1-line">by {e.brandId.name}</p>
+                        </div>
+                        <div className="photo">
+                          <div
+                            id={e._id}
+                            className="carousel slide"
+                            data-ride="carousel"
+                            data-interval="false"
+                          >
+                            <ol className="carousel-indicators">
+                              <li
+                                data-target={`#${e._id}`}
+                                data-slide-to={0}
+                                className="active"
+                              />
+                              <li data-target={`#${e._id}`} data-slide-to={1} />
+                            </ol>
+                            <div className="carousel-inner" role="listbox">
+                              {e.images &&
+                                e.images.map((image, index) => (
+                                  <div
+                                    style={{
+                                      backgroundImage: `url("/images/${image}")`,
+                                    }}
+                                    className={
+                                      index === 0 ? "item active" : "item"
+                                    }
+                                  ></div>
+                                ))}
+                            </div>
+                          </div>
+                          <div className="vertical-icon">
+                            <a
+                              href="#"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                if (e.amount > 0) {
+                                  dispatch(
+                                    addToCart({
+                                      productId: e._id,
+                                      amount: 1,
+                                    })
+                                  );
+                                  toastNotify(
+                                    "success",
+                                    "Thêm vào giỏ hàng thành công"
+                                  );
+                                } else
+                                  toastNotify("warn", "Sản phẩm đã hết hàng");
+                              }}
+                            >
+                              <i className="fa fa-shopping-cart" />
+                            </a>
+                            <Link to={`/products/${e._id}`}>
+                              <i className="fa fa-search-plus" />
+                            </Link>
+                          </div>
+                        </div>
+                        <div className="price">
+                          {e.amount > 0 ? (
+                            <strong>
+                              {e.priceDiscount && (
+                                <del
+                                  style={{
+                                    fontSize: "16px",
+                                    fontWeight: 600,
+                                    marginRight: "8px",
+                                    color: "#FF0000",
+                                  }}
+                                >
+                                  {formatPrice(e.price)}₫
+                                </del>
+                              )}
+                              {e.priceDiscount ? (
+                                <ins>{formatPrice(e.priceDiscount)}₫</ins>
+                              ) : (
+                                <ins>{formatPrice(e.price)}₫</ins>
+                              )}
+                            </strong>
+                          ) : (
+                            <strong style={{ color: "red" }}>Hết hàng</strong>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+            </div>
+            <div className="tab-pane fade" id="table"></div>
+            <div className="tab-pane fade" id="cabinet"></div>
+          </div>
+        </div>
+
         <div className="link-container">
           <Link className="link-to" to="/products">
             Xem toàn bộ sản phẩm <i className="fa fa-angle-right" />
