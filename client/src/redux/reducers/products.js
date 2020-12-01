@@ -201,11 +201,14 @@ export default function (state = initialState, action) {
       };
 
     case GET_CART:
+      const cart = localStorage.getItem("cart");
       if (action.payload && action.payload.length > 0) {
         localStorage.setItem("cart", JSON.stringify(action.payload));
         return { ...state, cart: [...action.payload] };
+      } else {
+        if (cart) return { ...state, cart: JSON.parse(cart) };
+        return { ...state };
       }
-      return { ...state };
 
     case ADD_CART:
       let newCart = [];
