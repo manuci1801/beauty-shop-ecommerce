@@ -186,7 +186,11 @@ export const getCart = () => (dispatch) => {
         payload: res.data.cart,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) =>
+      dispatch({
+        type: GET_CART,
+      })
+    );
 };
 
 export const addToCart = (data) => (dispatch) => {
