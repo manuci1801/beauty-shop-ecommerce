@@ -134,12 +134,10 @@ function OrdersRaw({ products, addOrder }) {
                   <div className="flex-1">{formatPrice(product.price)}₫</div>
                   <div className="flex-1 mx-4"> x </div>
                   <input
-                    className="flex-1 mx-4 pl-4 w-4 border border-gray-600"
+                    className="w-16 mx-4border border-gray-600"
                     type="number"
-                    defaultValue={1}
-                    min={1}
                     onChange={(e) => {
-                      if (!e.target.value.includes("-"))
+                      if (e.target.value.includes("-"))
                         return toastNotify(
                           "warn",
                           "Bạn chỉ có thể nhập số dương"

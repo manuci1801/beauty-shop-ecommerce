@@ -36,7 +36,7 @@ function Products() {
   }, []);
 
   useEffect(() => {
-    setCurrentProducts([...products.filter((e) => !e.isDeleted)]);
+    if (products) setCurrentProducts([...products.filter((e) => !e.isDeleted)]);
   }, [products]);
 
   useEffect(() => {
