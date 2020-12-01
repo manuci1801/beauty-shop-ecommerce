@@ -231,7 +231,7 @@ function Header({ props }) {
     dispatch(getProducts());
     dispatch(getBrands());
     dispatch(getCart());
-  }, []);
+  }, [isAuthenticated]);
 
   function hideModal() {
     let modal = window.document.getElementById("auth-modal");
