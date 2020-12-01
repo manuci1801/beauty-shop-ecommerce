@@ -248,7 +248,6 @@ function Home() {
                       if (keys) {
                         const { brand, category, price } = keys;
                         if (brand || category || price) {
-                          console.log(e.brandId._id == brand);
                           if (price)
                             return brand
                               ? e.brandId._id == brand

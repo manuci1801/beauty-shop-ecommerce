@@ -1,5 +1,6 @@
 import _ from "lodash";
 import toastNotify from "../../utils/toastNotify";
+import axios from "axios";
 
 import {
   GET_PRODUCTS,
@@ -200,16 +201,11 @@ export default function (state = initialState, action) {
       };
 
     case GET_CART:
-      const cart = JSON.parse(localStorage.getItem("cart"));
-
-      if (cart && cart.length > 0) {
-        return {
-          ...state,
-          cart: [...cart],
-        };
-      } else {
-        return { ...state };
+      if (action.payload && action.payload.length > 0) {
+        localStorage.setItem("cart", JSON.stringify(action.payload));
+        return { ...state, cart: [...action.payload] };
       }
+      return { ...state };
 
     case ADD_CART:
       let newCart = [];
@@ -236,6 +232,7 @@ export default function (state = initialState, action) {
       }
 
       localStorage.setItem("cart", JSON.stringify(newCart));
+      axios.post("/api/carts", { cart: newCart });
       return {
         ...state,
         cart: newCart,
@@ -246,7 +243,7 @@ export default function (state = initialState, action) {
       let _cart = cartCur.filter((e) => e.productId != action.payload);
 
       localStorage.setItem("cart", JSON.stringify(_cart));
-
+      axios.post("/api/carts", { cart: _cart });
       return {
         ...state,
         cart: _cart,
@@ -254,6 +251,7 @@ export default function (state = initialState, action) {
 
     case CLEAR_CART:
       localStorage.removeItem("cart");
+      axios.post("/api/carts", { cart: [] });
       return {
         ...state,
         cart: [],

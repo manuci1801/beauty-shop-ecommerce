@@ -178,9 +178,15 @@ export const updateSubcategory = (data) => (dispatch) => {
 };
 
 export const getCart = () => (dispatch) => {
-  return dispatch({
-    type: GET_CART,
-  });
+  axios
+    .get("/api/carts")
+    .then((res) => {
+      return dispatch({
+        type: GET_CART,
+        payload: res.data.cart,
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 export const addToCart = (data) => (dispatch) => {

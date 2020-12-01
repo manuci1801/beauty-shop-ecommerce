@@ -13,6 +13,7 @@ const blogController = require("./blogs");
 const commentController = require("./comments");
 const vnpayController = require("./vnpay");
 const bannerController = require("./banners");
+const cartController = require("./carts");
 
 module.exports = {
   authController,
@@ -30,4 +31,5 @@ module.exports = {
   commentController,
   vnpayController,
   bannerController,
+  cartController,
 };
