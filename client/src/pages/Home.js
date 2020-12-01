@@ -127,7 +127,7 @@ function Home() {
                   products.length > 0 &&
                   products
                     .filter((e) => !e.isDeleted)
-                    .slice(0, 4)
+                    .slice(0, 8)
                     .map((e) => (
                       <div className="col-item col-xs-6 col-md-3">
                         <div className="item-container">
@@ -268,7 +268,7 @@ function Home() {
                       }
                       return true;
                     })
-                    .slice(0, 4)
+                    .slice(0, 8)
                     .map((e) => (
                       <div className="col-item col-xs-6 col-md-3">
                         <div className="item-container">
@@ -394,7 +394,7 @@ function Home() {
                 products
                   .filter((e) => !e.isDeleted)
                   .sort((a, b) => b.amount - a.amount)
-                  .slice(0, 4)
+                  .slice(0, 8)
                   .map((e) => (
                     <div className="col-item col-xs-6 col-md-3">
                       <div className="item-container">

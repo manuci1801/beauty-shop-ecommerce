@@ -310,6 +310,10 @@ function Header({ props }) {
       .catch((err) => toastNotify("warn", "Đã có lỗi xảy ra. Hãy thử lại"));
   }
 
+  const getTotalAmountInCart = () => {
+    return cart.reduce((acc, e) => acc + e.amount, 0);
+  };
+
   return (
     <>
       {!isAdminRoute ? (
@@ -496,8 +500,24 @@ function Header({ props }) {
                 <i className="fa fa-heart-o" />
               </Link> */}
               <Link to="/cart">
-                <i className="fa fa-shopping-cart" />
-                <small>{cart && cart.length}</small>
+                <i
+                  style={{ fontSize: "40px", position: "relative" }}
+                  className="fa fa-shopping-cart fa-3x"
+                >
+                  <div
+                    style={{
+                      fontSize: "20px",
+                      position: "absolute",
+                      right: "-8px",
+                      top: "-8px",
+                      padding: "2px 8px",
+                      borderRadius: "50%",
+                      backgroundColor: "#336699",
+                    }}
+                  >
+                    {cart && getTotalAmountInCart()}
+                  </div>
+                </i>
               </Link>
             </div>
             <Link className="logo" to="/">
