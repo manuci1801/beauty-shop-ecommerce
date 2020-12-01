@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { Modal } from "antd";
 import axios from "axios";
-import { Link, Redirect } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import formatPrice from "../utils/formatPrice";
-
 import toastNotify from "../utils/toastNotify";
-import { CLEAR_CART } from "../redux/types";
+
+const { confirm } = Modal;
 
 function Payment({ coupon, checkout, checkoutNoAuth }) {
   const dispatch = useDispatch();
@@ -89,6 +90,96 @@ function Payment({ coupon, checkout, checkoutNoAuth }) {
   //       window.location.href = "/cart";
   //     });
   // }
+
+  function showConfirm() {
+    confirm({
+      title: "Bạn muốn thanh toán đơn hàng?",
+      icon: <ExclamationCircleOutlined />,
+      onOk() {
+        checkoutOrder();
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  }
+
+  function checkoutOrder() {
+    if (typeof orderData.name === "undefined")
+      return toastNotify("warn", "Họ tên không được để trống");
+    if (typeof orderData.phone === "undefined")
+      return toastNotify("warn", "Điện thoại không được để trống");
+    if (typeof orderData.address === "undefined")
+      return toastNotify("warn", "Địa chỉ không được để trống");
+
+    if (typeof orderData.shipType === "undefined")
+      return toastNotify("warn", "Hãy chọn hình thức vận chuyển");
+
+    if (orderData.orderType === "VNPAY") {
+      axios
+        .post("/api/vnpay/create-payment-url", {
+          amount:
+            orderData.shipType === "fast"
+              ? (coupon
+                  ? coupon.discountPrice
+                    ? totalPrice - coupon.discountPrice
+                    : totalPrice -
+                      Math.floor((coupon.discountRate * totalPrice) / 100)
+                  : totalPrice) + 40000
+              : coupon
+              ? coupon.discountPrice
+                ? totalPrice - coupon.discountPrice
+                : totalPrice -
+                  Math.floor((coupon.discountRate * totalPrice) / 100)
+              : totalPrice,
+          bankCode: "NCB",
+          orderDescription: "st",
+          orderType: "210000",
+          language: "vn",
+        })
+        .then(async (res) => {
+          await localStorage.setItem(
+            "cart_pending",
+            JSON.stringify({
+              ...orderData,
+              products: [...cart],
+              total:
+                Object.keys(coupon).length > 0
+                  ? coupon.discountPrice
+                    ? totalPrice -
+                      coupon.discountPrice +
+                      (orderData.shipType === "fast" ? 40000 : 0)
+                    : totalPrice -
+                      Math.floor((coupon.discountRate * totalPrice) / 100) +
+                      (orderData.shipType === "fast" ? 40000 : 0)
+                  : totalPrice + (orderData.shipType === "fast" ? 40000 : 0),
+              coupon: Object.keys(coupon).length > 0 ? "coupon" : "",
+            })
+          );
+          window.location.href = res.data.data;
+        })
+        .catch((err) => console.log(err));
+    } else {
+      if (!isAuthenticated) {
+        checkoutNoAuth(orderData);
+      } else
+        checkout({
+          ...orderData,
+          products: [...cart],
+          total:
+            Object.keys(coupon).length > 0
+              ? coupon.discountPrice
+                ? totalPrice -
+                  coupon.discountPrice +
+                  (orderData.shipType === "fast" ? 40000 : 0)
+                : totalPrice -
+                  Math.floor((coupon.discountRate * totalPrice) / 100) +
+                  (orderData.shipType === "fast" ? 40000 : 0)
+              : totalPrice + (orderData.shipType === "fast" ? 40000 : 0),
+          coupon: Object.keys(coupon).length > 0 ? coupon : "",
+        });
+    }
+  }
 
   return (
     <div className="container payment-main">
@@ -365,93 +456,7 @@ function Payment({ coupon, checkout, checkoutNoAuth }) {
               className="order-final"
               onClick={(e) => {
                 e.preventDefault();
-                if (typeof orderData.name === "undefined")
-                  return toastNotify("warn", "Họ tên không được để trống");
-                if (typeof orderData.phone === "undefined")
-                  return toastNotify("warn", "Điện thoại không được để trống");
-                if (typeof orderData.address === "undefined")
-                  return toastNotify("warn", "Địa chỉ không được để trống");
-
-                if (typeof orderData.shipType === "undefined")
-                  return toastNotify("warn", "Hãy chọn hình thức vận chuyển");
-
-                if (orderData.orderType === "VNPAY") {
-                  axios
-                    .post("/api/vnpay/create-payment-url", {
-                      amount:
-                        orderData.shipType === "fast"
-                          ? (coupon
-                              ? coupon.discountPrice
-                                ? totalPrice - coupon.discountPrice
-                                : totalPrice -
-                                  Math.floor(
-                                    (coupon.discountRate * totalPrice) / 100
-                                  )
-                              : totalPrice) + 40000
-                          : coupon
-                          ? coupon.discountPrice
-                            ? totalPrice - coupon.discountPrice
-                            : totalPrice -
-                              Math.floor(
-                                (coupon.discountRate * totalPrice) / 100
-                              )
-                          : totalPrice,
-                      bankCode: "NCB",
-                      orderDescription: "st",
-                      orderType: "210000",
-                      language: "vn",
-                    })
-                    .then(async (res) => {
-                      await localStorage.setItem(
-                        "cart_pending",
-                        JSON.stringify({
-                          ...orderData,
-                          products: [...cart],
-                          total:
-                            Object.keys(coupon).length > 0
-                              ? coupon.discountPrice
-                                ? totalPrice -
-                                  coupon.discountPrice +
-                                  (orderData.shipType === "fast" ? 40000 : 0)
-                                : totalPrice -
-                                  Math.floor(
-                                    (coupon.discountRate * totalPrice) / 100
-                                  ) +
-                                  (orderData.shipType === "fast" ? 40000 : 0)
-                              : totalPrice +
-                                (orderData.shipType === "fast" ? 40000 : 0),
-                          coupon:
-                            Object.keys(coupon).length > 0 ? "coupon" : "",
-                        })
-                      );
-                      window.location.href = res.data.data;
-                    })
-                    .catch((err) => console.log(err));
-                } else {
-                  if (window.confirm("Bạn chắc chắn muốn đặt hàng?")) {
-                    if (!isAuthenticated) {
-                      checkoutNoAuth(orderData);
-                    } else
-                      checkout({
-                        ...orderData,
-                        products: [...cart],
-                        total:
-                          Object.keys(coupon).length > 0
-                            ? coupon.discountPrice
-                              ? totalPrice -
-                                coupon.discountPrice +
-                                (orderData.shipType === "fast" ? 40000 : 0)
-                              : totalPrice -
-                                Math.floor(
-                                  (coupon.discountRate * totalPrice) / 100
-                                ) +
-                                (orderData.shipType === "fast" ? 40000 : 0)
-                            : totalPrice +
-                              (orderData.shipType === "fast" ? 40000 : 0),
-                        coupon: Object.keys(coupon).length > 0 ? coupon : "",
-                      });
-                  }
-                }
+                showConfirm();
               }}
             >
               Đặt hàng

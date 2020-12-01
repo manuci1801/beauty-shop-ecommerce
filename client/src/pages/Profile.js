@@ -1,5 +1,4 @@
 import { DatePicker, Steps } from "antd";
-import Modal from "antd/lib/modal/Modal";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import moment from "moment";
@@ -10,6 +9,10 @@ import { formatDate } from "../utils/formatDate";
 import formatPrice from "../utils/formatPrice";
 import setAuthToken from "../utils/setAuthToken";
 import toastNotify from "../utils/toastNotify";
+import { Modal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+
+const { confirm } = Modal;
 
 const { Step } = Steps;
 
@@ -97,16 +100,11 @@ function Profile() {
     }
   }, [addresses]);
 
-  function updateProfile() {
-    if (
-      emailUpdate != user.email ||
-      nameUpdate != user.name ||
-      phoneUpdate != user.phone ||
-      birthdayUpdate != user.phone ||
-      genderUpdate != user.gender ||
-      passwordUpdate.length > 0
-    ) {
-      if (window.confirm("Bạn chắc chắn muốn thay đổi thông tin?")) {
+  function showConfirmUpdateProfile() {
+    confirm({
+      title: "Bạn chắc chắn muốn thay đổi thông tin?",
+      icon: <ExclamationCircleOutlined />,
+      onOk() {
         let dataUpdate = {};
         if (emailUpdate != user.email) {
           dataUpdate.email = emailUpdate;
@@ -136,9 +134,26 @@ function Profile() {
           const decoded = jwt_decode(token);
           console.log(decoded);
           // Set current user
+          toastNotify("success", "Cập nhật thông tin thành công");
           dispatch(setCurrentUser(decoded));
         });
-      }
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  }
+
+  function updateProfile() {
+    if (
+      emailUpdate != user.email ||
+      nameUpdate != user.name ||
+      phoneUpdate != user.phone ||
+      birthdayUpdate != user.phone ||
+      genderUpdate != user.gender ||
+      passwordUpdate.length > 0
+    ) {
+      showConfirmUpdateProfile();
     }
   }
 
@@ -172,6 +187,35 @@ function Profile() {
       .catch((err) => toastNotify("error", "Đã có lỗi xảy ra"));
   }
 
+  function showConfirmUpdateAddress() {
+    confirm({
+      title: "Bạn chắc chắn muốn thay đổi thông tin?",
+      icon: <ExclamationCircleOutlined />,
+      onOk() {
+        axios
+          .put(`/api/profiles/address/${addressUpdate._id}`, {
+            name: addressName,
+            phone: addressPhone,
+            address: addressAddress,
+            isShipDefault: isAddressShipDefault,
+            isPaymentDefault: isAddressPaymentDefault,
+          })
+          .then((res) => {
+            getAddresses();
+            setCurrentTab("address");
+            toastNotify("success", "Cập nhật địa chỉ thành công");
+            setAddressName("");
+            setAddressPhone("");
+            setAddressAddress("");
+          })
+          .catch((err) => toastNotify("error", "Đã có lỗi xảy ra"));
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  }
+
   function updateAddress() {
     if (!addressName) {
       return toastNotify("warn", "Họ tên không được để trống");
@@ -190,25 +234,7 @@ function Profile() {
       isAddressPaymentDefault != addressUpdate.isPaymentDefault ||
       isAddressShipDefault != addressUpdate.isShipDefault
     ) {
-      if (window.confirm("Bạn chắc chắn muốn thay đổi thông tin?")) {
-        axios
-          .put(`/api/profiles/address/${addressUpdate._id}`, {
-            name: addressName,
-            phone: addressPhone,
-            address: addressAddress,
-            isShipDefault: isAddressShipDefault,
-            isPaymentDefault: isAddressPaymentDefault,
-          })
-          .then((res) => {
-            getAddresses();
-            setCurrentTab("address");
-            toastNotify("success", "Thêm địa chỉ thành công");
-            setAddressName("");
-            setAddressPhone("");
-            setAddressAddress("");
-          })
-          .catch((err) => toastNotify("error", "Đã có lỗi xảy ra"));
-      }
+      showConfirmUpdateAddress();
     }
   }
 
