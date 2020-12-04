@@ -50,20 +50,10 @@ const addReplyComment = async (req, res) => {
       isReply: true,
     });
     await newReplyComment.save();
-
-    res.json(newReplyComment);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-};
-
-const getAll = async (req, res) => {
-  try {
-    const data = await Comment.aggregate([
+    const comment = await Comment.aggregate([
       {
         $match: {
-          productId: mongoose.Types.ObjectId("5fa93f4bc2286a0238693304"),
+          _id: mongoose.Types.ObjectId(newReplyComment._id),
         },
       },
       {
@@ -75,11 +65,56 @@ const getAll = async (req, res) => {
         },
       },
     ]);
-    console.log(data);
-    res.json(data);
+
+    const commentPopulate = await Comment.populate(comment, [
+      { path: "user", select: ["_id", "name", "email"] },
+      { path: "productId", select: ["_id", "name"] },
+    ]);
+
+    res.json(commentPopulate);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
+  }
+};
+
+const getAll = async (req, res) => {
+  try {
+    const data = await Comment.aggregate([
+      { $match: { isReply: false } },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "commentId",
+          as: "replies",
+        },
+      },
+    ]);
+    const dataPopulate = await Comment.populate(data, [
+      { path: "user", select: ["_id", "name", "email"] },
+      { path: "productId", select: ["_id", "name"] },
+    ]);
+
+    console.log(dataPopulate);
+    res.json(dataPopulate);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+};
+
+const deleteOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await Comment.findByIdAndDelete(id);
+    await Comment.deleteMany({ commentId: id });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 };
 
@@ -87,4 +122,5 @@ module.exports = {
   addComment,
   addReplyComment,
   getAll,
+  deleteOne,
 };

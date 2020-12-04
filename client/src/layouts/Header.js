@@ -230,7 +230,7 @@ function Header({ props }) {
     dispatch(getSubcategories());
     dispatch(getProducts());
     dispatch(getBrands());
-    dispatch(getCart());
+    if (isAuthenticated) dispatch(getCart());
   }, [isAuthenticated]);
 
   function hideModal() {

@@ -23,6 +23,7 @@ import Blogs from "../components/admin/Blogs";
 import OrdersRaw from "../components/admin/OrdersRaw";
 import OrdersCOD from "../components/admin/OrdersCOD";
 import Banners from "../components/admin/Banners";
+import Responses from "../components/admin/Responses";
 
 function Admin() {
   const { SubMenu } = Menu;
@@ -152,6 +153,8 @@ function Admin() {
         subcategories={subcategories}
         dispatch={dispatch}
       />
+    ) : currentTab === "responses" ? (
+      <Responses />
     ) : currentTab === "contacts" ? (
       <Contacts contacts={contacts} deleteContact={deleteContact} />
     ) : currentTab === "orders" ? (
@@ -235,6 +238,7 @@ function Admin() {
               <Menu.Item key="products">Sản phẩm</Menu.Item>
               <Menu.Item key="brands">Thương hiệu</Menu.Item>
               <Menu.Item key="categories">Danh mục</Menu.Item>
+              <Menu.Item key="responses">Phản hồi sản phẩm</Menu.Item>
             </SubMenu>
             <SubMenu
               key="orders-management"

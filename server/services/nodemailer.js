@@ -47,9 +47,9 @@ const sendMailOrder = async (to, order) => {
     let tableProducts = order.products.map(
       (e) =>
         `<tr style={ font-size: "16px", font-style: "italic" }>
-        <td>${e.productId.name}</td>
-        <td style={ width: "10%" }${e.amount}</td>
-        <td style={ width: "10%" }>
+        <td style={border: "1px solid black"}>${e.productId.name}</td>
+        <td style={ width: "10%", border: "1px solid black" }${e.amount}</td>
+        <td style={ width: "10%", border: "1px solid black" }>
           ${formatPrice(e.productId.price)}₫
         </td>
       </tr>`
@@ -111,16 +111,22 @@ const sendMailOrder = async (to, order) => {
             }
           >
             <tr>
-              <td>Tạm tính</td>
-              <td>${formatPrice(getTotalTmp())}₫</td>
+              <td style={border: "1px solid black"}>Tạm tính</td>
+              <td style={border: "1px solid black"}>${formatPrice(
+                getTotalTmp()
+              )}₫</td>
             </tr>
             <tr>
-              <td>Phí ship</td>
-              <td>${order.shipType === "fast" ? formatPrice(40000) : 0}₫</td>
+              <td style={border: "1px solid black"}>Phí ship</td>
+              <td style={border: "1px solid black"}>${
+                order.shipType === "fast" ? formatPrice(40000) : 0
+              }₫</td>
             </tr>
             <tr>
-              <td>Tổng tiền</td>
-              <td>${formatPrice(order.total)}₫</td>
+              <td style={border: "1px solid black"}>Tổng tiền</td>
+              <td style={border: "1px solid black"}>${formatPrice(
+                order.total
+              )}₫</td>
             </tr>
           </table>
         </>
