@@ -10,8 +10,8 @@ function Blog() {
   const [blogTags, setBlogTags] = useState([]);
 
   const [searchInput, setSearchInput] = useState("");
-  const [tag, setTag] = useState("");
-  const [category, setCategory] = useState("");
+  const [tagFilter, setTagFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   useEffect(() => {
     document.title = "Blog";
@@ -87,7 +87,7 @@ function Blog() {
                 </button>
               </form>
             </li>
-            <li className="nav-title" onClick={() => setCategory("")}>
+            <li className="nav-title" onClick={() => setCategoryFilter("")}>
               <a data-toggle="display-all">
                 <h4>Danh mục bài viết</h4>
               </a>
@@ -97,11 +97,15 @@ function Blog() {
               blogCategories.map((category) => (
                 <li key={category._id}>
                   <button
-                    className="product-group"
-                    type="button"
+                    className={
+                      categoryFilter === category._id
+                        ? "product-group active"
+                        : "product-group"
+                    }
+                    // type="button"
                     // data-toggle="filter-display"
                     // data-target=".room"
-                    onClick={() => setCategory(category._id)}
+                    onClick={() => setCategoryFilter(category._id)}
                   >
                     <h4>{category.name}</h4>
                     <span className="number" />
@@ -122,7 +126,7 @@ function Blog() {
                 </li>
               ))}
 
-            <li className="nav-title" onClick={() => setTag("")}>
+            <li className="nav-title" onClick={() => setTagFilter("")}>
               <a data-toggle="display-all">
                 <h4>Blog Tag</h4>
               </a>
@@ -132,10 +136,12 @@ function Blog() {
                 blogTags.length > 0 &&
                 blogTags.map((tag) => (
                   <button
+                    key={tag._id}
                     type="button"
+                    className={tagFilter === tag.tag ? "active" : ""}
                     // data-toggle="filter-display"
                     // data-target=".dining-room"
-                    onClick={() => setTag(tag.tag)}
+                    onClick={() => setTagFilter(tag.tag)}
                   >
                     <h5>{tag.tag}</h5>
                   </button>
@@ -147,11 +153,13 @@ function Blog() {
               blogs.length > 0 &&
               blogs
                 .filter((blog) =>
-                  new RegExp(searchInput, "gi").test(blog.title) && tag
-                    ? blog.tags.includes(tag)
-                    : true && category
-                    ? blog.category._id === category
-                    : true
+                  new RegExp(searchInput, "gi").test(blog.title)
+                )
+                .filter((blog) =>
+                  tagFilter ? blog.tags.includes(tagFilter) : true
+                )
+                .filter((blog) =>
+                  categoryFilter ? blog.category._id === categoryFilter : true
                 )
                 .map((blog) => (
                   <div className="col-item col-xs-12">

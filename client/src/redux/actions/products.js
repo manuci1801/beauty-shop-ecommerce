@@ -202,8 +202,7 @@ export const addToCart = (data) => (dispatch) => {
   });
 };
 
-export const clearCart = (message) => (dispatch) => {
-  toastNotify("success", message);
+export const clearCart = () => (dispatch) => {
   return dispatch({
     type: CLEAR_CART,
   });

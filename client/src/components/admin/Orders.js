@@ -220,7 +220,7 @@ function Orders({
               size="large"
               onClick={() => handleOnAddOrder()}
             >
-              Thêm
+              Tạo đơn hàng nháp
             </Button>
             <div style={{ display: "flex" }}>
               <Button

@@ -308,11 +308,6 @@ function Profile() {
                     Đơn mua
                   </a>
                 </li>
-                <li className={currentTab === "history" ? "active" : ""}>
-                  <a href="#" onClick={() => setCurrentTab("history")}>
-                    MIN Xu
-                  </a>
-                </li>
               </ul>
             </nav>
             <div className="tab-content">

@@ -4020,3 +4020,9 @@ img {
 .required-field {
   border-color: red;
 }
+
+.table-order-detail,
+.table-order-detail td,
+.table-order-detail th {
+  border: 1px solid black;
+}

@@ -24,7 +24,7 @@ function Cart() {
   const [coupon, setCoupon] = useState({});
 
   // steps
-  const [current, setCurrent] = React.useState(0);
+  const [current, setCurrent] = useState(0);
   const next = () => {
     setCurrent(current + 1);
   };
@@ -250,7 +250,7 @@ function Cart() {
                             <button
                               className="empty-cart link-to hidden-mobile"
                               onClick={() => {
-                                dispatch(clearCart("Đã xóa toàn bộ giỏ hàng"));
+                                dispatch(clearCart());
                                 toastNotify(
                                   "success",
                                   "Đã xóa toàn bộ giỏ hàng"
@@ -347,11 +347,17 @@ function Cart() {
               <div
                 style={{
                   textAlign: "center",
-                  padding: "20px",
+                  padding: "40px",
                   fontSize: "28px",
+                  minHeight: "50vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
                 }}
               >
-                Giỏ hàng trống
+                <img src="/img/empty-cart.png" alt="empty-cart" />
+                <div>Giỏ hàng trống</div>
               </div>
             )}
           </div>
@@ -373,11 +379,28 @@ function Cart() {
       content: (
         <div className="container">
           <div className="row text-center m-8">
-            <div className="text-3xl text-bold">Đã đặt đơn hàng thành công</div>
-            <div>
-              <Link className="mt-4" to="/products">
-                <Button type="primary">Tiếp tục mua hàng</Button>
-              </Link>
+            <div
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                minHeight: "50vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
+              <div className="text-4xl font-bold">THANK YOU </div>
+              <div className="my-10 text-2xl">
+                Cảm ơn bạn đã mua hàng tại shop của chúng tôi , mời bạn check
+                mail để có thể xem chi tiết thông tin về đơn hàng ! Xin cảm ơn
+                !!!{" "}
+              </div>
+              <div>
+                <Link className="mt-4" to="/products">
+                  <Button type="primary">Tiếp tục mua hàng</Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -387,15 +410,15 @@ function Cart() {
 
   return (
     <>
-      <div className="flex mx-20 mt-12">
-        <div className="flex-1 text-bold text-center">
+      <div className="flex mx-20 mt-12 justify-center items-center relative">
+        <div className="text-bold text-center">
           <Steps current={current}>
             {steps.map((item) => (
               <Step key={item.title} title={item.title} />
             ))}
           </Steps>
         </div>
-        <div className="flex-1 text-right">
+        <div className="absolute right-0">
           {current === 0 && (
             <Button
               type="primary"
@@ -419,6 +442,7 @@ function Cart() {
           )}
         </div>
       </div>
+
       <div className="steps-content">{steps[current].content}</div>
       {/* <div className="steps-action">
         {current < steps.length - 1 && (

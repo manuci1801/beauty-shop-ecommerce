@@ -60,6 +60,7 @@ function OrdersRaw({ products, addOrder }) {
 
   function onSearch(val) {
     setSearchName(val);
+    console.log(val);
   }
 
   function getAmountOfProductSelected(id) {
@@ -171,13 +172,16 @@ function OrdersRaw({ products, addOrder }) {
             value={null}
             onChange={(val) => handleAddProductsSelected(val)}
             onSearch={onSearch}
+            filterOption={(input, option) => {
+              let product = products.find((e) => e._id == option.value);
+              return product
+                ? new RegExp(searchName, "gi").test(product.name)
+                : true;
+            }}
           >
             {products && products.length > 0 ? (
               products
                 .filter((e) => !e.isDeleted)
-                .filter((product) =>
-                  new RegExp(searchName, "gi").test(product.name)
-                )
                 .map((product) => (
                   <Option value={product._id}>
                     <div>

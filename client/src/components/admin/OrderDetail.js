@@ -478,14 +478,26 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
           <div style={{ fontSize: "24px", fontWeight: "1000" }}>
             Thông tin đơn hàng
           </div>
-          <table style={{ width: "100%", margin: "auto" }}>
+          <table
+            className="table-order-detail"
+            style={{
+              width: "100%",
+              margin: "auto",
+              borderCollapse: "collapse",
+            }}
+          >
             <tr>
               <th>Hàng hóa</th>
               <th>SL</th>
               <th>GIá</th>
             </tr>
             {order.products.map((e) => (
-              <tr style={{ fontSize: "16px", fontStyle: "italic" }}>
+              <tr
+                style={{
+                  fontSize: "16px",
+                  fontStyle: "italic",
+                }}
+              >
                 <td>{e.productId.name}</td>
                 <td style={{ width: "10%" }}>{e.amount}</td>
                 <td style={{ width: "10%" }}>

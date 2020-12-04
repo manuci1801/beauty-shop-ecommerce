@@ -105,6 +105,9 @@ const sendMailOrder = async (to, order) => {
           <table
             style={
               font-weight: "1000",
+              width: "100%",
+              border-collapse: "collapse",
+              border: "1px solid black"
             }
           >
             <tr>
