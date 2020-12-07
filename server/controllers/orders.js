@@ -34,7 +34,7 @@ const addOne = async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json(err);
   }
 };
@@ -61,7 +61,7 @@ const getAllOfUser = async (req, res) => {
 
     res.json(orders);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json(err);
   }
 };
@@ -81,7 +81,7 @@ const addOneNoAuth = async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json(err);
   }
 };
@@ -317,6 +317,48 @@ const getHistoriesByOrderId = async (req, res) => {
   }
 };
 
+const getStatisticalOrders = async (req, res) => {
+  try {
+    const orders = await Order.aggregate([
+      // {
+      //   $match: {
+      //     $and: [
+      //       { created_date: { $gte: start_date } },
+      //       { created_date: { $lte: end_date } },
+      //     ],
+      //   },
+      // },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+            day: { $dayOfMonth: "$createdAt" },
+          },
+          total: { $sum: "$total" },
+        },
+      },
+      {
+        $project: {
+          date: {
+            year: "$_id.year",
+            month: "$_id.month",
+            day: "$_id.day",
+          },
+          total: 1,
+          _id: 0,
+        },
+      },
+    ]);
+
+    res.json(orders);
+  } catch (error) {
+    console.log("---------------");
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
+
 const objectsEqual = (o1, o2) =>
   typeof o1 === "object" && Object.keys(o1).length > 0
     ? Object.keys(o1).length === Object.keys(o2).length &&
@@ -336,4 +378,5 @@ module.exports = {
   updateOrder,
   getHistoriesByOrderId,
   deleteOne,
+  getStatisticalOrders,
 };

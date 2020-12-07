@@ -130,6 +130,7 @@ function Admin() {
         brands={brands}
         users={users}
         contacts={contacts}
+        orders={orders}
       />
     ) : currentTab === "users" ? (
       <Users
