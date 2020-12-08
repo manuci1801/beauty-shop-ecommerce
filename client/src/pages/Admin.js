@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Menu, Button } from "antd";
+import { Menu, Button, Modal } from "antd";
 import {
   MailOutlined,
   AppstoreOutlined,
@@ -43,6 +43,10 @@ function Admin() {
   const [contacts, setContacts] = useState([]);
 
   const [isAddOrderRaw, setIsAddOrderRaw] = useState(false);
+
+  // change password state
+  const [isVisible, setIsVisible] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
 
   const [
     isAuthenticated,
@@ -212,10 +216,9 @@ function Admin() {
     ) : null;
 
   const handleChangePassword = () => {
-    const password = window.prompt("Mật khẩu mới là: ", "new-password");
-    if (password) {
+    if (newPassword) {
       axios
-        .post("/api/users/change-password", { password })
+        .post("/api/users/change-password", { password: newPassword })
         .then((res) => {
           toastNotify(
             "success",
@@ -224,11 +227,54 @@ function Admin() {
           setTimeout(() => dispatch(logout(true)), 2000);
         })
         .catch((err) => console.log(err));
-    }
+    } else toastNotify("warn", "Hãy nhập mật khẩu mới");
   };
 
   return (
     <>
+      <Modal
+        style={{ top: "20px" }}
+        title={"Đổi mật khẩu"}
+        visible={isVisible}
+        maskClosable={false}
+        footer={null}
+        width="25%"
+        onCancel={() => {
+          setIsVisible(false);
+        }}
+      >
+        <form className="w-full m-auto" style={{ fontSize: "14px" }}>
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
+                htmlFor="name"
+              >
+                Mật khẩu mới
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="name"
+                type="text"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="md:flex md:items-center">
+            <div className="md:w-1/3">
+              <button
+                className="shadow bg-teal-400 hover:bg-teal-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-8 rounded"
+                type="button"
+                onClick={() => handleChangePassword()}
+              >
+                OK
+              </button>
+            </div>
+            <div className="md:w-2/3" />
+          </div>
+        </form>
+      </Modal>
       {isAuthenticated && user.role === "ROLE_ADMIN" ? (
         <div style={{ display: "flex" }}>
           <Menu
@@ -323,7 +369,7 @@ function Admin() {
               <Button
                 type="primary"
                 className="mt-4"
-                onClick={() => handleChangePassword()}
+                onClick={() => setIsVisible(true)}
               >
                 Đổi mật khẩu
               </Button>

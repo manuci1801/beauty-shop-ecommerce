@@ -57,21 +57,20 @@ function About() {
           <div className="col-xs-12 col-sm-6 col-md-8 pull-right txt-col">
             <h2>Chúng tôi có gì?</h2>
             <h3>
-              <i className="fa fa-long-arrow-right" /> Sản phẩm nội thất
+              <i className="fa fa-long-arrow-right" /> Sản phẩm phong phú
             </h3>
             <p>
-              Mong muốn đem tới điều khác biệt cho thị trường nhưng vẫn phù hợp
-              về tính năng sản phẩm cũng như túi tiền, nhu cầu của khách hàng,
-              chúng tôi luôn không ngừng tìm kiếm và sáng tạo để ngày một hoàn
-              thiện hơn và mang đến cho khách hàng những sản phẩm mới tinh tế và
-              độc đáo.
+              Khách hàng không chỉ được trải nghiệm các sản phẩm làm đẹp mới và
+              chất lượng nhất trong và ngoài nước. Các blogger còn là những
+              người sẽ liên tục cập nhật tạo ra các box mới độc đáo, sáng tạo và
+              tốt nhất để mang đến cho khách hàng nhiều sự lựa chọn khác nhau
             </p>
             <p>
               Chúng tôi hi vọng mỗi cửa hàng của MIN đều sẽ là một là một không
               gian đủ sáng tạo dành cho ai yêu sự độc đáo, đủ ấm áp thân quen
               với những người đôi chút hoài cổ, đủ phù hợp để mỗi khách hàng đến
-              với MIN đều có thể tìm được một vài món đồ cho ngôi nhà, cửa hàng
-              hay không gian của mình.
+              với MIN đều có thể tìm được một vài món đồ mỹ phẩm cho bản thân,
+              gia đình, bạn bè.
             </p>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-4 pull-left img-col">

@@ -41,9 +41,9 @@ function Profile() {
   const [isAddressPaymentDefault, setIsAddressPaymentDefault] = useState(false);
   const [addressUpdate, setAddressUpdate] = useState({});
 
-  // show order histories
-  const [visible, setVisible] = useState(false);
-  const [histories, setHistories] = useState([]);
+  // change password state
+  const [isVisible, setIsVisible] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
 
   // pagination
   const [page, setPage] = useState(0);
@@ -246,10 +246,9 @@ function Profile() {
   }
 
   const handleChangePassword = () => {
-    const password = window.prompt("Mật khẩu mới là: ", "new-password");
-    if (password) {
+    if (newPassword) {
       axios
-        .post("/api/users/change-password", { password })
+        .post("/api/users/change-password", { password: newPassword })
         .then((res) => {
           toastNotify(
             "success",
@@ -258,30 +257,53 @@ function Profile() {
           setTimeout(() => dispatch(logout()), 2000);
         })
         .catch((err) => console.log(err));
-    }
+    } else toastNotify("warn", "Hãy nhập mật khẩu mới");
   };
 
   return (
     <>
       <Modal
-        style={{ top: "30px" }}
-        visible={histories.length > 0 ? visible : false}
+        style={{ top: "20px" }}
+        title={"Đổi mật khẩu"}
+        visible={isVisible}
         maskClosable={false}
         footer={null}
-        width="50%"
+        width="25%"
         onCancel={() => {
-          setVisible(false);
+          setIsVisible(false);
         }}
       >
-        <Steps progressDot current={histories.length} direction="vertical">
-          {histories.map((e) => (
-            <Step
-              title={e.name}
-              subTitle={formatDate(e.createdAt)}
-              description={e.description}
-            />
-          ))}
-        </Steps>
+        <form className="w-full m-auto" style={{ fontSize: "14px" }}>
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-md font-bold mb-2"
+                htmlFor="name"
+              >
+                Mật khẩu mới
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="name"
+                type="text"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="md:flex md:items-center">
+            <div className="md:w-1/3">
+              <button
+                className="shadow bg-teal-400 hover:bg-teal-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-8 rounded"
+                type="button"
+                onClick={() => handleChangePassword()}
+              >
+                OK
+              </button>
+            </div>
+            <div className="md:w-2/3" />
+          </div>
+        </form>
       </Modal>
       <button
         type="button"
@@ -451,10 +473,7 @@ function Profile() {
                 <div className="tab-pane active" id="account-info">
                   <div className="flex justify-between">
                     <h3>Thông tin cá nhân</h3>
-                    <Button
-                      type="primary"
-                      onClick={() => handleChangePassword()}
-                    >
+                    <Button type="primary" onClick={() => setIsVisible(true)}>
                       Đổi mật khẩu
                     </Button>
                   </div>
