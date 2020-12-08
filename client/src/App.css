@@ -3424,7 +3424,7 @@ h3.comment-reply-title {
   border-radius: 0;
 }
 .logged img {
-  width: 22px;
+  width: auto;
   height: 22px;
   border-radius: 50%;
   margin-right: 5px;
@@ -3487,7 +3487,7 @@ h3.comment-reply-title {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  margin-right: 10px;
+  margin: 0 auto;
 }
 .account-main {
   margin: 80px auto;

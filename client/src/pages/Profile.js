@@ -284,7 +284,16 @@ function Profile() {
               <div className="user-top-wrap">
                 <div className="user-top">
                   <img src="img/feedback_1.jpg" />
-                  <span>{user.name}</span>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      wordWrap: "break-word",
+                      whiteSpace: "-moz-pre-wrap",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {user.name}
+                  </div>
                 </div>
               </div>
               <ul className="nav nav-stacked">

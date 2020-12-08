@@ -293,10 +293,14 @@ function Admin() {
                 alignItems: "center",
                 justifyContent: "center",
                 margin: "12px 0",
+                flexDirection: "column",
               }}
             >
               <Button type="primary" danger onClick={() => dispatch(logout())}>
                 Đăng xuất
+              </Button>
+              <Button type="primary" className="mt-4">
+                Đổi mật khẩu
               </Button>
             </div>
           </Menu>
