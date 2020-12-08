@@ -109,7 +109,7 @@ function Responses() {
             resetState();
             setComments([
               ...comments.slice(0, idx),
-              res.data,
+              res.data[0],
               ...comments.slice(idx + 1, comments.length),
             ]);
             toastNotify("success", "Phản hồi thành công");
@@ -136,19 +136,19 @@ function Responses() {
       title: "Tên người dùng",
       dataIndex: "user",
       key: "user",
-      render: (text) => (text.name ? text.name : null),
+      render: (text) => (text ? text.name : null),
     },
     {
       title: "Email",
       dataIndex: "user",
       key: "user",
-      render: (text) => (text.email ? text.email : null),
+      render: (text) => (text ? text.email : null),
     },
     {
       title: "Sản phẩm",
       dataIndex: "productId",
       key: "productId",
-      render: (text) => (text.name ? text.name : null),
+      render: (text) => (text ? text.name : null),
     },
     {
       title: "Nội dung",
@@ -159,7 +159,7 @@ function Responses() {
       title: "Phản hồi",
       dataIndex: "replies",
       key: "replies",
-      render: (text) => (text && text.length > 0 ? text[0].content : null),
+      render: (text) => (text ? text[text.length - 1].content : null),
     },
     {
       title: "Hành động",

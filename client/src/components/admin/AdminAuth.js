@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Checkbox } from "antd";
+import axios from "axios";
 import { useDispatch } from "react-redux";
 
 import { loginAdmin } from "../../redux/actions/auth";
+import toastNotify from "../../utils/toastNotify";
 
 function AdminAuth() {
   const dispatch = useDispatch();
@@ -31,6 +33,21 @@ function AdminAuth() {
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
+  };
+
+  const handleForgotPassword = () => {
+    const email = window.prompt("Email tài khoản admin của bạn là:");
+    if (email) {
+      axios
+        .post("/api/users/forgot-password", { email })
+        .then((res) => {
+          toastNotify(
+            "success",
+            "Mật khẩu mới đã được gửi tới email của bạn. Vui lòng kiểm tra email."
+          );
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
@@ -78,13 +95,16 @@ function AdminAuth() {
           <Input.Password />
         </Form.Item>
 
-        {/* <Form.Item {...tailLayout} name="remember" valuePropName="checked">
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item> */}
-
         <Form.Item {...tailLayout}>
           <Button type="primary" htmlType="submit">
             Submit
+          </Button>
+          <Button
+            type="ghost"
+            className="ml-8"
+            onClick={() => handleForgotPassword()}
+          >
+            Quên mật khẩu
           </Button>
         </Form.Item>
       </Form>

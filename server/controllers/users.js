@@ -1,6 +1,8 @@
 const argon2 = require("argon2");
+const { v4 } = require("uuid");
 
 const User = require("../models/User");
+const { sendMail } = require("../services/nodemailer");
 
 const getMany = async (req, res) => {
   try {
@@ -46,8 +48,50 @@ const deleteOne = async (req, res) => {
   res.json({ success: true });
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) return res.json({ success: true });
+
+    const newPassword = await v4();
+    sendMail(
+      email,
+      "Mật khẩu mới",
+      `<div>
+      <div>Mật khẩu mới của bạn là: <h4><i><strong>${newPassword}</strong></i></h4></div>
+    </div>`
+    );
+    await User.findByIdAndUpdate(user._id, {
+      password: await argon2.hash(newPassword),
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    await User.findByIdAndUpdate(req.user.id, {
+      password: await argon2.hash(password),
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
 module.exports = {
   getMany,
   addOne,
   deleteOne,
+  changePassword,
+  forgotPassword,
 };

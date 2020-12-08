@@ -53,7 +53,7 @@ const addReplyComment = async (req, res) => {
     const comment = await Comment.aggregate([
       {
         $match: {
-          _id: mongoose.Types.ObjectId(newReplyComment._id),
+          _id: mongoose.Types.ObjectId(commentId),
         },
       },
       {
@@ -70,7 +70,7 @@ const addReplyComment = async (req, res) => {
       { path: "user", select: ["_id", "name", "email"] },
       { path: "productId", select: ["_id", "name"] },
     ]);
-
+    console.log(commentPopulate);
     res.json(commentPopulate);
   } catch (err) {
     console.log(err);

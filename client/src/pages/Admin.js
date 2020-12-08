@@ -24,6 +24,7 @@ import OrdersRaw from "../components/admin/OrdersRaw";
 import OrdersCOD from "../components/admin/OrdersCOD";
 import Banners from "../components/admin/Banners";
 import Responses from "../components/admin/Responses";
+import toastNotify from "../utils/toastNotify";
 
 function Admin() {
   const { SubMenu } = Menu;
@@ -210,6 +211,22 @@ function Admin() {
       <Blogs />
     ) : null;
 
+  const handleChangePassword = () => {
+    const password = window.prompt("Mật khẩu mới là: ", "new-password");
+    if (password) {
+      axios
+        .post("/api/users/change-password", { password })
+        .then((res) => {
+          toastNotify(
+            "success",
+            "Đổi mật khẩu thành công. Vui lòng đăng nhập lại"
+          );
+          // setTimeout(() => dispatch(logout()), 2000);
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   return (
     <>
       {isAuthenticated && user.role === "ROLE_ADMIN" ? (
@@ -299,7 +316,11 @@ function Admin() {
               <Button type="primary" danger onClick={() => dispatch(logout())}>
                 Đăng xuất
               </Button>
-              <Button type="primary" className="mt-4">
+              <Button
+                type="primary"
+                className="mt-4"
+                onClick={() => handleChangePassword()}
+              >
                 Đổi mật khẩu
               </Button>
             </div>

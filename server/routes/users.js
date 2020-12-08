@@ -9,6 +9,9 @@ router
   .get(isAuth, isAdmin, userController.getMany)
   .post(isAuth, isAdmin, userController.addOne);
 
+router.route("/change-password").post(isAuth, userController.changePassword);
+router.route("/forgot-password").post(userController.forgotPassword);
+
 router.route("/:id").delete(isAuth, isAdmin, userController.deleteOne);
 
 module.exports = router;

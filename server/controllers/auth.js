@@ -31,7 +31,7 @@ const register = async (req, res) => {
         });
 
         // send mail verify
-        await sendMail(
+        sendMail(
           email,
           "verify account",
           `<a href="http://${process.env.CLIENT_URI}/verify/${verifyToken}"> Click to verify account</a>`
@@ -143,7 +143,7 @@ const forgotPassword = async (req, res) => {
 
     if (user)
       // send mail change password
-      await sendMail(
+      sendMail(
         email,
         "change password account",
         `

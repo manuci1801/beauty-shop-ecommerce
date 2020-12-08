@@ -30,7 +30,7 @@ const addOne = async (req, res) => {
     const order = await Order.findById(newOrder._id)
       .populate("products.productId", ["name", "price"])
       .populate("user", ["name", "email"]);
-    await sendMailOrder(req.user.email, order);
+    sendMailOrder(req.user.email, order);
 
     res.json({ success: true });
   } catch (err) {
