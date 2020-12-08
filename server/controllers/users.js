@@ -35,6 +35,7 @@ const addOne = async (req, res) => {
       role,
       phone,
       address,
+      isVerify: role === "ROLE_ADMIN" ? true : false,
     });
 
     await newUser.save();
