@@ -302,10 +302,13 @@ function Header({ props }) {
 
   function forgotPassword(data) {
     axios
-      .post("/api/auth/forgot-password", data)
+      .post("/api/users/forgot-password", data)
       .then((res) => {
         hideModal();
-        toastNotify("success", "Hãy kiểm tra email của bạn");
+        toastNotify(
+          "success",
+          "Mật khẩu mới đã được gửi tới email của bạn. Hãy kiểm tra email của bạn"
+        );
       })
       .catch((err) => toastNotify("warn", "Đã có lỗi xảy ra. Hãy thử lại"));
   }

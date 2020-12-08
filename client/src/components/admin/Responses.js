@@ -159,7 +159,8 @@ function Responses() {
       title: "Phản hồi",
       dataIndex: "replies",
       key: "replies",
-      render: (text) => (text ? text[text.length - 1].content : null),
+      render: (text) =>
+        text && text.length > 0 ? text[text.length - 1].content : null,
     },
     {
       title: "Hành động",

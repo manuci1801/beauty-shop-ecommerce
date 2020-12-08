@@ -1,10 +1,10 @@
-import { DatePicker, Steps } from "antd";
+import { Button, DatePicker, Steps } from "antd";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentUser } from "../redux/actions/auth";
+import { setCurrentUser, logout } from "../redux/actions/auth";
 import { formatDate } from "../utils/formatDate";
 import formatPrice from "../utils/formatPrice";
 import setAuthToken from "../utils/setAuthToken";
@@ -245,6 +245,22 @@ function Profile() {
       .catch((err) => toastNotify("error", "Đã có lỗi xảy ra"));
   }
 
+  const handleChangePassword = () => {
+    const password = window.prompt("Mật khẩu mới là: ", "new-password");
+    if (password) {
+      axios
+        .post("/api/users/change-password", { password })
+        .then((res) => {
+          toastNotify(
+            "success",
+            "Đổi mật khẩu thành công. Vui lòng đăng nhập lại"
+          );
+          setTimeout(() => dispatch(logout()), 2000);
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   return (
     <>
       <Modal
@@ -433,7 +449,15 @@ function Profile() {
               )}
               {currentTab === "account-info" && (
                 <div className="tab-pane active" id="account-info">
-                  <h3>Thông tin cá nhân</h3>
+                  <div className="flex justify-between">
+                    <h3>Thông tin cá nhân</h3>
+                    <Button
+                      type="primary"
+                      onClick={() => handleChangePassword()}
+                    >
+                      Đổi mật khẩu
+                    </Button>
+                  </div>
                   <form>
                     <ul>
                       <li>
@@ -448,7 +472,7 @@ function Profile() {
                           />
                         </div>
                       </li>
-                      <li>
+                      {/* <li>
                         <label htmlFor="password">Mật khẩu</label>
                         <div className="input-field">
                           <input
@@ -465,7 +489,7 @@ function Profile() {
                             onChange={(e) => setPasswordUpdate(e.target.value)}
                           />
                         </div>
-                      </li>
+                      </li> */}
                       <li>
                         <label htmlFor="name">Họ tên</label>
                         <div className="input-field">

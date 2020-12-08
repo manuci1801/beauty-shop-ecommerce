@@ -221,7 +221,7 @@ function Admin() {
             "success",
             "Đổi mật khẩu thành công. Vui lòng đăng nhập lại"
           );
-          // setTimeout(() => dispatch(logout()), 2000);
+          setTimeout(() => dispatch(logout(true)), 2000);
         })
         .catch((err) => console.log(err));
     }
@@ -313,7 +313,11 @@ function Admin() {
                 flexDirection: "column",
               }}
             >
-              <Button type="primary" danger onClick={() => dispatch(logout())}>
+              <Button
+                type="primary"
+                danger
+                onClick={() => dispatch(logout(true))}
+              >
                 Đăng xuất
               </Button>
               <Button

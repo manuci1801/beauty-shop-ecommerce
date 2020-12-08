@@ -89,11 +89,12 @@ export const setCurrentUser = (decoded) => {
 };
 
 // Log user out
-export const logout = () => (dispatch) => {
+export const logout = (isAdmin = false) => (dispatch) => {
   localStorage.removeItem("jwtToken");
   setAuthToken(false);
   dispatch(setCurrentUser({}));
   toastNotify("success", "Đăng xuất thành công");
+  window.location.href = isAdmin ? "/admin" : "/";
 };
 
 export const register = (data) => (dispatch) => {
