@@ -396,7 +396,7 @@ function Header({ props }) {
               {isAuthenticated && user ? (
                 <div className="logged" style={{ display: "flex" }}>
                   {/* <i class="fa fa-user-o"></i> */}
-                  <img src="/img/feedback_1.jpg" />
+                  <img src="/img/user-default.jpg" />
                   <div className="dropdown">
                     <button
                       className="btn btn-default dropdown-toggle"

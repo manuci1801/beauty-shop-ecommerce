@@ -38,6 +38,7 @@ function ProductDetail() {
       .then((res) => {
         // setProduct(res.data.product);
         setComments(res.data.comments);
+        console.log(res.data.comments);
         setProductsRelated(res.data.productsRelated);
       })
       .catch((err) => console.log(err));
@@ -321,22 +322,27 @@ function ProductDetail() {
                                   </div>
                                 </div>
                               </div>
-                              {/* <ul className="children">
-                              {e.replies &&
-                                e.replies.length > 0 &&
-                                e.replies.map((reply) => (
-                                  <li className="comment">
-                                    <div className="comment-wrap">
-                                      <div className="comment-img">
-                                        <img alt="" src="/img/feedback_1.jpg" />
-                                      </div>
-                                      <div className="comment-block">
-                                        <div className="comment-header">
-                                          <span className="comment-author">
-                                            <a href="#"></a>
-                                          </span>
-                                          <span>2 tuần trước </span>
-                                          <span className="pull-right">
+                              <ul className="children">
+                                {e.replies &&
+                                  e.replies.length > 0 &&
+                                  e.replies.map((reply) => (
+                                    <li className="comment">
+                                      <div className="comment-wrap">
+                                        <div className="comment-img">
+                                          <img
+                                            alt=""
+                                            src="/img/user-default.jpg"
+                                          />
+                                        </div>
+                                        <div className="comment-block">
+                                          <div className="comment-header">
+                                            <span className="comment-author">
+                                              <a href="#">ADMIN</a>
+                                            </span>
+                                            <span>
+                                              {formatDate(e.createdAt)}
+                                            </span>
+                                            {/* <span className="pull-right">
                                             <a
                                               className="comment-reply-link"
                                               href="#"
@@ -347,17 +353,16 @@ function ProductDetail() {
                                                 Trả lời
                                               </span>
                                             </a>
-                                          </span>
-                                        </div>
-                                        <div className="comment-content">
-                                          <p>{reply.content}</p>
+                                          </span> */}
+                                          </div>
+                                          <div className="comment-content">
+                                            <p>{reply.content}</p>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  </li>
-                                ))}
-                            </ul>
-                          */}
+                                    </li>
+                                  ))}
+                              </ul>
                             </li>
                           ))}
                       </ul>

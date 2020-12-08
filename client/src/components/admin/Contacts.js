@@ -3,12 +3,25 @@ import axios from "axios";
 import { formatDate } from "../../utils/formatDate";
 import { Button, Input, Table } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
 
 function Contacts({ contacts, deleteContact }) {
   const handleDelete = (id) => {
     axios.delete(`/api/contacts/${id}`).then((res) => {
       deleteContact(id);
     });
+  };
+
+  const exportToCSV = (csvData, fileName) => {
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
+    const ws = XLSX.utils.json_to_sheet(csvData);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension);
   };
 
   const columns = [
@@ -67,10 +80,16 @@ function Contacts({ contacts, deleteContact }) {
         }}
       >
         <div style={{ display: "flex", marginLeft: "auto" }}>
-          <Button type="primary" icon={<DownloadOutlined />} size="large">
+          <Button
+            type="primary"
+            onClick={() =>
+              exportToCSV(contacts, `contacts ${formatDate(new Date())}`)
+            }
+            icon={<DownloadOutlined />}
+            size="large"
+          >
             Xuất Excel
           </Button>
-          <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
         </div>
       </div>
 

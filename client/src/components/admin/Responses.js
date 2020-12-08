@@ -197,9 +197,9 @@ function Responses() {
         <Button type="primary" size="large" onClick={() => setIsVisible(true)}>
           Thêm
         </Button>
-        <div style={{ display: "flex" }}>
+        {/* <div style={{ display: "flex" }}>
           <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
-        </div>
+        </div> */}
       </div>
       <Modal
         style={{ top: "20px" }}

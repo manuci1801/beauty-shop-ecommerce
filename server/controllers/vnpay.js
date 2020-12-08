@@ -20,7 +20,6 @@ let postCreatePaymentUrl = (req, res) => {
     let returnUrl = "http://localhost:3000/payment/check";
 
     let date = new Date();
-
     let createDate = dateFormat(date, "yyyymmddHHmmss");
     let orderId = dateFormat(date, "HHmmss");
     let amount = req.body.amount;

@@ -116,22 +116,19 @@ function Payment({ coupon, checkout, checkoutNoAuth }) {
       return toastNotify("warn", "Hãy chọn hình thức vận chuyển");
 
     if (orderData.orderType === "VNPAY") {
+      const total =
+        Object.keys(coupon).length > 0
+          ? coupon.discountPrice
+            ? totalPrice -
+              coupon.discountPrice +
+              (orderData.shipType === "fast" ? 40000 : 0)
+            : totalPrice -
+              Math.floor((coupon.discountRate * totalPrice) / 100) +
+              (orderData.shipType === "fast" ? 40000 : 0)
+          : totalPrice + (orderData.shipType === "fast" ? 40000 : 0);
       axios
         .post("/api/vnpay/create-payment-url", {
-          amount:
-            orderData.shipType === "fast"
-              ? (coupon
-                  ? coupon.discountPrice
-                    ? totalPrice - coupon.discountPrice
-                    : totalPrice -
-                      Math.floor((coupon.discountRate * totalPrice) / 100)
-                  : totalPrice) + 40000
-              : coupon
-              ? coupon.discountPrice
-                ? totalPrice - coupon.discountPrice
-                : totalPrice -
-                  Math.floor((coupon.discountRate * totalPrice) / 100)
-              : totalPrice,
+          amount: total,
           bankCode: "NCB",
           orderDescription: "st",
           orderType: "210000",

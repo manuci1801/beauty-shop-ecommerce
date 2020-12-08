@@ -512,9 +512,9 @@ function Home() {
       <div className="container-fluid brand-slide">
         <div className="container">
           <div className="brand-owl owl-carousel">
-            <div className="brand-item">
+            {/* <div className="brand-item">
               <img src="img/logo_1.png" className="img-responsive" />
-            </div>
+            </div> */}
             {/* <div className="brand-item">
               <img src="img/logo_2.png" className="img-responsive" />
             </div>
