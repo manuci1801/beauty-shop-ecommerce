@@ -22,6 +22,11 @@ const getMany = async (req, res) => {
 const addOne = async (req, res) => {
   try {
     const { name, email, password, role, phone, address } = req.body;
+    const user = await User.findOne({ email });
+    if (user)
+      return res.status(400).json({
+        errors: [{ field: "email", message: "Email đã tồn tại" }],
+      });
 
     const newUser = new User({
       name,
