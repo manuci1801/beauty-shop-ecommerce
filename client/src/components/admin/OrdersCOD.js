@@ -12,7 +12,13 @@ const fileType =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
 const fileExtension = ".xlsx";
 
-function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
+function OrdersCOD({
+  orders,
+  handleOnAddOrder,
+  products,
+  updateOrders,
+  deleteOrder,
+}) {
   const { TabPane } = Tabs;
 
   const [currentTab, setCurrentTab] = useState("orders-all");
@@ -24,15 +30,11 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
 
   const [orderSelected, setOrderSelected] = useState("");
 
+  const [searchInput, setSearchInput] = useState("");
+
   function handleChangeTab(key) {
     setCurrentTab(key);
   }
-
-  // const handleDelete = (id) => {
-  //   axios.delete(`/api/contacts/${id}`).then((res) => {
-  //     deleteContact(id);
-  //   });
-  // };
 
   const rowSelection = {
     ordersSelected,
@@ -41,12 +43,6 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
       setOrdersSelected(selectedRowKeys);
     },
   };
-
-  useEffect(() => {
-    // if (orderIdSelected) {
-    //   alert(orderIdSelected);
-    // }
-  }, [orderSelected]);
 
   const exportToCSV = (csvData, fileName) => {
     const ws = XLSX.utils.json_to_sheet(csvData);
@@ -61,6 +57,11 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
       .get(`/api/orders/${id}/cancel`)
       .then((res) => updateOrders(res.data))
       .catch((err) => console.log(err));
+  };
+
+  const handleDeleteOrder = (id) => {
+    deleteOrder(id);
+    setOrderSelected("");
   };
 
   const columns = [
@@ -204,6 +205,7 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
           orderSelected={orderSelected}
           setOrderSelected={setOrderSelected}
           updateOrders={updateOrders}
+          handleDeleteOrder={handleDeleteOrder}
         />
       ) : (
         <>
@@ -221,7 +223,7 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
               size="large"
               onClick={() => handleOnAddOrder()}
             >
-              Thêm
+              Tạo đơn hàng nháp
             </Button>
             <div style={{ display: "flex" }}>
               <Button
@@ -234,7 +236,11 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
               >
                 Xuất Excel
               </Button>
-              <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+              <Input
+                onChange={(e) => setSearchInput(e.target.value)}
+                style={{ marginLeft: "4px" }}
+                placeholder="Tìm kiếm"
+              />
             </div>
           </div>
           <div className="p-4">
@@ -281,25 +287,53 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
                 columns={columns}
                 dataSource={
                   paid && unpaid
-                    ? orders.filter(
-                        (order) =>
-                          (paid ? order.isPaid : true) ||
-                          ((unpaid ? !order.isPaid : true) &&
-                            order.status === "pending")
-                      )
+                    ? orders
+                        .filter(
+                          (order) =>
+                            (paid ? order.isPaid : true) ||
+                            ((unpaid ? !order.isPaid : true) &&
+                              order.status === "pending")
+                        )
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
                     : paid
-                    ? orders.filter(
-                        (order) =>
-                          (paid ? order.isPaid : true) &&
-                          order.status === "pending"
-                      )
+                    ? orders
+                        .filter(
+                          (order) =>
+                            (paid ? order.isPaid : true) &&
+                            order.status === "pending"
+                        )
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
                     : unpaid
-                    ? orders.filter(
-                        (order) =>
-                          (unpaid ? !order.isPaid : true) &&
-                          order.status === "pending"
-                      )
-                    : orders.filter((order) => order.status === "pending")
+                    ? orders
+                        .filter(
+                          (order) =>
+                            (unpaid ? !order.isPaid : true) &&
+                            order.status === "pending"
+                        )
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
+                    : orders
+                        .filter((order) => order.status === "pending")
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
                 }
                 rowKey={(record) => record._id}
                 pagination={pagination}
@@ -313,7 +347,14 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
             <TabPane tab="Đã đóng gói" key="orders-packed">
               <Table
                 columns={columns}
-                dataSource={orders.filter((order) => order.status === "packed")}
+                dataSource={orders
+                  .filter((order) => order.status === "packed")
+                  .filter(
+                    (e) =>
+                      new RegExp(searchInput, "gi").test(e.name) ||
+                      new RegExp(searchInput, "gi").test(e.phone) ||
+                      new RegExp(searchInput, "gi").test(e.address)
+                  )}
                 rowKey={(record) => record._id}
                 pagination={pagination}
                 // rowSelection={rowSelection}
@@ -326,9 +367,14 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
             <TabPane tab="Đã giao hàng" key="orders-delivered">
               <Table
                 columns={columns}
-                dataSource={orders.filter(
-                  (order) => order.status === "delivered"
-                )}
+                dataSource={orders
+                  .filter((order) => order.status === "delivered")
+                  .filter(
+                    (e) =>
+                      new RegExp(searchInput, "gi").test(e.name) ||
+                      new RegExp(searchInput, "gi").test(e.phone) ||
+                      new RegExp(searchInput, "gi").test(e.address)
+                  )}
                 rowKey={(record) => record._id}
                 pagination={pagination}
                 // rowSelection={rowSelection}
@@ -341,9 +387,14 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
             <TabPane tab="Thành công" key="orders-success">
               <Table
                 columns={columns}
-                dataSource={orders.filter(
-                  (order) => order.status === "success"
-                )}
+                dataSource={orders
+                  .filter((order) => order.status === "success")
+                  .filter(
+                    (e) =>
+                      new RegExp(searchInput, "gi").test(e.name) ||
+                      new RegExp(searchInput, "gi").test(e.phone) ||
+                      new RegExp(searchInput, "gi").test(e.address)
+                  )}
                 rowKey={(record) => record._id}
                 pagination={pagination}
                 // rowSelection={rowSelection}
@@ -356,7 +407,14 @@ function OrdersCOD({ orders, handleOnAddOrder, products, updateOrders }) {
             <TabPane tab="Bị hủy" key="orders-cancel">
               <Table
                 columns={columns}
-                dataSource={orders.filter((order) => order.status === "cancel")}
+                dataSource={orders
+                  .filter((order) => order.status === "cancel")
+                  .filter(
+                    (e) =>
+                      new RegExp(searchInput, "gi").test(e.name) ||
+                      new RegExp(searchInput, "gi").test(e.phone) ||
+                      new RegExp(searchInput, "gi").test(e.address)
+                  )}
                 rowKey={(record) => record._id}
                 pagination={pagination}
                 // rowSelection={rowSelection}

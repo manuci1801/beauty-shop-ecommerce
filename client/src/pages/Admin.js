@@ -32,6 +32,7 @@ function Admin() {
   const handleClick = (e) => {
     console.log("click ", e);
     setCurrentTab(e.key);
+    setIsAddOrderRaw(false);
   };
 
   const dispatch = useDispatch();
@@ -39,6 +40,8 @@ function Admin() {
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [contacts, setContacts] = useState([]);
+
+  const [isAddOrderRaw, setIsAddOrderRaw] = useState(false);
 
   const [
     isAuthenticated,
@@ -103,6 +106,7 @@ function Admin() {
 
   const handleOnAddOrder = () => {
     setCurrentTab("orders-raw");
+    setIsAddOrderRaw(true);
   };
 
   const addOrder = (order) => {
@@ -167,13 +171,22 @@ function Admin() {
         deleteOrder={deleteOrder}
       />
     ) : currentTab === "orders-raw" ? (
-      <OrdersRaw products={products} addOrder={addOrder} />
+      <OrdersRaw
+        orders={orders.filter((e) => e.isCreatedByAdmin)}
+        addOrder={addOrder}
+        products={products}
+        updateOrders={updateOrders}
+        deleteOrder={deleteOrder}
+        isAddOrderRaw={isAddOrderRaw}
+        setIsAddOrderRaw={setIsAddOrderRaw}
+      />
     ) : currentTab === "orders-cod" ? (
       <OrdersCOD
         orders={orders.filter((e) => e.orderType === "COD")}
         products={products}
         handleOnAddOrder={handleOnAddOrder}
         updateOrders={updateOrders}
+        deleteOrder={deleteOrder}
       />
     ) : currentTab === "orders-vnpay" ? (
       <OrdersCOD
@@ -181,6 +194,7 @@ function Admin() {
         products={products}
         handleOnAddOrder={handleOnAddOrder}
         updateOrders={updateOrders}
+        deleteOrder={deleteOrder}
       />
     ) : currentTab === "discounts" ? (
       <Discounts

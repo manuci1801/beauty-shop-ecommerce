@@ -31,6 +31,7 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
   const [isUpdate, setIsUpdate] = useState(false);
   const [productId, setProductId] = useState("");
 
+  const [searchInput, setSearchInput] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 4 });
 
   const fileRef = useRef();
@@ -296,7 +297,11 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
           >
             Xuất Excel
           </Button>
-          <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+          <Input
+            onChange={(e) => setSearchInput(e.target.value)}
+            style={{ marginLeft: "4px" }}
+            placeholder="Tìm kiếm"
+          />
         </div>
       </div>
       <Modal
@@ -563,7 +568,9 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
 
       <Table
         columns={columns}
-        dataSource={products.filter((e) => !e.isDeleted)}
+        dataSource={products.filter(
+          (e) => !e.isDeleted && new RegExp(searchInput, "gi").test(e.name)
+        )}
         rowKey={(record) => record._id}
         pagination={pagination}
         onChange={(_pagination, filters, sorter) => setPagination(_pagination)}

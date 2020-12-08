@@ -193,20 +193,24 @@ function Users({ users, addUser, deleteUser }) {
         <Button type="primary" size="large" onClick={() => setIsVisible(true)}>
           Thêm
         </Button>
-        <Input
-          onChange={(e) => setSearchInput(e.target.value)}
-          style={{ margin: "4px 40px" }}
-          placeholder="Tìm kiếm"
-        />
 
-        <Button
-          type="primary"
-          onClick={() => exportToCSV(users, `users ${formatDate(new Date())}`)}
-          icon={<DownloadOutlined />}
-          size="large"
-        >
-          Xuất Excel
-        </Button>
+        <div style={{ display: "flex" }}>
+          <Button
+            type="primary"
+            onClick={() =>
+              exportToCSV(users, `users ${formatDate(new Date())}`)
+            }
+            icon={<DownloadOutlined />}
+            size="large"
+          >
+            Xuất Excel
+          </Button>
+          <Input
+            onChange={(e) => setSearchInput(e.target.value)}
+            style={{ marginLeft: "4px" }}
+            placeholder="Tìm kiếm"
+          />
+        </div>
       </div>
       <Modal
         style={{ top: "20px" }}
@@ -373,8 +377,11 @@ function Users({ users, addUser, deleteUser }) {
       </Modal>
       <Table
         columns={columns}
-        dataSource={users.filter((e) =>
-          new RegExp(searchInput, "gi").test(e.name)
+        dataSource={users.filter(
+          (e) =>
+            new RegExp(searchInput, "gi").test(e.name) ||
+            new RegExp(searchInput, "gi").test(e.email) ||
+            new RegExp(searchInput, "gi").test(e.phone)
         )}
         rowKey={(record) => record._id}
         pagination={pagination}

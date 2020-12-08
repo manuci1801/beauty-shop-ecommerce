@@ -27,6 +27,7 @@ function Categories({ categories, subcategories, dispatch }) {
   const [categoryId, setCategoryId] = useState("");
   const [categoryIdSelected, setCategoryIdSelected] = useState("");
 
+  const [searchInput, setSearchInput] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 6 });
 
   function callback(key) {
@@ -411,7 +412,11 @@ function Categories({ categories, subcategories, dispatch }) {
           Thêm
         </Button>
         <div style={{ display: "flex" }}>
-          <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+          <Input
+            onChange={(e) => setSearchInput(e.target.value)}
+            style={{ marginLeft: "4px" }}
+            placeholder="Tìm kiếm"
+          />
         </div>
       </div>
 
@@ -419,7 +424,9 @@ function Categories({ categories, subcategories, dispatch }) {
         <TabPane tab="Danh mục" key="categories">
           <Table
             columns={categoryColumns}
-            dataSource={categories}
+            dataSource={categories.filter((e) =>
+              new RegExp(searchInput, "gi").test(e.name)
+            )}
             rowKey={(record) => record._id}
             pagination={pagination}
             onChange={(_pagination, filters, sorter) =>
@@ -431,7 +438,9 @@ function Categories({ categories, subcategories, dispatch }) {
         <TabPane tab="Danh mục phụ" key="subcategories">
           <Table
             columns={subcategoryColumns}
-            dataSource={subcategories}
+            dataSource={subcategories.filter((e) =>
+              new RegExp(searchInput, "gi").test(e.name)
+            )}
             rowKey={(record) => record._id}
             pagination={pagination}
             onChange={(_pagination, filters, sorter) =>

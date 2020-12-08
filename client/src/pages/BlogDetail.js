@@ -39,11 +39,6 @@ function BlogDetail() {
     <>
       <div className="container-fluid page-heading blog-heading">
         <div className="heading-content">
-          <h1>Blog</h1>
-          <p>
-            Nơi MIN chia sẻ những ý tưởng độc đáo, những kiến thức hữu ích, và
-            những câu chuyện thú vị về nội thất.
-          </p>
           <ol className="breadcrumb">
             <li>
               <Link to="/">Trang chủ</Link>

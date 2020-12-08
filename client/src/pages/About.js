@@ -6,8 +6,6 @@ function About() {
     <>
       <div className="container-fluid page-heading about-heading">
         <div className="heading-content">
-          <h1>Về MIN</h1>
-          <p>Chúng tôi là ai? Chúng tôi có gì? Chúng tôi làm gì?</p>
           <ol className="breadcrumb">
             <li>
               <Link to="/">Trang chủ</Link>

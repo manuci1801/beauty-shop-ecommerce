@@ -30,6 +30,8 @@ function Orders({
 
   const [orderSelected, setOrderSelected] = useState("");
 
+  const [searchInput, setSearchInput] = useState("");
+
   function handleChangeTab(key) {
     setCurrentTab(key);
   }
@@ -46,12 +48,6 @@ function Orders({
       setOrdersSelected(selectedRowKeys);
     },
   };
-
-  useEffect(() => {
-    // if (orderIdSelected) {
-    //   alert(orderIdSelected);
-    // }
-  }, [orderSelected]);
 
   const exportToCSV = (csvData, fileName) => {
     const ws = XLSX.utils.json_to_sheet(csvData);
@@ -233,7 +229,11 @@ function Orders({
               >
                 Xuất Excel
               </Button>
-              <Input style={{ marginLeft: "4px" }} placeholder="Tìm kiếm" />
+              <Input
+                onChange={(e) => setSearchInput(e.target.value)}
+                style={{ marginLeft: "4px" }}
+                placeholder="Tìm kiếm"
+              />
             </div>
           </div>
           <div className="p-4">
@@ -255,16 +255,42 @@ function Orders({
                 columns={columns}
                 dataSource={
                   paid && unpaid
-                    ? orders.filter(
-                        (order) =>
-                          (paid ? order.isPaid : true) ||
-                          (unpaid ? !order.isPaid : true)
-                      )
+                    ? orders
+                        .filter(
+                          (order) =>
+                            (paid ? order.isPaid : true) ||
+                            (unpaid ? !order.isPaid : true)
+                        )
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
                     : paid
-                    ? orders.filter((order) => (paid ? order.isPaid : true))
+                    ? orders
+                        .filter((order) => (paid ? order.isPaid : true))
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
                     : unpaid
-                    ? orders.filter((order) => (unpaid ? !order.isPaid : true))
-                    : orders
+                    ? orders
+                        .filter((order) => (unpaid ? !order.isPaid : true))
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
+                    : orders.filter(
+                        (e) =>
+                          new RegExp(searchInput, "gi").test(e.name) ||
+                          new RegExp(searchInput, "gi").test(e.phone) ||
+                          new RegExp(searchInput, "gi").test(e.address)
+                      )
                 }
                 rowKey={(record) => record._id}
                 pagination={pagination}
@@ -285,25 +311,53 @@ function Orders({
                 columns={columns}
                 dataSource={
                   paid && unpaid
-                    ? orders.filter(
-                        (order) =>
-                          (paid ? order.isPaid : true) ||
-                          ((unpaid ? !order.isPaid : true) &&
-                            order.status === "pending")
-                      )
+                    ? orders
+                        .filter(
+                          (order) =>
+                            (paid ? order.isPaid : true) ||
+                            ((unpaid ? !order.isPaid : true) &&
+                              order.status === "pending")
+                        )
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
                     : paid
-                    ? orders.filter(
-                        (order) =>
-                          (paid ? order.isPaid : true) &&
-                          order.status === "pending"
-                      )
+                    ? orders
+                        .filter(
+                          (order) =>
+                            (paid ? order.isPaid : true) &&
+                            order.status === "pending"
+                        )
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
                     : unpaid
-                    ? orders.filter(
-                        (order) =>
-                          (unpaid ? !order.isPaid : true) &&
-                          order.status === "pending"
-                      )
-                    : orders.filter((order) => order.status === "pending")
+                    ? orders
+                        .filter(
+                          (order) =>
+                            (unpaid ? !order.isPaid : true) &&
+                            order.status === "pending"
+                        )
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
+                    : orders
+                        .filter((order) => order.status === "pending")
+                        .filter(
+                          (e) =>
+                            new RegExp(searchInput, "gi").test(e.name) ||
+                            new RegExp(searchInput, "gi").test(e.phone) ||
+                            new RegExp(searchInput, "gi").test(e.address)
+                        )
                 }
                 rowKey={(record) => record._id}
                 pagination={pagination}
@@ -322,7 +376,14 @@ function Orders({
             <TabPane tab="Đã đóng gói" key="orders-packed">
               <Table
                 columns={columns}
-                dataSource={orders.filter((order) => order.status === "packed")}
+                dataSource={orders
+                  .filter((order) => order.status === "packed")
+                  .filter(
+                    (e) =>
+                      new RegExp(searchInput, "gi").test(e.name) ||
+                      new RegExp(searchInput, "gi").test(e.phone) ||
+                      new RegExp(searchInput, "gi").test(e.address)
+                  )}
                 rowKey={(record) => record._id}
                 pagination={pagination}
                 // rowSelection={rowSelection}
@@ -335,9 +396,14 @@ function Orders({
             <TabPane tab="Đã giao hàng" key="orders-delivered">
               <Table
                 columns={columns}
-                dataSource={orders.filter(
-                  (order) => order.status === "delivered"
-                )}
+                dataSource={orders
+                  .filter((order) => order.status === "delivered")
+                  .filter(
+                    (e) =>
+                      new RegExp(searchInput, "gi").test(e.name) ||
+                      new RegExp(searchInput, "gi").test(e.phone) ||
+                      new RegExp(searchInput, "gi").test(e.address)
+                  )}
                 rowKey={(record) => record._id}
                 pagination={pagination}
                 // rowSelection={rowSelection}
@@ -350,9 +416,14 @@ function Orders({
             <TabPane tab="Thành công" key="orders-success">
               <Table
                 columns={columns}
-                dataSource={orders.filter(
-                  (order) => order.status === "success"
-                )}
+                dataSource={orders
+                  .filter((order) => order.status === "success")
+                  .filter(
+                    (e) =>
+                      new RegExp(searchInput, "gi").test(e.name) ||
+                      new RegExp(searchInput, "gi").test(e.phone) ||
+                      new RegExp(searchInput, "gi").test(e.address)
+                  )}
                 rowKey={(record) => record._id}
                 pagination={pagination}
                 // rowSelection={rowSelection}
@@ -376,7 +447,14 @@ function Orders({
                     alert("1");
                   },
                 })}
-                dataSource={orders.filter((order) => order.status === "cancel")}
+                dataSource={orders
+                  .filter((order) => order.status === "cancel")
+                  .filter(
+                    (e) =>
+                      new RegExp(searchInput, "gi").test(e.name) ||
+                      new RegExp(searchInput, "gi").test(e.phone) ||
+                      new RegExp(searchInput, "gi").test(e.address)
+                  )}
               />
             </TabPane>
           </Tabs>

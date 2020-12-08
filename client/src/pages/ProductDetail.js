@@ -63,11 +63,6 @@ function ProductDetail() {
         <>
           <div className="container-fluid page-heading shop-heading">
             <div className="heading-content">
-              <h1>Chi tiết Sản phẩm</h1>
-              <p>
-                Mỗi món đồ là một câu chuyện nhỏ. MIN cùng bạn viết nên câu
-                chuyện ngôi nhà mình.
-              </p>
               <ol className="breadcrumb">
                 <li>
                   <Link to="/">Trang chủ</Link>
