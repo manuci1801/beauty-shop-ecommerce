@@ -87,9 +87,10 @@ function Coupons() {
           setCoupons([...coupons, res.data]);
         })
         .catch((err) => {
-        if (err.response.data.code)
-        return toastNotify("error", "Đã tồn tại mã code");
-        toastNotify("error", "Đã có lỗi xảy ra")});
+          if (err.response.data.code)
+            return toastNotify("error", "Đã tồn tại mã code");
+          toastNotify("error", "Đã có lỗi xảy ra");
+        });
     }
   };
 
@@ -328,7 +329,7 @@ function Coupons() {
                 type="text"
                 value={formatPrice(discount)}
                 onChange={(e) => {
-                  if (e.target.value.match(/^[0-9]+\.?/) || !e.target.value)
+                  if (e.target.value.match(/^[0-9]+\,?/) || !e.target.value)
                     setDiscount(e.target.value.split(",").join(""));
                   else
                     return toastNotify("warn", "Bạn chỉ có thể nhập số dương");

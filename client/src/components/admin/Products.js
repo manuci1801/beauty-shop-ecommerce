@@ -14,6 +14,7 @@ import {
 } from "../../redux/actions/products";
 import toastNotify from "../../utils/toastNotify";
 import { formatDate } from "../../utils/formatDate";
+import formatPrice from "../../utils/formatPrice";
 
 function Products({ products, brands, categories, subcategories, dispatch }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -445,12 +446,13 @@ function Products({ products, brands, categories, subcategories, dispatch }) {
               <input
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="price"
-                type="number"
-                min="1"
-                value={price}
+                type="text"
+                value={formatPrice(price)}
                 onChange={(e) => {
-                  if (!e.target.value.includes("-")) setPrice(e.target.value);
-                  else toastNotify("warn", "Bạn chỉ có thể nhập số dương");
+                  if (e.target.value.match(/^[0-9]+\,?/))
+                    setPrice(e.target.value.split(",").join(""));
+                  else
+                    return toastNotify("warn", "Bạn chỉ có thể nhập số dương");
                 }}
               />
             </div>

@@ -478,7 +478,7 @@ function Discounts({ brands, categories, subcategories }) {
                 min="1"
                 value={formatPrice(discount)}
                 onChange={(e) => {
-                  if (e.target.value.match(/^[0-9]+\.?/) || !e.target.value)
+                  if (e.target.value.match(/^[0-9]+\,?/) || !e.target.value)
                     setDiscount(e.target.value.split(",").join(""));
                   else
                     return toastNotify("warn", "Bạn chỉ có thể nhập số dương");
