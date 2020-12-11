@@ -79,7 +79,7 @@ const updateOne = async (req, res) => {
 
     let category = await SubCategory.findByIdAndUpdate(id, updateData, {
       new: true,
-    });
+    }).populate("categoryId", ["name"]);
 
     res.json(category);
   } catch (err) {
