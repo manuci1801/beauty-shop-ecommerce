@@ -1,3 +1,4 @@
+// định nghĩa blog route
 const router = require("express").Router();
 
 const { blogController } = require("../controllers");
@@ -5,10 +6,16 @@ const { isAuth, isAdmin } = require("../middleware");
 
 const { uploadFile } = require("../utils/processFile");
 
+// blog route
 router
   .route("/")
   .get(blogController.getAll)
   .post(isAuth, isAdmin, uploadFile("cover", false), blogController.addBlog);
+router
+  .route("/:id")
+  .get(blogController.getById)
+  .put(isAuth, isAdmin, uploadFile("cover", false), blogController.updateOne)
+  .delete(isAuth, isAdmin, blogController.deleteOne);
 
 // blog categories route
 router
@@ -25,19 +32,10 @@ router
   .route("/tags")
   .get(blogController.getAllTags)
   .post(isAuth, isAdmin, blogController.addTag);
-
 router
   .route("/tags/:id")
   .put(isAuth, isAdmin, blogController.updateBlogTag)
   .delete(isAuth, isAdmin, blogController.deleteBlogTag);
-
-router
-  .route("/:id")
-  .get(blogController.getById)
-  .put(isAuth, isAdmin, uploadFile("cover", false), blogController.updateOne)
-  .delete(isAuth, isAdmin, blogController.deleteOne);
-
-// router.route("/check").post(blogController.checkValidCoupon);
 
 router
   .route("/upload")

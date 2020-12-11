@@ -149,6 +149,7 @@ const uploadImgContent = async (req, res) => {
   }
 };
 
+// cập nhật blog
 const updateOne = async (req, res) => {
   try {
     const { id } = req.params;
@@ -176,6 +177,7 @@ const updateOne = async (req, res) => {
   }
 };
 
+// xóa danh mục blog
 const deleteBlogCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -193,6 +195,7 @@ const deleteBlogCategory = async (req, res) => {
   }
 };
 
+// cập nhật danh mục blog
 const updateBlogCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -211,6 +214,7 @@ const updateBlogCategory = async (req, res) => {
   }
 };
 
+// xóa blog tag
 const deleteBlogTag = async (req, res) => {
   try {
     const { id } = req.params;
@@ -224,6 +228,7 @@ const deleteBlogTag = async (req, res) => {
   }
 };
 
+// cập nhật blog tag
 const updateBlogTag = async (req, res) => {
   try {
     const { id } = req.params;
