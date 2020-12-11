@@ -150,6 +150,7 @@ const updateOne = async (req, res) => {
     brandId,
     price,
     amount,
+    describeLink,
   } = req.body;
 
   let images = [];
@@ -167,6 +168,7 @@ const updateOne = async (req, res) => {
   if (price) updateData = { ...updateData, price };
   if (amount) updateData = { ...updateData, amount };
   if (description) updateData = { ...updateData, description };
+  if (describeLink) updateData = { ...updateData, describeLink };
   if (images.length > 0) updateData = { ...updateData, images };
 
   const product = await Product.findByIdAndUpdate(id, updateData, {
