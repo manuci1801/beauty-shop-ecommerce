@@ -14,13 +14,22 @@ router
 router
   .route("/categories")
   .get(blogController.getAllCategories)
-  .post(blogController.addCategory);
+  .post(isAuth, isAdmin, blogController.addCategory);
+router
+  .route("/categories/:id")
+  .put(isAuth, isAdmin, blogController.updateBlogCategory)
+  .delete(isAuth, isAdmin, blogController.deleteBlogCategory);
 
 // blog tags route
 router
   .route("/tags")
   .get(blogController.getAllTags)
-  .post(blogController.addTag);
+  .post(isAuth, isAdmin, blogController.addTag);
+
+router
+  .route("/tags/:id")
+  .put(isAuth, isAdmin, blogController.updateBlogTag)
+  .delete(isAuth, isAdmin, blogController.deleteBlogTag);
 
 router
   .route("/:id")
