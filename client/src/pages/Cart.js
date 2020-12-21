@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import formatPrice from "../utils/formatPrice";
@@ -17,6 +17,7 @@ const { Step } = Steps;
 
 function Cart() {
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -45,7 +46,12 @@ function Cart() {
   function getProductById(id) {
     return products.find((product) => product._id == id);
   }
-
+  useEffect(()=> {
+    if(location.state && location.state.step) {
+      console.log(location.state.step)
+      setCurrent(location.state.step)
+    }
+  }, [location])
   useEffect(() => {
     if (
       typeof cart !== "undefined" &&
