@@ -100,7 +100,7 @@ function Cart() {
               : totalPrice -
                 Math.floor((coupon.discountRate * totalPrice) / 100)
             : totalPrice,
-        coupon: Object.keys(coupon).length > 0 ? "coupon" : "",
+        coupon: Object.keys(coupon).length > 0 ? coupon : "",
       })
       .then((res) => {
         toastNotify("success", "Đặt hàng thành công");
